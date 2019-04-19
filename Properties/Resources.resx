@@ -1,0 +1,1030 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Banner" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Banner.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ChunkCommentFormat" xml:space="preserve">
+    <value>{0} ({1}), {2} bytes of data</value>
+  </data>
+  <data name="ChunkTypeLength" xml:space="preserve">
+    <value>Chunk type must be exactly 4 characters.</value>
+  </data>
+  <data name="DeltaTime" xml:space="preserve">
+    <value>Delta-time</value>
+  </data>
+  <data name="DeltaTimeFormat" xml:space="preserve">
+    <value>{0} ticks</value>
+  </data>
+  <data name="Escape" xml:space="preserve">
+    <value>escape</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>_Format:</value>
+  </data>
+  <data name="Format0" xml:space="preserve">
+    <value>0 (one multi-channel track)</value>
+  </data>
+  <data name="Format1" xml:space="preserve">
+    <value>1 (one or more simultaneous tracks)</value>
+  </data>
+  <data name="Format2" xml:space="preserve">
+    <value>2 (one or more independent tracks)</value>
+  </data>
+  <data name="FramesPerSecond" xml:space="preserve">
+    <value>_SMPTE format (frames per second):</value>
+  </data>
+  <data name="FramesPerSecond24" xml:space="preserve">
+    <value>24</value>
+  </data>
+  <data name="FramesPerSecond25" xml:space="preserve">
+    <value>25</value>
+  </data>
+  <data name="FramesPerSecond29" xml:space="preserve">
+    <value>30 drop frame</value>
+  </data>
+  <data name="FramesPerSecond30" xml:space="preserve">
+    <value>30</value>
+  </data>
+  <data name="HeaderChunk" xml:space="preserve">
+    <value>header chunk</value>
+  </data>
+  <data name="HeaderDataFormat" xml:space="preserve">
+    <value>Format {0}, {1} tracks, {2}</value>
+  </data>
+  <data name="HelpText" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Help.html;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="InvalidVLQ" xml:space="preserve">
+    <value>Invalid variable-length quantity.</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>message</value>
+  </data>
+  <data name="MIDIopsy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MIDIopsy.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NumberNotSupported" xml:space="preserve">
+    <value>Numbers of more than 4 bytes (32 bits) are not supported.</value>
+  </data>
+  <data name="NumberOfTracks" xml:space="preserve">
+    <value>_Number of tracks:</value>
+  </data>
+  <data name="StronglyTypedClass" xml:space="preserve">
+    <value>A strongly typed class must be used for this object.</value>
+  </data>
+  <data name="SysExEventFormat" xml:space="preserve">
+    <value>SysEx {0} ({1} bytes of data)</value>
+  </data>
+  <data name="TicksPerFrame" xml:space="preserve">
+    <value>_Resolution (ticks per frame):</value>
+  </data>
+  <data name="TicksPerQuarterNote" xml:space="preserve">
+    <value>Ticks per _quarter note:</value>
+  </data>
+  <data name="TrackChunk" xml:space="preserve">
+    <value>track chunk</value>
+  </data>
+  <data name="UnknownChunkType" xml:space="preserve">
+    <value>unknown chunk type</value>
+  </data>
+  <data name="UnrecognizedDataFormat" xml:space="preserve">
+    <value>Unrecognized data: "{0}"</value>
+  </data>
+  <data name="ValueRangeFormat" xml:space="preserve">
+    <value>{0} must be between {1} and {2}.</value>
+  </data>
+  <data name="MetaEventFormat" xml:space="preserve">
+    <value>Meta-event / {0} ({1} bytes of data)</value>
+  </data>
+  <data name="MetaEventType" xml:space="preserve">
+    <value>Meta-event type</value>
+  </data>
+  <data name="SequenceNumber" xml:space="preserve">
+    <value>Sequence Number</value>
+  </data>
+  <data name="MetaLengthFormat" xml:space="preserve">
+    <value>Data length for a {0} meta-event must be at least {1} bytes.</value>
+  </data>
+  <data name="TextEvent" xml:space="preserve">
+    <value>Text Event</value>
+  </data>
+  <data name="Centiframe" xml:space="preserve">
+    <value>Centiframe</value>
+  </data>
+  <data name="ClocksPerClick" xml:space="preserve">
+    <value>MIDI clocks per metronome click</value>
+  </data>
+  <data name="CopyrightNotice" xml:space="preserve">
+    <value>Copyright Notice</value>
+  </data>
+  <data name="CuePoint" xml:space="preserve">
+    <value>Cue Point</value>
+  </data>
+  <data name="Denominator" xml:space="preserve">
+    <value>Time signature denominator</value>
+  </data>
+  <data name="EndOfTrack" xml:space="preserve">
+    <value>End of Track</value>
+  </data>
+  <data name="Frame" xml:space="preserve">
+    <value>Frame</value>
+  </data>
+  <data name="Hour" xml:space="preserve">
+    <value>Hour</value>
+  </data>
+  <data name="InstrumentName" xml:space="preserve">
+    <value>Instrument Name</value>
+  </data>
+  <data name="KeySignature" xml:space="preserve">
+    <value>Key Signature</value>
+  </data>
+  <data name="Lyric" xml:space="preserve">
+    <value>Lyric</value>
+  </data>
+  <data name="Marker" xml:space="preserve">
+    <value>Marker</value>
+  </data>
+  <data name="MicrosecondsPerQuarterNote" xml:space="preserve">
+    <value>microseconds per quarter note</value>
+  </data>
+  <data name="MidiChannelPrefix" xml:space="preserve">
+    <value>MIDI Channel Prefix</value>
+  </data>
+  <data name="Minute" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="NotesPerQuarterNote" xml:space="preserve">
+    <value>notated 32nd-notes per MIDI quarter note</value>
+  </data>
+  <data name="Numerator" xml:space="preserve">
+    <value>Time signature numerator</value>
+  </data>
+  <data name="Second" xml:space="preserve">
+    <value>Second</value>
+  </data>
+  <data name="SequencerSpecificMetaEvent" xml:space="preserve">
+    <value>Sequencer-Specific Meta-Event</value>
+  </data>
+  <data name="SequenceTrackName" xml:space="preserve">
+    <value>Sequence/Track Name</value>
+  </data>
+  <data name="SetTempo" xml:space="preserve">
+    <value>Set Tempo</value>
+  </data>
+  <data name="SmpteOffset" xml:space="preserve">
+    <value>SMPTE Offset</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>time</value>
+  </data>
+  <data name="TimeSignature" xml:space="preserve">
+    <value>Time Signature</value>
+  </data>
+  <data name="Channel" xml:space="preserve">
+    <value>Channel</value>
+  </data>
+  <data name="ChannelFormat" xml:space="preserve">
+    <value>{0} on channel {1}</value>
+  </data>
+  <data name="ChannelNotChanged" xml:space="preserve">
+    <value>The channel of an event using running status cannot be changed arbitrarily.</value>
+  </data>
+  <data name="ChannelPressure" xml:space="preserve">
+    <value>Channel Pressure (Aftertouch)</value>
+  </data>
+  <data name="ControlChange" xml:space="preserve">
+    <value>Control Change</value>
+  </data>
+  <data name="Controller0" xml:space="preserve">
+    <value>Bank Select</value>
+  </data>
+  <data name="Controller1" xml:space="preserve">
+    <value>Modulation wheel or lever</value>
+  </data>
+  <data name="Controller10" xml:space="preserve">
+    <value>Pan</value>
+  </data>
+  <data name="Controller100" xml:space="preserve">
+    <value>Registered Parameter Number LSB</value>
+  </data>
+  <data name="Controller101" xml:space="preserve">
+    <value>Registered Parameter Number MSB</value>
+  </data>
+  <data name="Controller11" xml:space="preserve">
+    <value>Expression Controller</value>
+  </data>
+  <data name="Controller12" xml:space="preserve">
+    <value>Effect Control 1</value>
+  </data>
+  <data name="Controller13" xml:space="preserve">
+    <value>Effect Control 2</value>
+  </data>
+  <data name="Controller16" xml:space="preserve">
+    <value>General Purpose Controller # 1</value>
+  </data>
+  <data name="Controller17" xml:space="preserve">
+    <value>General Purpose Controller # 2</value>
+  </data>
+  <data name="Controller18" xml:space="preserve">
+    <value>General Purpose Controller # 3</value>
+  </data>
+  <data name="Controller19" xml:space="preserve">
+    <value>General Purpose Controller # 4</value>
+  </data>
+  <data name="Controller2" xml:space="preserve">
+    <value>Breath Controller</value>
+  </data>
+  <data name="Controller32" xml:space="preserve">
+    <value>LSB for value 0</value>
+  </data>
+  <data name="Controller33" xml:space="preserve">
+    <value>LSB for value 1</value>
+  </data>
+  <data name="Controller34" xml:space="preserve">
+    <value>LSB for value 2</value>
+  </data>
+  <data name="Controller35" xml:space="preserve">
+    <value>LSB for value 3</value>
+  </data>
+  <data name="Controller36" xml:space="preserve">
+    <value>LSB for value 4</value>
+  </data>
+  <data name="Controller37" xml:space="preserve">
+    <value>LSB for value 5</value>
+  </data>
+  <data name="Controller38" xml:space="preserve">
+    <value>LSB for value 6</value>
+  </data>
+  <data name="Controller39" xml:space="preserve">
+    <value>LSB for value 7</value>
+  </data>
+  <data name="Controller4" xml:space="preserve">
+    <value>Foot controller</value>
+  </data>
+  <data name="Controller40" xml:space="preserve">
+    <value>LSB for value 8</value>
+  </data>
+  <data name="Controller41" xml:space="preserve">
+    <value>LSB for value 9</value>
+  </data>
+  <data name="Controller42" xml:space="preserve">
+    <value>LSB for value 10</value>
+  </data>
+  <data name="Controller43" xml:space="preserve">
+    <value>LSB for value 11</value>
+  </data>
+  <data name="Controller44" xml:space="preserve">
+    <value>LSB for value 12</value>
+  </data>
+  <data name="Controller45" xml:space="preserve">
+    <value>LSB for value 13</value>
+  </data>
+  <data name="Controller46" xml:space="preserve">
+    <value>LSB for value 14</value>
+  </data>
+  <data name="Controller47" xml:space="preserve">
+    <value>LSB for value 15</value>
+  </data>
+  <data name="Controller48" xml:space="preserve">
+    <value>LSB for value 16</value>
+  </data>
+  <data name="Controller49" xml:space="preserve">
+    <value>LSB for value 17</value>
+  </data>
+  <data name="Controller5" xml:space="preserve">
+    <value>Portamento time</value>
+  </data>
+  <data name="Controller50" xml:space="preserve">
+    <value>LSB for value 18</value>
+  </data>
+  <data name="Controller51" xml:space="preserve">
+    <value>LSB for value 19</value>
+  </data>
+  <data name="Controller52" xml:space="preserve">
+    <value>LSB for value 20</value>
+  </data>
+  <data name="Controller53" xml:space="preserve">
+    <value>LSB for value 21</value>
+  </data>
+  <data name="Controller54" xml:space="preserve">
+    <value>LSB for value 22</value>
+  </data>
+  <data name="Controller55" xml:space="preserve">
+    <value>LSB for value 23</value>
+  </data>
+  <data name="Controller56" xml:space="preserve">
+    <value>LSB for value 24</value>
+  </data>
+  <data name="Controller57" xml:space="preserve">
+    <value>LSB for value 25</value>
+  </data>
+  <data name="Controller58" xml:space="preserve">
+    <value>LSB for value 26</value>
+  </data>
+  <data name="Controller59" xml:space="preserve">
+    <value>LSB for value 27</value>
+  </data>
+  <data name="Controller6" xml:space="preserve">
+    <value>Data entry MSB</value>
+  </data>
+  <data name="Controller60" xml:space="preserve">
+    <value>LSB for value 28</value>
+  </data>
+  <data name="Controller61" xml:space="preserve">
+    <value>LSB for value 29</value>
+  </data>
+  <data name="Controller62" xml:space="preserve">
+    <value>LSB for value 30</value>
+  </data>
+  <data name="Controller63" xml:space="preserve">
+    <value>LSB for value 31</value>
+  </data>
+  <data name="Controller64" xml:space="preserve">
+    <value>Sustain/Damper pedal</value>
+  </data>
+  <data name="Controller65" xml:space="preserve">
+    <value>Portamento On/Off</value>
+  </data>
+  <data name="Controller66" xml:space="preserve">
+    <value>Sostenuto</value>
+  </data>
+  <data name="Controller67" xml:space="preserve">
+    <value>Soft pedal</value>
+  </data>
+  <data name="Controller68" xml:space="preserve">
+    <value>Legato Footswitch</value>
+  </data>
+  <data name="Controller69" xml:space="preserve">
+    <value>Hold 2</value>
+  </data>
+  <data name="Controller7" xml:space="preserve">
+    <value>Channel Volume</value>
+  </data>
+  <data name="Controller70" xml:space="preserve">
+    <value>Sound Controller 1</value>
+  </data>
+  <data name="Controller71" xml:space="preserve">
+    <value>Sound Controller 2</value>
+  </data>
+  <data name="Controller72" xml:space="preserve">
+    <value>Sound Controller 3</value>
+  </data>
+  <data name="Controller73" xml:space="preserve">
+    <value>Sound Controller 4</value>
+  </data>
+  <data name="Controller74" xml:space="preserve">
+    <value>Sound Controller 5</value>
+  </data>
+  <data name="Controller75" xml:space="preserve">
+    <value>Sound Controller 6</value>
+  </data>
+  <data name="Controller76" xml:space="preserve">
+    <value>Sound Controller 7</value>
+  </data>
+  <data name="Controller77" xml:space="preserve">
+    <value>Sound Controller 8</value>
+  </data>
+  <data name="Controller78" xml:space="preserve">
+    <value>Sound Controller 9</value>
+  </data>
+  <data name="Controller79" xml:space="preserve">
+    <value>Sound Controller 10</value>
+  </data>
+  <data name="Controller8" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Controller80" xml:space="preserve">
+    <value>General Purpose Controller # 5</value>
+  </data>
+  <data name="Controller81" xml:space="preserve">
+    <value>General Purpose Controller # 6</value>
+  </data>
+  <data name="Controller82" xml:space="preserve">
+    <value>General Purpose Controller # 7</value>
+  </data>
+  <data name="Controller83" xml:space="preserve">
+    <value>General Purpose Controller # 8</value>
+  </data>
+  <data name="Controller84" xml:space="preserve">
+    <value>Portamento Control</value>
+  </data>
+  <data name="Controller91" xml:space="preserve">
+    <value>Effects 1 Depth</value>
+  </data>
+  <data name="Controller92" xml:space="preserve">
+    <value>Effects 2 Depth</value>
+  </data>
+  <data name="Controller93" xml:space="preserve">
+    <value>Effects 3 Depth</value>
+  </data>
+  <data name="Controller94" xml:space="preserve">
+    <value>Effects 4 Depth</value>
+  </data>
+  <data name="Controller95" xml:space="preserve">
+    <value>Effects 5 Depth</value>
+  </data>
+  <data name="Controller96" xml:space="preserve">
+    <value>Data increment</value>
+  </data>
+  <data name="Controller97" xml:space="preserve">
+    <value>Data decrement</value>
+  </data>
+  <data name="Controller98" xml:space="preserve">
+    <value>Non-Registered Parameter Number LSB</value>
+  </data>
+  <data name="Controller99" xml:space="preserve">
+    <value>Non-Registered Parameter Number MSB</value>
+  </data>
+  <data name="ControllerNumber" xml:space="preserve">
+    <value>Controller number</value>
+  </data>
+  <data name="ControlValue" xml:space="preserve">
+    <value>Control value</value>
+  </data>
+  <data name="MessageType" xml:space="preserve">
+    <value>Message type</value>
+  </data>
+  <data name="NoteNumber" xml:space="preserve">
+    <value>Note number</value>
+  </data>
+  <data name="NoteOff" xml:space="preserve">
+    <value>Note Off</value>
+  </data>
+  <data name="NoteOn" xml:space="preserve">
+    <value>Note On</value>
+  </data>
+  <data name="PitchBend" xml:space="preserve">
+    <value>Pitch Bend Change</value>
+  </data>
+  <data name="PolyKeyPressure" xml:space="preserve">
+    <value>Polyphonic Key Pressure (Aftertouch)</value>
+  </data>
+  <data name="PressureValue" xml:space="preserve">
+    <value>Pressure value</value>
+  </data>
+  <data name="ProgramChange" xml:space="preserve">
+    <value>Program Change</value>
+  </data>
+  <data name="ProgramNumber" xml:space="preserve">
+    <value>Program number</value>
+  </data>
+  <data name="Sound0" xml:space="preserve">
+    <value>Acoustic Grand Piano</value>
+  </data>
+  <data name="Sound1" xml:space="preserve">
+    <value>Bright Acoustic Piano</value>
+  </data>
+  <data name="Sound10" xml:space="preserve">
+    <value>Music Box</value>
+  </data>
+  <data name="Sound100" xml:space="preserve">
+    <value>FX 5 (brightness)</value>
+  </data>
+  <data name="Sound101" xml:space="preserve">
+    <value>FX 6 (goblins)</value>
+  </data>
+  <data name="Sound102" xml:space="preserve">
+    <value>FX 7 (echoes)</value>
+  </data>
+  <data name="Sound103" xml:space="preserve">
+    <value>FX 8 (sci-fi)</value>
+  </data>
+  <data name="Sound104" xml:space="preserve">
+    <value>Sitar</value>
+  </data>
+  <data name="Sound105" xml:space="preserve">
+    <value>Banjo</value>
+  </data>
+  <data name="Sound106" xml:space="preserve">
+    <value>Shamisen</value>
+  </data>
+  <data name="Sound107" xml:space="preserve">
+    <value>Koto</value>
+  </data>
+  <data name="Sound108" xml:space="preserve">
+    <value>Kalimba</value>
+  </data>
+  <data name="Sound109" xml:space="preserve">
+    <value>Bag pipe</value>
+  </data>
+  <data name="Sound11" xml:space="preserve">
+    <value>Vibraphone</value>
+  </data>
+  <data name="Sound110" xml:space="preserve">
+    <value>Fiddle</value>
+  </data>
+  <data name="Sound111" xml:space="preserve">
+    <value>Shanai</value>
+  </data>
+  <data name="Sound112" xml:space="preserve">
+    <value>Tinkle Bell</value>
+  </data>
+  <data name="Sound113" xml:space="preserve">
+    <value>Agogo</value>
+  </data>
+  <data name="Sound114" xml:space="preserve">
+    <value>Steel Drums</value>
+  </data>
+  <data name="Sound115" xml:space="preserve">
+    <value>Woodblock</value>
+  </data>
+  <data name="Sound116" xml:space="preserve">
+    <value>Taiko Drum</value>
+  </data>
+  <data name="Sound117" xml:space="preserve">
+    <value>Melodic Tom</value>
+  </data>
+  <data name="Sound118" xml:space="preserve">
+    <value>Synth Drum</value>
+  </data>
+  <data name="Sound119" xml:space="preserve">
+    <value>Reverse Cymbal</value>
+  </data>
+  <data name="Sound12" xml:space="preserve">
+    <value>Marimba</value>
+  </data>
+  <data name="Sound120" xml:space="preserve">
+    <value>Guitar Fret Noise</value>
+  </data>
+  <data name="Sound121" xml:space="preserve">
+    <value>Breath Noise</value>
+  </data>
+  <data name="Sound122" xml:space="preserve">
+    <value>Seashore</value>
+  </data>
+  <data name="Sound123" xml:space="preserve">
+    <value>Bird Tweet</value>
+  </data>
+  <data name="Sound124" xml:space="preserve">
+    <value>Telephone Ring</value>
+  </data>
+  <data name="Sound125" xml:space="preserve">
+    <value>Helicopter</value>
+  </data>
+  <data name="Sound126" xml:space="preserve">
+    <value>Applause</value>
+  </data>
+  <data name="Sound127" xml:space="preserve">
+    <value>Gunshot</value>
+  </data>
+  <data name="Sound13" xml:space="preserve">
+    <value>Xylophone</value>
+  </data>
+  <data name="Sound14" xml:space="preserve">
+    <value>Tubular Bells</value>
+  </data>
+  <data name="Sound15" xml:space="preserve">
+    <value>Dulcimer</value>
+  </data>
+  <data name="Sound16" xml:space="preserve">
+    <value>Drawbar Organ</value>
+  </data>
+  <data name="Sound17" xml:space="preserve">
+    <value>Percussive Organ</value>
+  </data>
+  <data name="Sound18" xml:space="preserve">
+    <value>Rock Organ</value>
+  </data>
+  <data name="Sound19" xml:space="preserve">
+    <value>Church Organ</value>
+  </data>
+  <data name="Sound2" xml:space="preserve">
+    <value>Electric Grand Piano</value>
+  </data>
+  <data name="Sound20" xml:space="preserve">
+    <value>Reed Organ</value>
+  </data>
+  <data name="Sound21" xml:space="preserve">
+    <value>Accordion</value>
+  </data>
+  <data name="Sound22" xml:space="preserve">
+    <value>Harmonica</value>
+  </data>
+  <data name="Sound23" xml:space="preserve">
+    <value>Tango Accordion</value>
+  </data>
+  <data name="Sound24" xml:space="preserve">
+    <value>Acoustic Guitar (nylon)</value>
+  </data>
+  <data name="Sound25" xml:space="preserve">
+    <value>Acoustic Guitar (steel)</value>
+  </data>
+  <data name="Sound26" xml:space="preserve">
+    <value>Electric Guitar (jazz)</value>
+  </data>
+  <data name="Sound27" xml:space="preserve">
+    <value>Electric Guitar (clean)</value>
+  </data>
+  <data name="Sound28" xml:space="preserve">
+    <value>Electric Guitar (muted</value>
+  </data>
+  <data name="Sound29" xml:space="preserve">
+    <value>Overdriven Guitar</value>
+  </data>
+  <data name="Sound3" xml:space="preserve">
+    <value>Honky-tonk Piano</value>
+  </data>
+  <data name="Sound30" xml:space="preserve">
+    <value>Distortion Guitar</value>
+  </data>
+  <data name="Sound31" xml:space="preserve">
+    <value>Guitar harmonics</value>
+  </data>
+  <data name="Sound32" xml:space="preserve">
+    <value>Acoustic Bass</value>
+  </data>
+  <data name="Sound33" xml:space="preserve">
+    <value>Electric Bass (finger)</value>
+  </data>
+  <data name="Sound34" xml:space="preserve">
+    <value>Electric Bass (pick)</value>
+  </data>
+  <data name="Sound35" xml:space="preserve">
+    <value>Fretless Bass</value>
+  </data>
+  <data name="Sound36" xml:space="preserve">
+    <value>Slap Bass 1</value>
+  </data>
+  <data name="Sound37" xml:space="preserve">
+    <value>Slap Bass 2</value>
+  </data>
+  <data name="Sound38" xml:space="preserve">
+    <value>Synth Bass 1</value>
+  </data>
+  <data name="Sound39" xml:space="preserve">
+    <value>Synth Bass 2</value>
+  </data>
+  <data name="Sound4" xml:space="preserve">
+    <value>Electric Piano 1</value>
+  </data>
+  <data name="Sound40" xml:space="preserve">
+    <value>Violin</value>
+  </data>
+  <data name="Sound41" xml:space="preserve">
+    <value>Viola</value>
+  </data>
+  <data name="Sound42" xml:space="preserve">
+    <value>Cello</value>
+  </data>
+  <data name="Sound43" xml:space="preserve">
+    <value>Contrabass</value>
+  </data>
+  <data name="Sound44" xml:space="preserve">
+    <value>Tremolo Strings</value>
+  </data>
+  <data name="Sound45" xml:space="preserve">
+    <value>Pizzicato Strings</value>
+  </data>
+  <data name="Sound46" xml:space="preserve">
+    <value>Orchestral Harp</value>
+  </data>
+  <data name="Sound47" xml:space="preserve">
+    <value>Timpani</value>
+  </data>
+  <data name="Sound48" xml:space="preserve">
+    <value>String Ensemble 1</value>
+  </data>
+  <data name="Sound49" xml:space="preserve">
+    <value>String Ensemble 2</value>
+  </data>
+  <data name="Sound5" xml:space="preserve">
+    <value>Electric Piano 2</value>
+  </data>
+  <data name="Sound50" xml:space="preserve">
+    <value>SynthStrings 1</value>
+  </data>
+  <data name="Sound51" xml:space="preserve">
+    <value>SynthStrings 2</value>
+  </data>
+  <data name="Sound52" xml:space="preserve">
+    <value>Choir Aahs</value>
+  </data>
+  <data name="Sound53" xml:space="preserve">
+    <value>Voice Oohs</value>
+  </data>
+  <data name="Sound54" xml:space="preserve">
+    <value>Synth Voice</value>
+  </data>
+  <data name="Sound55" xml:space="preserve">
+    <value>Orchestra Hit</value>
+  </data>
+  <data name="Sound56" xml:space="preserve">
+    <value>Trumpet</value>
+  </data>
+  <data name="Sound57" xml:space="preserve">
+    <value>Trombone</value>
+  </data>
+  <data name="Sound58" xml:space="preserve">
+    <value>Tuba</value>
+  </data>
+  <data name="Sound59" xml:space="preserve">
+    <value>Muted Trumpet</value>
+  </data>
+  <data name="Sound6" xml:space="preserve">
+    <value>Harpsichord</value>
+  </data>
+  <data name="Sound60" xml:space="preserve">
+    <value>French Horn</value>
+  </data>
+  <data name="Sound61" xml:space="preserve">
+    <value>Brass Section</value>
+  </data>
+  <data name="Sound62" xml:space="preserve">
+    <value>SynthBrass 1</value>
+  </data>
+  <data name="Sound63" xml:space="preserve">
+    <value>SynthBrass 2</value>
+  </data>
+  <data name="Sound64" xml:space="preserve">
+    <value>Soprano Sax</value>
+  </data>
+  <data name="Sound65" xml:space="preserve">
+    <value>Alto Sax</value>
+  </data>
+  <data name="Sound66" xml:space="preserve">
+    <value>Tenor Sax</value>
+  </data>
+  <data name="Sound67" xml:space="preserve">
+    <value>Baritone Sax</value>
+  </data>
+  <data name="Sound68" xml:space="preserve">
+    <value>Oboe</value>
+  </data>
+  <data name="Sound69" xml:space="preserve">
+    <value>English Horn</value>
+  </data>
+  <data name="Sound7" xml:space="preserve">
+    <value>Clavi</value>
+  </data>
+  <data name="Sound70" xml:space="preserve">
+    <value>Bassoon</value>
+  </data>
+  <data name="Sound71" xml:space="preserve">
+    <value>Clarinet</value>
+  </data>
+  <data name="Sound72" xml:space="preserve">
+    <value>Piccolo</value>
+  </data>
+  <data name="Sound73" xml:space="preserve">
+    <value>Flute</value>
+  </data>
+  <data name="Sound74" xml:space="preserve">
+    <value>Recorder</value>
+  </data>
+  <data name="Sound75" xml:space="preserve">
+    <value>Pan Flute</value>
+  </data>
+  <data name="Sound76" xml:space="preserve">
+    <value>Blown Bottle</value>
+  </data>
+  <data name="Sound77" xml:space="preserve">
+    <value>Shakuhachi</value>
+  </data>
+  <data name="Sound78" xml:space="preserve">
+    <value>Whistle</value>
+  </data>
+  <data name="Sound79" xml:space="preserve">
+    <value>Ocarina</value>
+  </data>
+  <data name="Sound8" xml:space="preserve">
+    <value>Celesta</value>
+  </data>
+  <data name="Sound80" xml:space="preserve">
+    <value>Lead 1 (square)</value>
+  </data>
+  <data name="Sound81" xml:space="preserve">
+    <value>Lead 2 (sawtooth)</value>
+  </data>
+  <data name="Sound82" xml:space="preserve">
+    <value>Lead 3 (calliope)</value>
+  </data>
+  <data name="Sound83" xml:space="preserve">
+    <value>Lead 4 (chiff)</value>
+  </data>
+  <data name="Sound84" xml:space="preserve">
+    <value>Lead 5 (charang)</value>
+  </data>
+  <data name="Sound85" xml:space="preserve">
+    <value>Lead 6 (voice)</value>
+  </data>
+  <data name="Sound86" xml:space="preserve">
+    <value>Lead 7 (fifths)</value>
+  </data>
+  <data name="Sound87" xml:space="preserve">
+    <value>Lead 8 (bass + lead)</value>
+  </data>
+  <data name="Sound88" xml:space="preserve">
+    <value>Pad 1 (new age)</value>
+  </data>
+  <data name="Sound89" xml:space="preserve">
+    <value>Pad 2 (warm)</value>
+  </data>
+  <data name="Sound9" xml:space="preserve">
+    <value>Glockenspiel</value>
+  </data>
+  <data name="Sound90" xml:space="preserve">
+    <value>Pad 3 (polysynth)</value>
+  </data>
+  <data name="Sound91" xml:space="preserve">
+    <value>Pad 4 (choir)</value>
+  </data>
+  <data name="Sound92" xml:space="preserve">
+    <value>Pad 5 (bowed)</value>
+  </data>
+  <data name="Sound93" xml:space="preserve">
+    <value>Pad 6 (metallic)</value>
+  </data>
+  <data name="Sound94" xml:space="preserve">
+    <value>Pad 7 (halo)</value>
+  </data>
+  <data name="Sound95" xml:space="preserve">
+    <value>Pad 8 (sweep)</value>
+  </data>
+  <data name="Sound96" xml:space="preserve">
+    <value>FX 1 (rain)</value>
+  </data>
+  <data name="Sound97" xml:space="preserve">
+    <value>FX 2 (soundtrack)</value>
+  </data>
+  <data name="Sound98" xml:space="preserve">
+    <value>FX 3 (crystal)</value>
+  </data>
+  <data name="Sound99" xml:space="preserve">
+    <value>FX 4 (atmosphere)</value>
+  </data>
+  <data name="Undefined" xml:space="preserve">
+    <value>Undefined</value>
+  </data>
+  <data name="Velocity" xml:space="preserve">
+    <value>Velocity</value>
+  </data>
+  <data name="ChannelMode" xml:space="preserve">
+    <value>Channel Mode</value>
+  </data>
+  <data name="Mode120" xml:space="preserve">
+    <value>All Sound Off</value>
+  </data>
+  <data name="Mode121" xml:space="preserve">
+    <value>Reset All Controllers</value>
+  </data>
+  <data name="Mode122" xml:space="preserve">
+    <value>Local Control</value>
+  </data>
+  <data name="Mode123" xml:space="preserve">
+    <value>All Notes Off</value>
+  </data>
+  <data name="Mode124" xml:space="preserve">
+    <value>Omni Mode Off</value>
+  </data>
+  <data name="Mode125" xml:space="preserve">
+    <value>Omni Mode On</value>
+  </data>
+  <data name="Mode126" xml:space="preserve">
+    <value>Mono Mode On</value>
+  </data>
+  <data name="Mode127" xml:space="preserve">
+    <value>Poly Mode On</value>
+  </data>
+  <data name="PitchBendChangeValue" xml:space="preserve">
+    <value>Pitch bend change value</value>
+  </data>
+  <data name="ValueListFormat" xml:space="preserve">
+    <value>{0} must be one of the following values:</value>
+  </data>
+  <data name="InvalidStatus" xml:space="preserve">
+    <value>Invalid status byte.</value>
+  </data>
+  <data name="MidiFiles" xml:space="preserve">
+    <value>MIDI Files (*.midi;*.mid;*.rmi;*.smf)|*.midi;*.mid;*.rmi;*.smf</value>
+  </data>
+  <data name="DeltaTimeDivision" xml:space="preserve">
+    <value>Delta-time division</value>
+  </data>
+  <data name="MetricalTime" xml:space="preserve">
+    <value>_Metrical time</value>
+  </data>
+  <data name="MidiHeader" xml:space="preserve">
+    <value>MIDI Header</value>
+  </data>
+  <data name="TimeCodeBasedTime" xml:space="preserve">
+    <value>_Time-code-based time</value>
+  </data>
+</root>

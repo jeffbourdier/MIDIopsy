@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="80">
+  <!-- icon -->
+  <rect x="16" y="16" width="48" height="48" rx="6" ry="6" stroke="#00007F" stroke-width="3" fill="#BFFFBF" />
+  <ellipse cx="37" cy="52" rx="6" ry="3" stroke="#00007F" stroke-width="3" fill="#00007F" />
+  <path d="m 43,52 v -24 l 9,-3 a 18,9 0,0,1 -9,6" stroke="#00007F" stroke-width="3" fill="#00007F" />
+  <!-- text -->
+  <text text-anchor="start" x="80" y="54" font-size="36px" fill="navy" font-family="sans-serif" font-weight="bold">MIDIopsy</text>
+  <text text-anchor="end" x="471" y="62" font-size="12px" fill="maroon" font-family="monospace">Software by</text>
+  <text text-anchor="end" x="471" y="76" font-size="12px" fill="maroon" font-family="monospace">Jeff Bourdier</text>
+  <!-- my logo -->
+  <rect x="492" y="44" width="16" height="32" stroke="maroon" fill="maroon" />
+  <rect x="476" y="44" width="16" height="32" stroke="maroon" fill="yellow" />
+  <path d="M 491 73 H 495 L 493 65 A 6 6 0 1 0 495 58 A 6 6 0 0 0 491 47" fill="yellow" />
+  <path d="M 492 73 H 488 L 490 65 A 6 6 0 1 1 488 58 A 6 6 0 0 1 492 47" fill="maroon" />
+</svg>
