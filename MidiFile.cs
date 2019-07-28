@@ -19,6 +19,9 @@ using System.Collections.Generic;
 /* File */
 using System.IO;
 
+/* FlowDocument, Paragraph, Run */
+using System.Windows.Documents;
+
 
 namespace JeffBourdier
 {
@@ -35,11 +38,8 @@ namespace JeffBourdier
         /// <param name="filePath">The path of the MIDI file.</param>
         public MidiFile(string filePath)
         {
-            /* Read all data from the MIDI file. */
             byte[] bytes = File.ReadAllBytes(filePath);
-
-            /* A MIDI file is made up of chunks. */
-            this.Chunks = new List<MidiChunk>();
+            this.Initialize(0);
             this.Replace(bytes);
         }
 
@@ -47,7 +47,7 @@ namespace JeffBourdier
         /// <param name="header">MidiHeaderChunk object representing the header chunk.</param>
         public MidiFile(MidiHeaderChunk header)
         {
-            this.Chunks = new List<MidiChunk>(1);
+            this.Initialize(1);
             this.AddChunk(header);
         }
 
@@ -60,8 +60,8 @@ namespace JeffBourdier
         #region Private Fields
 
         private List<MidiChunk> Chunks;
-        private string _Hex;
-        private string _Comments;
+        private FlowDocument _HexDocument;
+        private FlowDocument _CommentsDocument;
 
         #endregion
 
@@ -74,11 +74,15 @@ namespace JeffBourdier
         /// <summary>Gets the number of chunks contained in the MIDI file.</summary>
         public int ChunkCount { get { return this.Chunks.Count; } }
 
-        /// <summary>Representation of all chunks contained in this MIDI file, in hexadecimal format.</summary>
-        public string Hex { get { return this._Hex; } }
+        /// <summary>
+        /// Gets a flow document whose contents represent all chunks contained in this MIDI file, in hexadecimal format.
+        /// </summary>
+        public FlowDocument HexDocument { get { return this._HexDocument; } }
 
-        /// <summary>Human-readable text describing each chunk contained in this MIDI file.</summary>
-        public string Comments { get { return this._Comments; } }
+        /// <summary>
+        /// Gets a flow document whose content is user-friendly text describing each chunk contained in this MIDI file.
+        /// </summary>
+        public FlowDocument CommentsDocument { get { return this._CommentsDocument; } }
 
         #endregion
 
@@ -102,8 +106,8 @@ namespace JeffBourdier
             MidiChunk chunk;
 
             /* Make sure we start with a clean slate. */
-            this._Comments = null;
-            this._Hex = null;
+            this._CommentsDocument.Blocks.Clear();
+            this._HexDocument.Blocks.Clear();
             this.Chunks.Clear();
 
             /* Process each chunk from the byte array. */
@@ -154,11 +158,18 @@ namespace JeffBourdier
 
         #region Private Methods
 
+        private void Initialize(int chunkCount)
+        {
+            this.Chunks = new List<MidiChunk>(chunkCount);
+            this._HexDocument = new FlowDocument();
+            this._CommentsDocument = new FlowDocument();
+        }
+
         private void AddChunk(MidiChunk chunk)
         {
             this.Chunks.Add(chunk);
-            this._Hex += chunk.Hex + Environment.NewLine;
-            this._Comments += chunk.Comments + Environment.NewLine;
+            this._HexDocument.Blocks.Add(chunk.HexParagraph);
+            this._CommentsDocument.Blocks.Add(chunk.CommentsParagraph);
         }
 
         #endregion

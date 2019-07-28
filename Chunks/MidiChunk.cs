@@ -16,6 +16,9 @@ using System;
 /* List */
 using System.Collections.Generic;
 
+/* LineBreak, Paragraph */
+using System.Windows.Documents;
+
 
 namespace JeffBourdier
 {
@@ -67,8 +70,8 @@ namespace JeffBourdier
         #region Private Fields
 
         private List<MidiData> Data = new List<MidiData>();
-        private string _Hex;
-        private string _Comments;
+        private Paragraph _HexParagraph = new Paragraph();
+        private Paragraph _CommentsParagraph = new Paragraph();
 
         #endregion
 
@@ -81,11 +84,15 @@ namespace JeffBourdier
         /// <summary>Gets the number of MidiData objects contained in this chunk.</summary>
         public int DataCount { get { return this.Data.Count; } }
 
-        /// <summary>Representation of all MidiData objects contained in this chunk, in hexadecimal format.</summary>
-        public string Hex { get { return this._Hex; } }
+        /// <summary>
+        /// Gets a paragraph whose contents represent all MidiData objects contained in this chunk, in hexadecimal format.
+        /// </summary>
+        public Paragraph HexParagraph { get { return this._HexParagraph; } }
 
-        /// <summary>Human-readable text describing each MidiData object contained in this chunk.</summary>
-        public string Comments { get { return this._Comments; } }
+        /// <summary>
+        /// Gets a paragraph whose content is user-friendly text describing each MidiData object contained in this chunk.
+        /// </summary>
+        public Paragraph CommentsParagraph { get { return this._CommentsParagraph; } }
 
         #endregion
 
@@ -107,8 +114,10 @@ namespace JeffBourdier
         protected void AddData(MidiData data)
         {
             this.Data.Add(data);
-            this._Hex += data.Hex + Environment.NewLine;
-            this._Comments += data.Comment + Environment.NewLine;
+            if (this._HexParagraph.Inlines.Count > 0) this._HexParagraph.Inlines.Add(new LineBreak());
+            this._HexParagraph.Inlines.Add(data.HexRun);
+            if (this._CommentsParagraph.Inlines.Count > 0) this._CommentsParagraph.Inlines.Add(new LineBreak());
+            this._CommentsParagraph.Inlines.Add(data.CommentRun);
         }
 
         #endregion

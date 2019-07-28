@@ -99,7 +99,7 @@ namespace JeffBourdier
                 case "MTrk": s = Properties.Resources.TrackChunk; break;
                 default: s = Properties.Resources.UnknownChunkType; break;
             }
-            this._Comment = string.Format(Properties.Resources.ChunkCommentFormat, this.ChunkType, s, this.ChunkLength);
+            this.Comment = string.Format(Properties.Resources.ChunkCommentFormat, this.ChunkType, s, this.ChunkLength);
         }
 
         #endregion

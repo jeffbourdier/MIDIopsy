@@ -255,7 +255,7 @@ namespace JeffBourdier
                     this.TicksPerFrame, Text.ParseLabel(Properties.Resources.TicksPerFrame).ToLower());
 
             /* Assemble the entire comment string. */
-            this._Comment = string.Format(Properties.Resources.HeaderDataFormat, s, this.NumberOfTracks, r);
+            this.Comment = string.Format(Properties.Resources.HeaderDataFormat, s, this.NumberOfTracks, r);
         }
 
         private static void ValidateFramesPerSecond(uint n)

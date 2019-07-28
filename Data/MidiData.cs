@@ -13,6 +13,9 @@
 /* Array, ApplicationException, Math */
 using System;
 
+/* Run */
+using System.Windows.Documents;
+
 
 namespace JeffBourdier
 {
@@ -61,7 +64,7 @@ namespace JeffBourdier
         #region Protected Fields
 
         protected byte[] Bytes;
-        protected string _Comment;
+        protected string Comment;
 
         #endregion
 
@@ -74,8 +77,8 @@ namespace JeffBourdier
         /// <summary>Gets the number of bytes in the array.</summary>
         public int Length { get { return this.Bytes.Length; } }
 
-        /// <summary>Representation of the byte array in hexadecimal format.</summary>
-        public string Hex
+        /// <summary>Gets a run of text representing the byte array in hexadecimal format.</summary>
+        public Run HexRun
         {
             get
             {
@@ -85,20 +88,21 @@ namespace JeffBourdier
                     if (i > 0) s += " ";
                     s += this.Bytes[i].ToString("X2");
                 }
-                return s;
+                return new Run(s);
             }
         }
 
-        /// <summary>Human-readable text describing this object.</summary>
-        public string Comment
+        /// <summary>Gets a run of user-friendly text describing this object.</summary>
+        public Run CommentRun
         {
             get
             {
-                if (!string.IsNullOrEmpty(this._Comment)) return this._Comment;
+                if (!string.IsNullOrEmpty(this.Comment)) return new Run(this.Comment);
 
                 /* Attempt to convert the data bytes to a string for the comment. */
                 string s = MidiData.ReadText(this.Bytes, this.Bytes.Length, 0);
-                return string.Format(Properties.Resources.UnrecognizedDataFormat, s);
+                s = string.Format(Properties.Resources.UnrecognizedDataFormat, s);
+                return new Run(s);
             }
         }
 

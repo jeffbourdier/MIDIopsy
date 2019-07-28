@@ -138,9 +138,9 @@ namespace JeffBourdier
         /// <summary>Sets the comment text for this event.  (Delta-time is handled automatically.)</summary>
         protected void SetComment()
         {
-            this._Comment = string.Format(Properties.Resources.DeltaTimeFormat, this.DeltaTime);
-            if (!string.IsNullOrEmpty(this.TypeComment)) this._Comment += ", " + this.TypeComment;
-            if (!string.IsNullOrEmpty(this.DataComment)) this._Comment += ": " + this.DataComment;
+            this.Comment = string.Format(Properties.Resources.DeltaTimeFormat, this.DeltaTime);
+            if (!string.IsNullOrEmpty(this.TypeComment)) this.Comment += ", " + this.TypeComment;
+            if (!string.IsNullOrEmpty(this.DataComment)) this.Comment += ": " + this.DataComment;
         }
 
         #endregion
