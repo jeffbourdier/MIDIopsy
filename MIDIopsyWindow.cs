@@ -10,7 +10,7 @@
  */
 
 
-/* Uri, Exception, Environment, Math */
+/* Uri, Exception, Environment */
 using System;
 
 /* HorizontalAlignment, VerticalAlignment, GridLength, MessageBox,
@@ -18,11 +18,8 @@ using System;
  */
 using System.Windows;
 
-/* RichTextBox, ScrollBarVisibility, ScrollViewer, GridSplitter, Grid, ColumnDefinition, ScrollChangedEventArgs */
+/* TextBox, ScrollBarVisibility, ScrollViewer, GridSplitter, Grid, ColumnDefinition, ScrollChangedEventArgs */
 using System.Windows.Controls;
-
-/* Run, TextPointer, LogicalDirection, Paragraph */
-using System.Windows.Documents;
 
 /* FontFamily, Brushes */
 using System.Windows.Media;
@@ -45,19 +42,9 @@ namespace JeffBourdier
         /// <summary>Initializes a MIDIopsyWindow object.</summary>
         public MIDIopsyWindow()
         {
-            FontFamily fontFamily = new FontFamily("Courier New");
-
             /* Initialize the hex text box. */
-            this.HexTextBox = new RichTextBox();
-            this.HexTextBox.IsReadOnly = true;
-            this.HexTextBox.IsReadOnlyCaretVisible = true;
-            this.HexTextBox.FontFamily = fontFamily;
-            this.HexTextBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
-            this.HexTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+            this.HexTextBox = this.CreateTextBox();
             this.HexTextBox.Loaded += HexTextBox_Loaded;
-            this.HexTextBox.GotFocus += HexTextBox_GotFocus;
-            this.HexTextBox.SelectionChanged += HexTextBox_SelectionChanged;
-            this.HexTextBox.AddHandler(ScrollViewer.ScrollChangedEvent, new RoutedEventHandler(HexTextBox_ScrollChanged));
 
             /* Initialize the grid splitter. */
             GridSplitter gridSplitter = new GridSplitter();
@@ -66,16 +53,7 @@ namespace JeffBourdier
             gridSplitter.Width = UI.UnitSpace;
 
             /* Initialize the comments text box. */
-            this.CommentsTextBox = new RichTextBox();
-            this.CommentsTextBox.IsReadOnly = true;
-            this.CommentsTextBox.IsReadOnlyCaretVisible = true;
-            this.CommentsTextBox.FontFamily = fontFamily;
-            this.CommentsTextBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
-            this.CommentsTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            this.CommentsTextBox.GotFocus += CommentsTextBox_GotFocus;
-            this.CommentsTextBox.SelectionChanged += CommentsTextBox_SelectionChanged;
-            this.CommentsTextBox.AddHandler(ScrollViewer.ScrollChangedEvent,
-                new RoutedEventHandler(CommentsTextBox_ScrollChanged));
+            this.CommentsTextBox = this.CreateTextBox();
 
             /* Build out the editing panel. */
             this.EditingPanel = new Grid();
@@ -106,11 +84,12 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private RichTextBox HexTextBox;
-        private RichTextBox CommentsTextBox;
+        private static FontFamily FontFamily = new FontFamily("Courier New");
+
+        private TextBox HexTextBox;
+        private TextBox CommentsTextBox;
         private MidiFile MidiFile;
-        private Run HexRun;
-        private Run CommentsRun;
+        private bool Highlighting;
 
         #endregion
 
@@ -188,77 +167,75 @@ namespace JeffBourdier
         /* Give the hex text box initial focus. */
         private void HexTextBox_Loaded(object sender, RoutedEventArgs e) { this.HexTextBox.Focus(); }
 
-        /* When the hex text box gets focus, highlight accordingly. */
-        private void HexTextBox_GotFocus(object sender, RoutedEventArgs e)
-        { MIDIopsyWindow.Highlight(ref this.HexRun, this.HexTextBox, ref this.CommentsRun, this.CommentsTextBox); }
+        ///* When a text box gets focus, highlight accordingly. */
+        //private void TextBox_GotFocus(object sender, RoutedEventArgs e) { this.Highlight(sender as TextBox); }
 
-        /* When the caret (or current selection) of the hex text box changes position, highlight accordingly. */
-        private void HexTextBox_SelectionChanged(object sender, RoutedEventArgs e)
-        { MIDIopsyWindow.Highlight(ref this.HexRun, this.HexTextBox, ref this.CommentsRun, this.CommentsTextBox); }
+        /* When the caret (or current selection) of a text box changes, highlight accordingly. */
+        private void TextBox_SelectionChanged(object sender, RoutedEventArgs e) { this.Highlight(sender as TextBox); }
 
-        /* Synchronize the scroll position of the comments text box with that of the hex text box. */
-        private void HexTextBox_ScrollChanged(object sender, RoutedEventArgs e)
-        { this.CommentsTextBox.ScrollToVerticalOffset((e as ScrollChangedEventArgs).VerticalOffset); }
-
-        /* When the comments text box gets focus, highlight accordingly. */
-        private void CommentsTextBox_GotFocus(object sender, RoutedEventArgs e)
-        { MIDIopsyWindow.Highlight(ref this.CommentsRun, this.CommentsTextBox, ref this.HexRun, this.HexTextBox); }
-
-        /* When the caret (or current selection) of the comments text box changes position, highlight accordingly. */
-        private void CommentsTextBox_SelectionChanged(object sender, RoutedEventArgs e)
-        { MIDIopsyWindow.Highlight(ref this.CommentsRun, this.CommentsTextBox, ref this.HexRun, this.HexTextBox); }
-
-        /* Synchronize the scroll position of the hex text box with that of the comments text box. */
-        private void CommentsTextBox_ScrollChanged(object sender, RoutedEventArgs e)
-        { this.HexTextBox.ScrollToVerticalOffset((e as ScrollChangedEventArgs).VerticalOffset); }
+        /* Synchronize the scroll position of the other text box. */
+        private void TextBox_ScrollChanged(object sender, RoutedEventArgs e)
+        { this.GetOtherTextBox(sender).ScrollToVerticalOffset((e as ScrollChangedEventArgs).VerticalOffset); }
 
         #endregion
+
+        private TextBox CreateTextBox()
+        {
+            TextBox textBox = new TextBox();
+            textBox.IsReadOnly = true;
+            textBox.IsReadOnlyCaretVisible = true;
+            textBox.IsInactiveSelectionHighlightEnabled = true;  /* requires .NET Framework 4.5 */
+            textBox.FontFamily = MIDIopsyWindow.FontFamily;
+            textBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+            textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+            textBox.SelectionBrush = Brushes.DarkKhaki;
+            //textBox.GotFocus += this.TextBox_GotFocus;
+            textBox.SelectionChanged += this.TextBox_SelectionChanged;
+            textBox.AddHandler(ScrollViewer.ScrollChangedEvent, new RoutedEventHandler(this.TextBox_ScrollChanged));
+            return textBox;
+        }
 
         /* Populate the text boxes with the appropriate flow content (document) of the open MIDI file. */
         private void Populate()
         {
-            this.HexTextBox.Document = this.MidiFile.HexDocument;
-            this.CommentsTextBox.Document = this.MidiFile.CommentsDocument;
+            this.HexTextBox.Text = this.MidiFile.Hex;
+            this.CommentsTextBox.Text = this.MidiFile.Comments;
         }
 
-        /* Highlight a run in a (rich) text box. */
-        private static void Highlight(ref Run run, RichTextBox textBox, ref Run otherRun, RichTextBox otherTextBox)
+        /* Highlight a line in a text box. */
+        private void Highlight(TextBox textBox)
         {
-            /* Unhighlight the currently highlighted run (if any). */
-            if (run != null) run.Background = null;
+            /* Only one highlight operation at a time. */
+            if (this.Highlighting) return;
 
-            /* Get a text pointer to the beginning of the line where the input caret is. */
-            TextPointer pointer = textBox.CaretPosition.GetLineStartPosition(0);
-
-            /* If the text box has the focus... */
-            if (textBox.IsFocused)
+            /* Determine which text box is being highlighted, and on which line the input caret is. */
+            int n, j, i = 0;
+            bool hex = (textBox == this.HexTextBox);
+            if (textBox.CaretIndex == textBox.Text.Length)
             {
-                /* Synchronize the other text box's input caret.  (This should trigger highlighting in the other text box.) */
-                MIDIopsyWindow.SetCaretPosition(pointer, otherTextBox);
-
-                /* If there is a selection in the text box, don't try to highlight anything. */
-                if (!textBox.Selection.IsEmpty) return;
+                n = this.MidiFile.LineCount;
+                i = textBox.Text.Length;
+                j = 0;
             }
-            /* Otherwise, if there is a selection in the other text box, don't try to highlight anything. */
-            else if (!otherTextBox.Selection.IsEmpty) return;
+            else
+            {
+                for (n = 1; (j = this.MidiFile.GetIndex(n, hex)) <= textBox.CaretIndex; ++n) i = j;
+                j -= Environment.NewLine.Length + i;
+            }
 
-            /* Highlight the run where the input caret is. */
-            run = pointer.GetAdjacentElement(LogicalDirection.Forward) as Run;
-            run.Background = Brushes.Khaki;
+            /* If the text box (being highlighted) has the focus, synchronize the other text
+             * box's input caret.  (This should trigger highlighting in the other text box.)
+             */
+            if (textBox.IsFocused) this.GetOtherTextBox(textBox).CaretIndex = this.MidiFile.GetIndex(n - 1, !hex);
+
+            /* Highlight (select) the line where the input caret is. */
+            this.Highlighting = true;
+            textBox.Select(i, j);
+            this.Highlighting = false;
         }
 
-        /* Set the position of the input caret in a (rich) text box based on the line # of a text pointer. */
-        private static void SetCaretPosition(TextPointer pointer, RichTextBox textBox)
-        {
-            /* Get the line # of the text pointer. */
-            int count;
-            pointer.GetLineStartPosition(int.MinValue, out count);
-            count = Math.Abs(count);
-
-            /* Set the position of the text box's input caret to the beginning of the corresponding line. */
-            Paragraph paragraph = textBox.Document.ContentStart.GetAdjacentElement(LogicalDirection.Forward) as Paragraph;
-            textBox.CaretPosition = paragraph.ContentStart.GetLineStartPosition(count);
-        }
+        private TextBox GetOtherTextBox(object textBox)
+        { return (textBox == this.HexTextBox) ? this.CommentsTextBox : this.HexTextBox; }
 
         #endregion
     }

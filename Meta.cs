@@ -17,6 +17,6 @@ namespace JeffBourdier
     {
         public const string Name = "MIDIopsy";
         public const string FullName = Meta.Name + " by " + AppHelper.AuthorName;
-        public const string Version = "0.1";
+        public const string Version = "0.2";
     }
 }

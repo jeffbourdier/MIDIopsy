@@ -32,7 +32,7 @@ namespace JeffBourdier
             : base("MThd", length)
         {
             MidiHeaderData data = new MidiHeaderData(bytes, index);
-            this.AddData(data);
+            this.AddItem(data);
         }
 
         /// <summary>Initializes a new instance of the MidiHeaderChunk class using metrical time.</summary>
@@ -44,7 +44,7 @@ namespace JeffBourdier
             : base("MThd", 6)
         {
             MidiHeaderData data = new MidiHeaderData(format, numberOfTracks, ticksPerQuarterNote);
-            this.AddData(data);
+            this.AddItem(data);
         }
 
         /// <summary>Initializes a new instance of the MidiHeaderChunk class using time-code-based time.</summary>
@@ -59,7 +59,7 @@ namespace JeffBourdier
             : base("MThd", 6)
         {
             MidiHeaderData data = new MidiHeaderData(format, numberOfTracks, framesPerSecond, ticksPerFrame);
-            this.AddData(data);
+            this.AddItem(data);
         }
 
         #endregion

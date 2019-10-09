@@ -17,7 +17,7 @@ using System;
 namespace JeffBourdier
 {
     /// <summary>Encapsulates the eight bytes of type and length for a MIDI file chunk.</summary>
-    public sealed class MidiChunkInfo : MidiData
+    public sealed class MidiChunkInfo : MidiItem
     {
         /****************
          * Constructors *
@@ -99,7 +99,7 @@ namespace JeffBourdier
                 case "MTrk": s = Properties.Resources.TrackChunk; break;
                 default: s = Properties.Resources.UnknownChunkType; break;
             }
-            this.Comment = string.Format(Properties.Resources.ChunkCommentFormat, this.ChunkType, s, this.ChunkLength);
+            this._Comment = string.Format(Properties.Resources.ChunkCommentFormat, this.ChunkType, s, this.ChunkLength);
         }
 
         #endregion

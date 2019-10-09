@@ -112,26 +112,23 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Banner" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Banner.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ChunkCommentFormat" xml:space="preserve">
-    <value>{0} ({1}), {2} bytes of data</value>
+    <value>{0} ({1}) | {2} bytes of data</value>
   </data>
   <data name="ChunkTypeLength" xml:space="preserve">
     <value>Chunk type must be exactly 4 characters.</value>
   </data>
   <data name="DeltaTime" xml:space="preserve">
     <value>Delta-time</value>
-  </data>
-  <data name="DeltaTimeFormat" xml:space="preserve">
-    <value>{0} ticks</value>
   </data>
   <data name="Escape" xml:space="preserve">
     <value>escape</value>
@@ -167,7 +164,7 @@
     <value>header chunk</value>
   </data>
   <data name="HeaderDataFormat" xml:space="preserve">
-    <value>Format {0}, {1} tracks, {2}</value>
+    <value>Format {0} | {1} tracks | {2}</value>
   </data>
   <data name="HelpText" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Help.html;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -191,7 +188,7 @@
     <value>A strongly typed class must be used for this object.</value>
   </data>
   <data name="SysExEventFormat" xml:space="preserve">
-    <value>SysEx {0} ({1} bytes of data)</value>
+    <value>SysEx {0} | {1} bytes</value>
   </data>
   <data name="TicksPerFrame" xml:space="preserve">
     <value>_Resolution (ticks per frame):</value>
@@ -212,7 +209,7 @@
     <value>{0} must be between {1} and {2}.</value>
   </data>
   <data name="MetaEventFormat" xml:space="preserve">
-    <value>Meta-event / {0} ({1} bytes of data)</value>
+    <value>Meta-event | {0,-19} | {1,3} bytes</value>
   </data>
   <data name="MetaEventType" xml:space="preserve">
     <value>Meta-event type</value>
@@ -300,9 +297,6 @@
   </data>
   <data name="Channel" xml:space="preserve">
     <value>Channel</value>
-  </data>
-  <data name="ChannelFormat" xml:space="preserve">
-    <value>{0} on channel {1}</value>
   </data>
   <data name="ChannelNotChanged" xml:space="preserve">
     <value>The channel of an event using running status cannot be changed arbitrarily.</value>

@@ -61,6 +61,8 @@ namespace JeffBourdier
             this._RunningStatus = true;
             this._MessageType = uint.MaxValue;
             this._Channel = uint.MaxValue;
+            this.TypeComment = new string(' ', 22);
+            this.SetComment();
             this._DataOffset = 0;
         }
 
@@ -86,6 +88,16 @@ namespace JeffBourdier
 
         #region Public Properties
 
+        /// <summary>Representation of the byte array in hexadecimal format.</summary>
+        public override string Hex
+        {
+            get
+            {
+                string s = base.Hex;
+                return this.RunningStatus ? (s.Substring(0, 12) + "   " + s.Substring(12)) : s;
+            }
+        }
+
         /// <summary>Indicates whether or not this event was created with running status.</summary>
         public bool RunningStatus { get { return this._RunningStatus; } }
 
@@ -110,7 +122,7 @@ namespace JeffBourdier
                 MidiData.ValidateNumber(value, 0, 0xF, Properties.Resources.Channel);
                 MidiData.WriteNumber((this.MessageType << 4) | value, 1, this.Bytes, this.DeltaTimeSize);
                 this._Channel = value;
-                this.TypeComment = string.Format(Properties.Resources.ChannelFormat, this.MessageTypeComment, this.Channel);
+                this.TypeComment = string.Format("{0,-17} | {1,2}", this.MessageTypeComment, this.Channel);
                 this.SetComment();
             }
         }

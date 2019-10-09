@@ -57,6 +57,9 @@ namespace JeffBourdier
         /// <summary>The standard height of a button (in pixels).</summary>
         public const int ButtonHeight = 10 * UI.UnitSpace;
 
+        /// <summary>The maximum valid page width for a flow document.</summary>
+        public const double MaxFlowDocPageWidth = 1000000;
+
         #endregion
 
         /***********

@@ -19,7 +19,7 @@ namespace JeffBourdier
     /// <summary>
     /// Encapsulates the six bytes of data (format, number of tracks, and delta-time division) for a MIDI header (MThd) chunk.
     /// </summary>
-    public sealed class MidiHeaderData : MidiData
+    public sealed class MidiHeaderData : MidiItem
     {
         /****************
          * Constructors *
@@ -255,7 +255,7 @@ namespace JeffBourdier
                     this.TicksPerFrame, Text.ParseLabel(Properties.Resources.TicksPerFrame).ToLower());
 
             /* Assemble the entire comment string. */
-            this.Comment = string.Format(Properties.Resources.HeaderDataFormat, s, this.NumberOfTracks, r);
+            this._Comment = string.Format(Properties.Resources.HeaderDataFormat, s, this.NumberOfTracks, r);
         }
 
         private static void ValidateFramesPerSecond(uint n)

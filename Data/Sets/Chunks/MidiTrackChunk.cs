@@ -56,7 +56,7 @@ namespace JeffBourdier
                     case 0xF0: mtrkEvent = new MidiSysExEvent(dt, false, bytes, j); break;
                     default: mtrkEvent = this.CreateChannelEvent(dt, u, bytes, j); break;
                 }
-                this.AddData(mtrkEvent);
+                this.AddItem(mtrkEvent);
             }
         }
 
@@ -136,7 +136,7 @@ namespace JeffBourdier
              */
             for (int i = this.DataCount - 1; i > 0; --i)
             {
-                lastEvent = this.GetData(i);
+                lastEvent = this.GetItem(i);
                 if (lastEvent is MidiChannelEvent) break;
             }
 

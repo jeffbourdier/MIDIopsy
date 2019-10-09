@@ -17,7 +17,7 @@ using System;
 namespace JeffBourdier
 {
     /// <summary>Corresponds to an MTrk event in the MIDI file spec.</summary>
-    public abstract class MidiEvent : MidiData
+    public abstract class MidiEvent : MidiItem
     {
         /****************
          * Constructors *
@@ -62,6 +62,9 @@ namespace JeffBourdier
          **************/
 
         #region Public Properties
+
+        /// <summary>Representation of the byte array in hexadecimal format.</summary>
+        public override string Hex { get { return new string(' ', (4 - this.DeltaTimeSize) * 3) + base.Hex; } }
 
         /// <summary>The amount of time (in ticks) between the previous event in the track and this one.</summary>
         public int DeltaTime
@@ -125,8 +128,8 @@ namespace JeffBourdier
         }
 
         /// <summary>
-        /// Attempt to convert the data in the byte array (starting at a given index, through the
-        /// end) to a string for the "data" portion of the comment (the part following the colon).
+        /// Attempt to convert the data in the byte array (starting at a given index, through the end)
+        /// to a string for the "data" portion of the comment (the part following the last pipe bar).
         /// </summary>
         /// <param name="index">Index in the byte array at which to begin conversion.</param>
         protected void StringifyDataBytes(int index)
@@ -137,11 +140,7 @@ namespace JeffBourdier
 
         /// <summary>Sets the comment text for this event.  (Delta-time is handled automatically.)</summary>
         protected void SetComment()
-        {
-            this.Comment = string.Format(Properties.Resources.DeltaTimeFormat, this.DeltaTime);
-            if (!string.IsNullOrEmpty(this.TypeComment)) this.Comment += ", " + this.TypeComment;
-            if (!string.IsNullOrEmpty(this.DataComment)) this.Comment += ": " + this.DataComment;
-        }
+        { this._Comment = string.Format("{0,5} | {1} | {2}", this.DeltaTime, this.TypeComment, this.DataComment); }
 
         #endregion
     }

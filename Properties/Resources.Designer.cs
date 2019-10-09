@@ -89,15 +89,6 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} on channel {1}.
-        /// </summary>
-        internal static string ChannelFormat {
-            get {
-                return ResourceManager.GetString("ChannelFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Channel Mode.
         /// </summary>
         internal static string ChannelMode {
@@ -125,7 +116,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}), {2} bytes of data.
+        ///   Looks up a localized string similar to {0} ({1}) | {2} bytes of data.
         /// </summary>
         internal static string ChunkCommentFormat {
             get {
@@ -935,15 +926,6 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} ticks.
-        /// </summary>
-        internal static string DeltaTimeFormat {
-            get {
-                return ResourceManager.GetString("DeltaTimeFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Time signature denominator.
         /// </summary>
         internal static string Denominator {
@@ -1070,7 +1052,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Format {0}, {1} tracks, {2}.
+        ///   Looks up a localized string similar to Format {0} | {1} tracks | {2}.
         /// </summary>
         internal static string HeaderDataFormat {
             get {
@@ -1184,7 +1166,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Meta-event / {0} ({1} bytes of data).
+        ///   Looks up a localized string similar to Meta-event | {0,-19} | {1,3} bytes.
         /// </summary>
         internal static string MetaEventFormat {
             get {
@@ -2679,7 +2661,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SysEx {0} ({1} bytes of data).
+        ///   Looks up a localized string similar to SysEx {0} | {1} bytes.
         /// </summary>
         internal static string SysExEventFormat {
             get {

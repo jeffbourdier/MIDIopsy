@@ -1,5 +1,5 @@
-﻿/* MidiNoteOffEvent.cs - Implementation of MidiNoteOffEvent class, which
- * corresponds to a "Note Off" channel message/event in the MIDI file spec.
+﻿/* MidiNoteOnEvent.cs - Implementation of MidiNoteOnEvent class, which
+ * corresponds to a "Note On" channel message/event in the MIDI file spec.
  *
  * Copyright (c) 2018-9 Jeffrey Paul Bourdier
  *
@@ -13,8 +13,8 @@
 
 namespace JeffBourdier
 {
-    /// <summary>Corresponds to a "Note Off" channel message/event in the MIDI file spec.</summary>
-    public class MidiNoteOffEvent : MidiChannelEvent
+    /// <summary>Corresponds to a "Note On" channel message/event in the MIDI file spec.</summary>
+    public class MidiNoteOnEvent : MidiChannelEvent
     {
         /****************
          * Constructors *
@@ -22,20 +22,20 @@ namespace JeffBourdier
 
         #region Public Constructors
 
-        /// <summary>Initializes a new instance of the MidiNoteOffEvent class.</summary>
+        /// <summary>Initializes a new instance of the MidiNoteOnEvent class.</summary>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="channel">One of the sixteen logical MIDI channels on which this event is transmitted.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
         /// <remarks>To create an event with running status, use the other constructor.</remarks>
-        public MidiNoteOffEvent(int deltaTime, uint channel, byte[] bytes, int index)
-            : base(deltaTime, 0x8, channel, 3, Properties.Resources.NoteOff) { this.Initialize(bytes, index); }
+        public MidiNoteOnEvent(int deltaTime, uint channel, byte[] bytes, int index)
+            : base(deltaTime, 0x9, channel, 3, Properties.Resources.NoteOn) { this.Initialize(bytes, index); }
 
-        /// <summary>Initializes a new instance of the MidiNoteOffEvent class using running status.</summary>
+        /// <summary>Initializes a new instance of the MidiNoteOnEvent class using running status.</summary>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        public MidiNoteOffEvent(int deltaTime, byte[] bytes, int index)
+        public MidiNoteOnEvent(int deltaTime, byte[] bytes, int index)
             : base(deltaTime, 2) { this.Initialize(bytes, index); }
 
         #endregion
@@ -76,7 +76,9 @@ namespace JeffBourdier
         /// volume, higher Velocity values generate louder notes (a value of 64 would correspond to mezzo-forte).
         /// </summary>
         /// <remarks>
-        /// Note Off velocity is normally ignored.  For maximum efficiency, use "Note On with Velocity of 0" for Note Off.
+        /// A Note-On message with a velocity value of zero is equivalent to a Note-Off message.  (This
+        /// is especially helpful when sending long strings of Note On/Off messages when Running Status
+        /// is in effect.)  For maximum efficiency, use "Note On with Velocity of 0" for Note Off.
         /// </remarks>
         public uint Velocity
         {
@@ -107,8 +109,7 @@ namespace JeffBourdier
 
         private void SetDataComment()
         {
-            this.DataComment = string.Format("{0}, {1} {2}", MidiData.NumberToNote(this.NoteNumber),
-                Properties.Resources.Velocity.ToLower(), this.Velocity);
+            this.DataComment = string.Format("{0} | {1,3}", MidiData.NumberToNote(this.NoteNumber), this.Velocity);
             this.SetComment();
         }
 
