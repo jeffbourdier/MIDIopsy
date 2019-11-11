@@ -144,11 +144,12 @@ namespace JeffBourdier
             if (lastEvent is MidiNoteOffEvent) return new MidiNoteOffEvent(deltaTime, bytes, index);
             if (lastEvent is MidiNoteOnEvent) return new MidiNoteOnEvent(deltaTime, bytes, index);
             if (lastEvent is MidiPolyKeyPressureEvent) return new MidiPolyKeyPressureEvent(deltaTime, bytes, index);
-            if (lastEvent is MidiControlChangeEvent) return new MidiControlChangeEvent(deltaTime, bytes, index);
+            if (lastEvent is MidiControlChangeEvent || lastEvent is MidiChannelModeEvent)
+                if (bytes[index] < 120) return new MidiControlChangeEvent(deltaTime, bytes, index);
+                else return new MidiChannelModeEvent(deltaTime, bytes, index);
             if (lastEvent is MidiProgramChangeEvent) return new MidiProgramChangeEvent(deltaTime, bytes, index);
             if (lastEvent is MidiChannelPressureEvent) return new MidiChannelPressureEvent(deltaTime, bytes, index);
             if (lastEvent is MidiPitchBendEvent) return new MidiPitchBendEvent(deltaTime, bytes, index);
-            if (lastEvent is MidiChannelModeEvent) return new MidiChannelModeEvent(deltaTime, bytes, index);
             throw new ApplicationException(Properties.Resources.InvalidStatus);
         }
 
