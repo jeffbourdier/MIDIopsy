@@ -45,7 +45,6 @@ namespace JeffBourdier
         {
             CommandBinding binding;
             RoutedUICommand settingsCommand, aboutCommand;
-            List<RoutedUICommand> commands;
 
             /* Create and bind the "Settings" command. */
             settingsCommand = new RoutedUICommand();
@@ -64,7 +63,7 @@ namespace JeffBourdier
             this.CommandBindings.Add(binding);
 
             /* Build the command list for the header panel. */
-            commands = new List<RoutedUICommand>();
+            List<RoutedUICommand> commands = new List<RoutedUICommand>();
             commands.Add(settingsCommand);
             commands.Add(ApplicationCommands.Help);
             commands.Add(aboutCommand);

@@ -935,6 +935,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Duration:.
+        /// </summary>
+        internal static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End of Track.
         /// </summary>
         internal static string EndOfTrack {
@@ -1415,6 +1424,15 @@ namespace JeffBourdier.Properties {
         internal static string PolyKeyPressure {
             get {
                 return ResourceManager.GetString("PolyKeyPressure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Position:.
+        /// </summary>
+        internal static string Position {
+            get {
+                return ResourceManager.GetString("Position", resourceCulture);
             }
         }
         
@@ -2652,6 +2670,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to S_tarting Position.
+        /// </summary>
+        internal static string StartingPosition {
+            get {
+                return ResourceManager.GetString("StartingPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A strongly typed class must be used for this object..
         /// </summary>
         internal static string StronglyTypedClass {
@@ -2765,15 +2792,6 @@ namespace JeffBourdier.Properties {
         internal static string ValueListFormat {
             get {
                 return ResourceManager.GetString("ValueListFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} must be between {1} and {2}..
-        /// </summary>
-        internal static string ValueRangeFormat {
-            get {
-                return ResourceManager.GetString("ValueRangeFormat", resourceCulture);
             }
         }
         

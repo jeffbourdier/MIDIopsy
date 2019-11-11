@@ -11,10 +11,10 @@
  */
 
 
-/* Window, RoutedEventArgs, DependencyObject, UIElement */
+/* Window, RoutedEventArgs, DependencyObject, UIElement, MessageBox, MessageBoxButton, MessageBoxImage */
 using System.Windows;
 
-/* Panel, Control */
+/* Panel, Control, TextBox, FrameworkElement */
 using System.Windows.Controls;
 
 
@@ -78,10 +78,15 @@ namespace JeffBourdier
         public static void OkButton_Click(object sender, RoutedEventArgs e)
         {
             /* Set the dialog result to true and close the parent window. */
-            Window window = Window.GetWindow((DependencyObject)sender);
+            Window window = Window.GetWindow(sender as DependencyObject);
             window.DialogResult = true;
             window.Close();
         }
+
+        /// <summary>Handles the GotFocus event of a text box by selecting all of its contents.</summary>
+        /// <param name="sender">The element where the handler is being invoked.</param>
+        /// <param name="e">Contains information about the routed event.</param>
+        public static void TextBox_GotFocus(object sender, RoutedEventArgs e) { (sender as TextBox).SelectAll(); }
 
         #endregion
 
@@ -121,6 +126,44 @@ namespace JeffBourdier
             int n = 0;
             foreach (UIElement child in panel.Children) n += UI.CountElements(child);
             return n;
+        }
+
+        /// <summary>Determine whether or not a text box contains a valid number (unsigned integer).</summary>
+        /// <param name="textBox">A TextBox object.</param>
+        /// <param name="value">
+        /// Previous numeric value, to which the text box is reset if it does not contain a valid number.
+        /// If the text box does contain a valid number, receives the numeric value entered in therein.
+        /// </param>
+        /// <param name="max">Maximum value for the number.</param>
+        /// <param name="description">
+        /// A short description of the numeric value (for display purposes).  May be label content.
+        /// </param>
+        /// <returns>True if the text box contains a valid number; otherwise, false.</returns>
+        public static bool ValidateNumericInput(TextBox textBox, ref uint value, uint max, string description)
+        {
+            uint n;
+            FrameworkElement element;
+
+            /* If the user entered something non-numeric, it's invalid. */
+            if (!uint.TryParse(textBox.Text, out n))
+            {
+                /* Revert text to previous value. */
+                textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
+                return false;
+            }
+
+            /* If the user entered a valid number, assign the new value and we're done. */
+            if (n <= max) { value = n; return true; }
+
+            /* Give the user a message for an invalid number. */
+            string s = Text.ParseLabel(description);
+            s = string.Format(Common.Resources.ValueRangeFormat, s, 0, max);
+            for (element = textBox; element.Parent != null; element = element.Parent as FrameworkElement) ;
+            MessageBox.Show(element as Window, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+            /* Revert text to previous value. */
+            textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
+            return false;
         }
 
         #endregion

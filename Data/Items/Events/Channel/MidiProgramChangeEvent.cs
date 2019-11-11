@@ -219,8 +219,7 @@ namespace JeffBourdier
                 case 126: return Properties.Resources.Sound126;
                 case 127: return Properties.Resources.Sound127;
             }
-            string s = string.Format(Properties.Resources.ValueRangeFormat,
-                Properties.Resources.ProgramNumber, 0, sbyte.MaxValue);
+            string s = string.Format(Common.Resources.ValueRangeFormat, Properties.Resources.ProgramNumber, 0, sbyte.MaxValue);
             throw new ApplicationException(s);
         }
 

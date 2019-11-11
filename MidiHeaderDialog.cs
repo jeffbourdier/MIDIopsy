@@ -10,7 +10,7 @@
  */
 
 
-/* Thickness, TextAlignment, RoutedEventArgs, MessageBox, MessageBoxButton, MessageBoxImage */
+/* Thickness, TextAlignment, RoutedEventArgs */
 using System.Windows;
 
 /* ComboBox, TextBox, RadioButton, GroupBox, SelectionChangedEventArgs, TextChangedEventArgs */
@@ -41,7 +41,7 @@ namespace JeffBourdier
             this.FormatComboBox.Items.Add(Properties.Resources.Format0);
             this.FormatComboBox.Items.Add(Properties.Resources.Format1);
             this.FormatComboBox.Items.Add(Properties.Resources.Format2);
-            this.FormatComboBox.SelectionChanged += FormatComboBox_SelectionChanged;
+            this.FormatComboBox.SelectionChanged += this.FormatComboBox_SelectionChanged;
             this.FormatLabel.Target = this.FormatComboBox;
 
             /* Initialize the "Number of tracks" label. */
@@ -52,14 +52,14 @@ namespace JeffBourdier
             this.NumberOfTracksTextBox = new TextBox();
             this.NumberOfTracksTextBox.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             this.NumberOfTracksTextBox.TextAlignment = TextAlignment.Right;
-            this.NumberOfTracksTextBox.TextChanged += NumberOfTracksTextBox_TextChanged;
+            this.NumberOfTracksTextBox.TextChanged += this.NumberOfTracksTextBox_TextChanged;
             this.NumberOfTracksLabel.Target = this.NumberOfTracksTextBox;
 
             /* Initialize the "Metrical time" radio button. */
             this.MetricalTimeRadioButton = new RadioButton();
             this.MetricalTimeRadioButton.Content = Properties.Resources.MetricalTime;
             this.MetricalTimeRadioButton.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.MetricalTimeRadioButton.Checked += MetricalTimeRadioButton_Checked;
+            this.MetricalTimeRadioButton.Checked += this.MetricalTimeRadioButton_Checked;
 
             /* Initialize the "Ticks per quarter note" label. */
             this.TicksPerQuarterNoteLabel = new StandardLabel(Properties.Resources.TicksPerQuarterNote, true);
@@ -70,7 +70,7 @@ namespace JeffBourdier
             this.TicksPerQuarterNoteTextBox = new TextBox();
             this.TicksPerQuarterNoteTextBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             this.TicksPerQuarterNoteTextBox.TextAlignment = TextAlignment.Right;
-            this.TicksPerQuarterNoteTextBox.TextChanged += TicksPerQuarterNoteTextBox_TextChanged;
+            this.TicksPerQuarterNoteTextBox.TextChanged += this.TicksPerQuarterNoteTextBox_TextChanged;
             this.TicksPerQuarterNoteTextBox.IsEnabled = false;
             this.TicksPerQuarterNoteLabel.Target = this.TicksPerQuarterNoteTextBox;
 
@@ -79,7 +79,7 @@ namespace JeffBourdier
             this.TimeCodeBasedTimeRadioButton.Content = Properties.Resources.TimeCodeBasedTime;
             this.TimeCodeBasedTimeRadioButton.Margin =
                 new Thickness(UI.TripleSpace, UI.DoubleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.TimeCodeBasedTimeRadioButton.Checked += TimeCodeBasedTimeRadioButton_Checked;
+            this.TimeCodeBasedTimeRadioButton.Checked += this.TimeCodeBasedTimeRadioButton_Checked;
 
             /* Initialize the "Frames per second" label. */
             this.FramesPerSecondLabel = new StandardLabel(Properties.Resources.FramesPerSecond, true);
@@ -91,7 +91,7 @@ namespace JeffBourdier
             this.FramesPerSecondComboBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             for (int i = 0; i < MidiHeaderData.FramesPerSecondCount; ++i)
                 this.FramesPerSecondComboBox.Items.Add(MidiHeaderData.FramesPerSecondStrings[i]);
-            this.FramesPerSecondComboBox.SelectionChanged += FramesPerSecondComboBox_SelectionChanged;
+            this.FramesPerSecondComboBox.SelectionChanged += this.FramesPerSecondComboBox_SelectionChanged;
             this.FramesPerSecondComboBox.IsEnabled = false;
             this.FramesPerSecondLabel.Target = this.FramesPerSecondComboBox;
 
@@ -104,7 +104,7 @@ namespace JeffBourdier
             this.TicksPerFrameTextBox = new TextBox();
             this.TicksPerFrameTextBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.TripleSpace);
             this.TicksPerFrameTextBox.TextAlignment = TextAlignment.Right;
-            this.TicksPerFrameTextBox.TextChanged += TicksPerFrameTextBox_TextChanged;
+            this.TicksPerFrameTextBox.TextChanged += this.TicksPerFrameTextBox_TextChanged;
             this.TicksPerFrameTextBox.IsEnabled = false;
             this.TicksPerFrameLabel.Target = this.TicksPerFrameTextBox;
 
@@ -161,6 +161,7 @@ namespace JeffBourdier
         private uint NumberOfTracks = uint.MaxValue;
         private uint TicksPerQuarterNote = uint.MaxValue;
         private uint TicksPerFrame = uint.MaxValue;
+        private bool NoValidation = false;
 
         #endregion
 
@@ -204,7 +205,7 @@ namespace JeffBourdier
 
         private void NumberOfTracksTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            this.ValidateNumericInput(this.NumberOfTracksLabel, ushort.MaxValue, ref this.NumberOfTracks);
+            this.ValidateNumericInput(this.NumberOfTracksLabel, ref this.NumberOfTracks, ushort.MaxValue);
             this.EnableOkButton();
         }
 
@@ -212,7 +213,7 @@ namespace JeffBourdier
 
         private void TicksPerQuarterNoteTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            this.ValidateNumericInput(this.TicksPerQuarterNoteLabel, (uint)short.MaxValue, ref this.TicksPerQuarterNote);
+            this.ValidateNumericInput(this.TicksPerQuarterNoteLabel, ref this.TicksPerQuarterNote, (uint)short.MaxValue);
             this.EnableOkButton();
         }
 
@@ -223,7 +224,7 @@ namespace JeffBourdier
 
         private void TicksPerFrameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            this.ValidateNumericInput(this.TicksPerFrameLabel, byte.MaxValue, ref this.TicksPerFrame);
+            this.ValidateNumericInput(this.TicksPerFrameLabel, ref this.TicksPerFrame, byte.MaxValue);
             this.EnableOkButton();
         }
 
@@ -241,9 +242,11 @@ namespace JeffBourdier
             this.EnableOkButton();
         }
 
-        private void ValidateNumericInput(Label label, uint max, ref uint value)
+        private void ValidateNumericInput(Label label, ref uint value, uint max)
         {
-            uint n;
+            /* Prevent unnecessary recursion. */
+            if (this.NoValidation) return;
+            this.NoValidation = true;
 
             /* Allow null/empty value. */
             TextBox textBox = label.Target as TextBox;
@@ -252,27 +255,9 @@ namespace JeffBourdier
                 /* Revert to initial value. */
                 value = uint.MaxValue;
                 textBox.Text = null;
-                return;
             }
-
-            /* If the user entered something non-numeric, it's invalid. */
-            if (!uint.TryParse(textBox.Text, out n))
-            {
-                /* Revert text to previous value. */
-                textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
-                return;
-            }
-
-            /* If the user entered a valid number, assign the new value and we're done. */
-            if (n < max) { value = n; return; }
-
-            /* Give the user a message for an invalid number. */
-            string s = Text.ParseLabel(label.Content as string);
-            s = string.Format(Properties.Resources.ValueRangeFormat, s, 0, max);
-            MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-
-            /* Revert text to previous value. */
-            textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
+            else UI.ValidateNumericInput(textBox, ref value, max, label.Content as string);
+            this.NoValidation = false;
         }
 
         private void EnableOkButton() { this.OkButton.IsEnabled = this.CheckRequiredInput(); }

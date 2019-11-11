@@ -41,25 +41,53 @@ namespace JeffBourdier
         {
             /* Initialize the button. */
             this.Command = command;
-            this.Content = command.Text;
             this.Height = UI.ButtonHeight;
             this.Width = UI.ButtonWidth;
             this.Margin = new Thickness(UI.UnitSpace);
 
             /* Find the first key gesture in the input gesture collection. */
-            string s = null;
             foreach (InputGesture gesture in command.InputGestures)
             {
                 if (!(gesture is KeyGesture)) continue;
 
                 /* We've found a key gesture.  Get its display string. */
-                s = (gesture as KeyGesture).GetDisplayStringForCulture(null);
+                this.Shortcut = (gesture as KeyGesture).GetDisplayStringForCulture(null);
                 break;
             }
 
-            /* Set the tool-tip based on the command text and gesture display string. */
-            if (string.IsNullOrEmpty(s)) return;
-            this.ToolTip = command.Text + string.Format(" ({0})", s);
+            /* Set the content and tool-tip based on the command text and gesture display string. */
+            this.Text = command.Text;
+        }
+
+        #endregion
+
+        /**********
+         * Fields *
+         **********/
+
+        #region Private Fields
+
+        private string Shortcut = null;
+
+        #endregion
+
+        /**************
+         * Properties *
+         **************/
+
+        #region Public Properties
+
+        /// <summary>Sets the content and tool-tip for this button.</summary>
+        public string Text
+        {
+            set
+            {
+                this.Content = value;
+
+                /* If applicable, set the tool-tip to include the keyboard shortcut. */
+                if (string.IsNullOrEmpty(this.Shortcut)) return;
+                this.ToolTip = string.Format("{0} ({1})", value, this.Shortcut);
+            }
         }
 
         #endregion

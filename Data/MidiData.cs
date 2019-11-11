@@ -67,8 +67,11 @@ namespace JeffBourdier
         protected static string ReadText(byte[] bytes, int length, int index)
         {
             char[] chars = new char[length];
-
-            for (int i = 0; i < length; ++i) chars[i] = (char)bytes[index + i];
+            for (int i = 0; i < length; ++i)
+            {
+                chars[i] = (char)bytes[index + i];
+                if (!Text.IsPrintable(chars[i])) chars[i] = '.';
+            }
             return new string(chars);
         }
 
@@ -81,9 +84,9 @@ namespace JeffBourdier
         /// <returns>The number that is read.</returns>
         protected static uint ReadNumber(byte[] bytes, int length, int index)
         {
-            uint n = 0;
-
             if (length > 4) throw new ApplicationException(Properties.Resources.NumberNotSupported);
+
+            uint n = 0;
             for (int i = 0; i < length; ++i) n |= (uint)bytes[index + i] << (8 * (length - i - 1));
             return n;
         }
@@ -94,12 +97,10 @@ namespace JeffBourdier
         /// <returns>The VLQ that is read.</returns>
         protected static int ReadVLQ(byte[] bytes, int index)
         {
-            int i, n = 0;
-
             /* A variable-length quantity is in big-endian order, and only the lowest seven bits of each byte are part of the
              * quantity.  The Most Significant Bit (MSB) is set in all bytes except the last.  It can be up to four bytes long.
              */
-            for (i = 0; i < 4; ++i)
+            for (int i = 0, n = 0; i < 4; ++i)
             {
                 /* As appropriate, initialize the result (or shift it seven bits
                  * to the left) and add to it the lowest seven bits of this byte.
@@ -144,9 +145,6 @@ namespace JeffBourdier
         /// <param name="index">Index in the byte array at which the VLQ is written.</param>
         protected static void WriteVLQ(int n, byte[] bytes, int index)
         {
-            int i, j = 0;
-            byte[] a = new byte[4];
-
             /* For the simple (and common) case of a single-byte VLQ, take a shortcut. */
             if (n < 0x80) { bytes[index] = (byte)n; return; }
 
@@ -157,6 +155,7 @@ namespace JeffBourdier
              * Most Significant Bit (MSB) set, and the last byte has the MSB clear.  The easiest way to accomplish this
              * is to write the VLQ "backwards" (least significant byte first) to a temporary byte array, then reverse it.
              */
+            int i, j = 0;
             for (i = n; i > 0; i >>= 7)
             {
                 bytes[index + j] = (byte)((i % 0x100) & 0x7F);
@@ -183,7 +182,7 @@ namespace JeffBourdier
             if (n >= min && n <= max) return;
 
             string s = Text.ParseLabel(description);
-            s = string.Format(Properties.Resources.ValueRangeFormat, s, min, max);
+            s = string.Format(Common.Resources.ValueRangeFormat, s, min, max);
             throw new ApplicationException(s);
         }
 

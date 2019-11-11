@@ -251,6 +251,15 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} must be between {1} and {2}..
+        /// </summary>
+        internal static string ValueRangeFormat {
+            get {
+                return ResourceManager.GetString("ValueRangeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Version.
         /// </summary>
         internal static string Version {

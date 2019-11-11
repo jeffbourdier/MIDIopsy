@@ -117,7 +117,7 @@ namespace JeffBourdier
                 case 126: return Properties.Resources.Mode126;
                 case 127: return Properties.Resources.Mode127;
             }
-            string s = string.Format(Properties.Resources.ValueRangeFormat,
+            string s = string.Format(Common.Resources.ValueRangeFormat,
                 Properties.Resources.ControllerNumber, 120, sbyte.MaxValue);
             throw new ApplicationException(s);
         }

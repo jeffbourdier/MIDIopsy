@@ -140,7 +140,7 @@ namespace JeffBourdier
 
         /// <summary>Sets the comment text for this event.  (Delta-time is handled automatically.)</summary>
         protected void SetComment()
-        { this._Comment = string.Format("{0,5} | {1} | {2}", this.DeltaTime, this.TypeComment, this.DataComment); }
+        { this._Comment = string.Format("{0,9} | {1} | {2}", this.DeltaTime, this.TypeComment, this.DataComment); }
 
         #endregion
     }

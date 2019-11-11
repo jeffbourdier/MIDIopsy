@@ -26,6 +26,35 @@ namespace JeffBourdier
 
         #region Public Methods
 
+        /// <summary>Returns an error message using the standard format.</summary>
+        /// <param name="text">Error-specific text.</param>
+        /// <param name="ex">The exception associated with the error.</param>
+        /// <returns>An error message using the standard format.</returns>
+        public static string FormatErrorMessage(string text, Exception ex)
+        { return string.Format(Common.Resources.ErrorMessageFormat, text, ex.Message); }
+
+        /// <summary>Indicates whether a character is considered printable according to Windows-1252 encoding.</summary>
+        /// <param name="c">The character to evaluate.</param>
+        /// <returns>True if c is printable; otherwise, false.</returns>
+        public static bool IsPrintable(char c)
+        {
+            if (c < 0x20) return false;
+            if (c < 0x7F) return true;
+            if (c < 0x80) return false;
+            if (c < 0x81) return true;
+            if (c < 0x82) return false;
+            if (c < 0x8D) return true;
+            if (c < 0x8E) return false;
+            if (c < 0x8F) return true;
+            if (c < 0x91) return false;
+            if (c < 0x9D) return true;
+            if (c < 0x9E) return false;
+            if (c < 0xA0) return true;
+            if (c < 0xA1) return false;
+            if (c < 0x100) return true;
+            return false;
+        }
+
         /// <summary>
         /// Parses a string meant to serve as the content of a label.  If the string contains parentheses, the text
         /// within the parentheses is returned.  Otherwise, the string with underscores and colons removed is returned.
@@ -58,13 +87,6 @@ namespace JeffBourdier
             }
             return r;
         }
-
-        /// <summary>Returns an error message using the standard format.</summary>
-        /// <param name="text">Error-specific text.</param>
-        /// <param name="ex">The exception associated with the error.</param>
-        /// <returns>An error message using the standard format.</returns>
-        public static string FormatErrorMessage(string text, Exception ex)
-        { return string.Format(Common.Resources.ErrorMessageFormat, text, ex.Message); }
 
         #endregion
     }

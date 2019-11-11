@@ -64,8 +64,8 @@ namespace JeffBourdier
         {
             int i, n;
             CommandBinding binding;
-            KeyGesture gesture;
             List<RoutedUICommand> commands;
+            KeyGesture gesture;
 
             /* Bind the "New" command. */
             binding = new CommandBinding(ApplicationCommands.New, this.NewExecuted, this.OpeningCommandCanExecute);
@@ -75,27 +75,23 @@ namespace JeffBourdier
             binding = new CommandBinding(ApplicationCommands.Open, this.OpenExecuted, this.OpeningCommandCanExecute);
             this.CommandBindings.Add(binding);
 
-            /* Build the command list for the opening panel. */
+            /* Build the opening panel (which goes with the MRU panel, to be built shortly). */
             commands = new List<RoutedUICommand>();
             commands.Add(ApplicationCommands.New);
             commands.Add(ApplicationCommands.Open);
-            CommandPanel panel = new CommandPanel(commands, false);
-            panel.TabIndexOffset = this.HeaderControlCount;
+            this.OpeningPanel = new CommandPanel(commands, true);
 
-            /* Start building the opening panel.  (RebuildMruButtons will finish building it.) */
-            this.OpeningPanel = new Grid();
-            this.OpeningPanel.ColumnDefinitions.Add(new ColumnDefinition());
-            this.OpeningPanel.Children.Add(panel);
-
-            /* Initialize the Most Recently Used (MRU) list. */
+            /* Start building the Most Recently Used (MRU) panel, and initialize the MRU list. */
+            this.MruPanel = new StackPanel();
             this.MruArray = new string[FileAppWindow.MruMax];
-            this.MruTabIndexOffset = 1 + panel.TabIndexOffset + panel.Children.Count;
+            this.MruTabIndexOffset = this.OpeningPanel.Children.Count + this.HeaderControlCount;
             if (Common.Settings.Default.Mru != null && Common.Settings.Default.Mru.Count > 0)
             {
                 /* Copy the number of MRU file paths into the MRU array, up to the maximum MRU count. */
                 n = Math.Min(Common.Settings.Default.Mru.Count, FileAppWindow.MruMax);
                 for (i = 0; i < n; ++i) this.MruArray[i] = Common.Settings.Default.Mru[i];
 
+                /* This finishes building the MRU panel. */
                 this.RebuildMruButtons();
             }
 
@@ -103,9 +99,7 @@ namespace JeffBourdier
             binding = new CommandBinding(ApplicationCommands.Save, this.SaveExecuted, this.SaveCanExecute);
             this.CommandBindings.Add(binding);
 
-            /* Bind the "Save As" command.  (Note:  Contrary to the documentation
-             * (MSDN), there is no default key gesture for this command, so add one.)
-             */
+            /* Bind the "Save As" command. */
             gesture = new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift);
             ApplicationCommands.SaveAs.InputGestures.Add(gesture);
             binding = new CommandBinding(ApplicationCommands.SaveAs, this.SaveAsExecuted, this.SaveAsCanExecute);
@@ -119,12 +113,12 @@ namespace JeffBourdier
             binding = new CommandBinding(command, this.DoneExecuted, this.DoneCanExecute);
             this.CommandBindings.Add(binding);
 
-            /* Build the command list for the editing panel. */
+            /* Build the saving panel (which goes with the editing panel, to be built by derived classes). */
             commands = new List<RoutedUICommand>();
             commands.Add(ApplicationCommands.Save);
             commands.Add(ApplicationCommands.SaveAs);
             commands.Add(command);
-            this.CommandPanel = new CommandPanel(commands, true);
+            this.SavingPanel = new CommandPanel(commands, true);
 
             /* Set the initial file state and assign the closing event handler. */
             this.State = FileState.None;
@@ -151,8 +145,8 @@ namespace JeffBourdier
         private FileState _State;
         private string _FilePath;
 
-        private Grid OpeningPanel;
-        private CommandPanel CommandPanel;
+        private CommandPanel OpeningPanel;
+        private CommandPanel SavingPanel;
         private StackPanel MruPanel;
         private string[] MruArray;
         private int MruTabIndexOffset;
@@ -166,8 +160,8 @@ namespace JeffBourdier
         #region Protected Properties
 
         /// <summary>
-        /// Gets or sets the file state, which specifies whether a file has just been opened or saved, edited,
-        /// created (new), or none of the above (the application has just been launched or a file closed).
+        /// Gets or sets the file state, which specifies whether a file has just been opened or saved, edited, created
+        /// (new), or none of the above (the application has just been launched, or a file has just been closed).
         /// </summary>
         protected FileState State
         {
@@ -180,18 +174,16 @@ namespace JeffBourdier
                 /* If the file state is changing to Edited, no further action is necessary. */
                 if (value == FileState.Edited) return;
 
-                /* If the application has just been launched or a file has just been closed,
-                 * remove the command panel (if it's there) and show the opening panel.
-                 */
+                /* If the application has just been launched or a file closed, show the opening and MRU panels. */
                 if (value == FileState.None)
                 {
-                    this.SetHeaderSubpanel(null);
-                    this.SetMainSubpanel(this.OpeningPanel);
+                    this.SetHeaderSubpanel(this.OpeningPanel);
+                    this.SetMainSubpanel(this.MruPanel);
                     return;
                 }
 
-                /* For all other file states (opened/saved or edited), show the command panel and the editing panel. */
-                this.SetHeaderSubpanel(this.CommandPanel);
+                /* For all other file states (opened/saved or edited), show the saving and editing panels. */
+                this.SetHeaderSubpanel(this.SavingPanel);
                 this.SetMainSubpanel(this.EditingPanel);
             }
         }
@@ -213,7 +205,7 @@ namespace JeffBourdier
                 }
 
                 /* Append the file name to the window title and update the Most Recently Used (MRU) list. */
-                this.Title = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(value), AppHelper.Title);
+                this.Title = string.Format("{0} - {1}", Path.GetFileName(value), AppHelper.Title);
                 this.UpdateMruItems();
             }
         }
@@ -223,17 +215,13 @@ namespace JeffBourdier
         {
             get
             {
-                int i;
-                StringCollection collection;
-
                 /* Add each MRU configuration setting. */
-                collection = new StringCollection();
-                for (i = 0; i < FileAppWindow.MruMax; ++i)
+                StringCollection collection = new StringCollection();
+                for (int i = 0; i < FileAppWindow.MruMax; ++i)
                 {
                     if (string.IsNullOrEmpty(this.MruArray[i])) continue;
                     collection.Add(this.MruArray[i]);
                 }
-
                 return collection;
             }
         }
@@ -294,6 +282,21 @@ namespace JeffBourdier
             /* We're saving as new and/or we do not have a file path, so prompt the user for a file path. */
             SaveFileDialog dialog = new SaveFileDialog();
             return this.OpenOrSaveFile(dialog);
+        }
+
+        /// <summary>
+        /// Prompts the user to save changes, resetting the file path if appropriate.  When
+        /// overridden in a derived class, performs additional actions as needed to close a file.
+        /// </summary>
+        /// <returns>True if the file is to be closed; otherwise, false.</returns>
+        protected virtual bool CloseFile()
+        {
+            /* Prompt the user to save changes.  If the user cancels, then never mind. */
+            if (!this.SaveChanges()) return false;
+
+            /* The user did not cancel (they either saved or discarded their changes), so reset the file path. */
+            this.FilePath = null;
+            return true;
         }
 
         #endregion
@@ -362,13 +365,14 @@ namespace JeffBourdier
 
         private void DoneExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            /* Prompt the user to save changes.  If the user cancels, then no further action is necessary. */
-            if (!this.SaveChanges()) return;
-
-            /* The user did not cancel (they either saved or discarded their
-             * changes), so reset file path and file state accordingly.
+            /* Prompt the user to save changes.  If the user cancels, then
+             * no further action is necessary, as the file is to be closed.
              */
-            this.FilePath = null;
+            if (!this.CloseFile()) return;
+
+            /* The user did not cancel (they either saved or discarded their changes),
+             * so the file is to be closed.  Reset the file state accordingly.
+             */
             this.State = FileState.None;
         }
 
@@ -446,9 +450,7 @@ namespace JeffBourdier
             }
 
             /* If we got all the way through and didn't find the file path, then remove whatever's on bottom. */
-            if (j < 0)
-                if (i == FileAppWindow.MruMax) j = i - 1;
-                else j = i;
+            if (j < 0) { if (i == FileAppWindow.MruMax) j = i - 1; else j = i; }
 
             /* Remove the chosen item from the array and move everything else down. */
             for (i = j; i > 0; --i) this.MruArray[i] = this.MruArray[i - 1];
@@ -460,47 +462,28 @@ namespace JeffBourdier
 
         private void RebuildMruButtons()
         {
-            this.BuildMruPanel();
+            /* If necessary, add "Open Recent" label to the MRU panel. */
+            if (this.MruPanel.Children.Count < 1)
+            {
+                StandardLabel label = new StandardLabel(Common.Resources.OpenRecent, false);
+                this.MruPanel.Children.Add(label);
+            }
 
             /* Iterate through each item in the Most Recently Used (MRU) array, up to the max. */
-            for (int i = 0; i < FileAppWindow.MruMax; )
+            for (int i = 0; i < FileAppWindow.MruMax; ++i)
             {
                 /* If we've reached a null/empty, then there are no more. */
                 if (string.IsNullOrEmpty(this.MruArray[i])) break;
 
                 /* Build and add a new button for this file path. */
                 Button button = new Button();
-                string s = Path.GetFileName(this.MruArray[i]);
-                button.Content = string.Format("_{0} {1}", ++i, s);
+                button.Content = string.Format("_{0} {1}", i + 1, this.MruArray[i]);
                 button.Margin = new Thickness(UI.UnitSpace, 0, UI.UnitSpace, 0);
                 button.HorizontalContentAlignment = HorizontalAlignment.Left;
                 button.Click += this.MruButton_Click;
                 button.TabIndex = this.MruTabIndexOffset + i;
                 this.MruPanel.Children.Add(button);
             }
-        }
-
-        private void BuildMruPanel()
-        {
-            /* If the panel has already been built, then we're done. */
-            if (this.MruPanel != null) return;
-
-            /* Realign the command buttons on the opening panel to the right (to make them continue to
-             * appear centered, once the MRU panel is added) and add the Most Recently Used (MRU) panel.
-             */
-            Panel panel = (this.OpeningPanel.Children[0] as Panel);
-            panel.HorizontalAlignment = HorizontalAlignment.Right;
-            this.OpeningPanel.ColumnDefinitions.Add(new ColumnDefinition());
-            this.MruPanel = new StackPanel();
-
-            /* Add "Open Recent" label to the MRU panel. */
-            StandardLabel label = new StandardLabel(Common.Resources.OpenRecent, false);
-            label.TabIndex = this.MruTabIndexOffset;
-            this.MruPanel.Children.Add(label);
-
-            /* Add the MRU panel to the opening panel. */
-            Grid.SetColumn(this.MruPanel, 1);
-            this.OpeningPanel.Children.Add(this.MruPanel);
         }
 
         #endregion
