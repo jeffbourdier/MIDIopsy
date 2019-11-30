@@ -1027,4 +1027,28 @@
   <data name="Position" xml:space="preserve">
     <value>_Position:</value>
   </data>
+  <data name="StartEditing" xml:space="preserve">
+    <value>Start Editing</value>
+  </data>
+  <data name="StopEditing" xml:space="preserve">
+    <value>Stop Editing</value>
+  </data>
+  <data name="EditWarning" xml:space="preserve">
+    <value>MIDI file editing is for expert users only.  If not done correctly, it could result in data corruption, making the file unusable.  Are you sure?</value>
+  </data>
+  <data name="WillStopPlayback" xml:space="preserve">
+    <value>This will stop playback.  Proceed?</value>
+  </data>
+  <data name="DataInvalid" xml:space="preserve">
+    <value>Data is invalid</value>
+  </data>
+  <data name="RevertToValid" xml:space="preserve">
+    <value>Revert to last valid version?</value>
+  </data>
+  <data name="SaveReverted" xml:space="preserve">
+    <value>Data reverted.  Save this version?</value>
+  </data>
+  <data name="ReloadForPlayback" xml:space="preserve">
+    <value>File has been edited and must be reloaded from disk in order to play the most recent version.  Save and reload now?</value>
+  </data>
 </root>

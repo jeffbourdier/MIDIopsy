@@ -10,17 +10,23 @@
  */
 
 
-/* Uri, Exception, Environment, EventArgs */
+/* Uri, Exception, Environment, EventArgs, StringSplitOptions */
 using System;
+
+/* List */
+using System.Collections.Generic;
 
 /* CancelEventArgs */
 using System.ComponentModel;
 
+/* NumberStyles */
+using System.Globalization;
+
 /* EventWaitHandle, EventResetMode, ThreadPool, Thread */
 using System.Threading;
 
-/* Thickness, HorizontalAlignment, VerticalAlignment, GridLength, MessageBox,
- * MessageBoxButton, MessageBoxImage, Visibility, RoutedEventArgs, RoutedEventHandler
+/* Thickness, GridLength, HorizontalAlignment, VerticalAlignment, TextAlignment, MessageBox,
+ * MessageBoxButton, MessageBoxImage, MessageBoxResult, RoutedEventArgs, RoutedEventHandler
  */
 using System.Windows;
 
@@ -29,10 +35,12 @@ using System.Windows;
  */
 using System.Windows.Controls;
 
-/* KeyGesture, MediaCommands, CommandBinding, ExecutedRoutedEventArgs, CanExecuteRoutedEventArgs */
+/* KeyGesture, MediaCommands, CommandBinding, RoutedUICommand,
+ * CommandManager, ExecutedRoutedEventArgs, CanExecuteRoutedEventArgs
+ */
 using System.Windows.Input;
 
-/* FontFamily, Brushes, MediaPlayer */
+/* FontFamily, Brush, Brushes, MediaPlayer */
 using System.Windows.Media;
 
 /* BitmapFrame */
@@ -41,7 +49,8 @@ using System.Windows.Media.Imaging;
 
 namespace JeffBourdier
 {
-    public delegate void PlaybackMethod();
+    /// <summary>Specifies enumerated constants to define the state of the UI.</summary>
+    internal enum UIState { View, Play, Edit }
 
     /// <summary>Represents a window that makes up the user interface for the MIDIopsy application.</summary>
     public class MIDIopsyWindow : FileAppWindow
@@ -57,13 +66,13 @@ namespace JeffBourdier
         {
             KeyGesture gesture;
             CommandBinding binding;
-            Grid grid;
             StandardLabel label;
 
             /* The duration of a MIDI file cannot be determined until it has been
              * opened for media playback (i.e., the MediaOpened event has been raised).
              */
             this.Player.MediaOpened += this.Player_MediaOpened;
+            this.Player.MediaEnded += this.Player_MediaEnded;
 
             /* Bind the Play/Stop command (for MIDI file playback). */
             gesture = new KeyGesture(Key.F5);
@@ -76,20 +85,28 @@ namespace JeffBourdier
             this.StartingPositionControl = new PositionControl(Properties.Resources.StartingPosition, false);
             this.StartingPositionControl.Margin = new Thickness(UI.UnitSpace);
 
-            /* Bind the Select command (to set starting position). */
+            /* Bind the Rewind command (to reset/zero starting position). */
             gesture = new KeyGesture(Key.F6);
+            MediaCommands.Rewind.InputGestures.Add(gesture);
+            binding = new CommandBinding(MediaCommands.Rewind, this.RewindExecuted, this.PlaybackCommandCanExecute);
+            this.CommandBindings.Add(binding);
+            CommandButton rewindButton = new CommandButton(MediaCommands.Rewind);
+
+            /* Bind the Select command (to set starting position). */
+            gesture = new KeyGesture(Key.F7);
             MediaCommands.Select.InputGestures.Add(gesture);
             binding = new CommandBinding(MediaCommands.Select, this.SelectExecuted, this.PlaybackCommandCanExecute);
             this.CommandBindings.Add(binding);
-            this.SelectButton = new CommandButton(MediaCommands.Select);
+            CommandButton selectButton = new CommandButton(MediaCommands.Select);
 
             /* Initialize the grid for the Position & Duration controls (to be added shortly). */
-            grid = new Grid();
+            Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions[1].Width = new GridLength(16 * UI.UnitSpace);
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
-            grid.Margin = new Thickness(UI.UnitSpace);
+            grid.Margin = new Thickness(0, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
 
             /* Add the Position controls. */
             label = new StandardLabel(Properties.Resources.Position, false);
@@ -105,13 +122,30 @@ namespace JeffBourdier
             Grid.SetRow(this.DurationTextBox, 1);
             grid.Children.Add(this.DurationTextBox);
 
-            /* Build the panel (for all the controls above). */
-            StackPanel panel = new StackPanel();
-            panel.Orientation = Orientation.Horizontal;
-            panel.Children.Add(this.PlayStopButton);
-            panel.Children.Add(this.StartingPositionControl);
-            panel.Children.Add(this.SelectButton);
-            panel.Children.Add(grid);
+            /* Build the panel for the playback controls. */
+            this.PlaybackPanel = new StackPanel();
+            this.PlaybackPanel.Orientation = Orientation.Horizontal;
+            this.PlaybackPanel.Children.Add(this.PlayStopButton);
+            this.PlaybackPanel.Children.Add(this.StartingPositionControl);
+            this.PlaybackPanel.Children.Add(rewindButton);
+            this.PlaybackPanel.Children.Add(selectButton);
+            this.PlaybackPanel.Children.Add(grid);
+
+            /* Create and bind the command to toggle (start/stop) editing. */
+            RoutedUICommand command = new RoutedUICommand();
+            gesture = new KeyGesture(Key.F2);
+            command.InputGestures.Add(gesture);
+            command.Text = Properties.Resources.StartEditing;
+            binding = new CommandBinding(command, this.EditExecuted, this.EditCanExecute);
+            this.CommandBindings.Add(binding);
+            this.EditButton = new CommandButton(command);
+
+            /* Build the dock panel (for all the controls above). */
+            DockPanel.SetDock(this.EditButton, Dock.Left);
+            DockPanel.SetDock(this.PlaybackPanel, Dock.Right);
+            DockPanel panel = new DockPanel();
+            panel.Children.Add(this.EditButton);
+            panel.Children.Add(this.PlaybackPanel);
             panel.Children.Add(new Canvas());
 
             /* Initialize the text boxes. */
@@ -126,24 +160,24 @@ namespace JeffBourdier
             splitter.Width = UI.UnitSpace;
 
             /* Build the grid for the text boxes. */
-            grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[0].Width = new GridLength(UI.ClientWidth / 2);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[1].Width = GridLength.Auto;
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            this.TextGrid = new Grid();
+            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            this.TextGrid.ColumnDefinitions[0].Width = new GridLength(UI.ClientWidth / 2);
+            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            this.TextGrid.ColumnDefinitions[1].Width = GridLength.Auto;
+            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
             Grid.SetColumn(this.HexTextBox, 0);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(this.CommentsTextBox, 2);
-            grid.Children.Add(this.HexTextBox);
-            grid.Children.Add(splitter);
-            grid.Children.Add(this.CommentsTextBox);
+            this.TextGrid.Children.Add(this.HexTextBox);
+            this.TextGrid.Children.Add(splitter);
+            this.TextGrid.Children.Add(this.CommentsTextBox);
 
             /* Build out the editing panel. */
             DockPanel.SetDock(panel, Dock.Top);
             this.EditingPanel = new DockPanel();
             this.EditingPanel.Children.Add(panel);
-            this.EditingPanel.Children.Add(grid);
+            this.EditingPanel.Children.Add(this.TextGrid);
 
             /* Initialize the window object. */
             Uri uri = AppHelper.CreateResourceUri(false, "MIDIopsy.ico");
@@ -167,30 +201,25 @@ namespace JeffBourdier
         #region Private Fields
 
         private static FontFamily Font = new FontFamily("Courier New");
+        private static Brush HighlightingBrush = Brushes.DarkKhaki;
+        private static Brush SelectionBrush = Brushes.DodgerBlue;
+        private static string[] Separators = new string[] { " ", Environment.NewLine };
 
         private MediaPlayer Player = new MediaPlayer();
         private CommandButton PlayStopButton;
         private PositionControl StartingPositionControl;
-        private CommandButton SelectButton;
         private TextBox PositionTextBox;
         private TextBox DurationTextBox;
+        private StackPanel PlaybackPanel;
+        private CommandButton EditButton;
         private TextBox HexTextBox;
         private TextBox CommentsTextBox;
+        private Grid TextGrid;
         private EventWaitHandle EventHandle;
         private MidiFile MidiFile;
-        private bool _IsPlaybackStopped = true;
-        private bool Highlighting = false;
-
-        #endregion
-
-        /**************
-         * Properties *
-         **************/
-
-        #region Private Properties
-
-        /* Indicate whether or not MIDI file playback is stopped. */
-        private bool IsPlaybackStopped { get { return this._IsPlaybackStopped; } }
+        private UIState UIState = UIState.View;
+        private bool NoHighlighting = false;
+        private string LastValidHex;
 
         #endregion
 
@@ -252,11 +281,50 @@ namespace JeffBourdier
         /// <returns>True if the file is to be saved; otherwise, false.</returns>
         protected override bool SaveFile(bool asNew)
         {
-            /* First, find out if the user even wants to save the file. */
+            MessageBoxResult result;
+
+            switch (this.UIState)
+            {
+                /* If the file is playing, warn the user that this will stop it. */
+                case UIState.Play:
+                    result = MessageBox.Show(this, Properties.Resources.WillStopPlayback,
+                        Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.No) return false;
+                    break;
+
+                /* If editing, validate the changes. */
+                case UIState.Edit:
+                    bool? valid = this.ApplyHex();
+
+                    /* If the changes are invalid and the user did not revert (so the data remains invalid), don't save. */
+                    if (valid == false) return false;
+
+                    /* If the user reverted the invalid changes (so the data is now valid), ask if they still want to save. */
+                    if (valid == null)
+                    {
+                        result = MessageBox.Show(this, Properties.Resources.SaveReverted, Meta.Name, MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.No) return false;
+                    }
+                    break;
+            }
+
+            /* Confirm that the user really wants to save, and establish the file path. */
             if (!base.SaveFile(asNew)) return false;
 
-            /* They do, so save it. */
-            this.MidiFile.WriteToDisk(this.FilePath);
+            /* Save the file and reload it for media playback.  (The sleep is to help ensure
+             * that the media player has released the file before attempting to write to it.)
+             */
+            this.StopPlayback();
+            this.Player.Close();
+            Thread.Sleep(100);
+            try { this.MidiFile.WriteToDisk(this.FilePath); }
+            catch (Exception ex)
+            {
+                string s = Text.FormatErrorMessage(Common.Resources.FileNotSaved, ex);
+                MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            this.InitializePlayback();
             return true;
         }
 
@@ -268,6 +336,7 @@ namespace JeffBourdier
             if (!base.CloseFile()) return false;
 
             /* They're really done, so unload the file. */
+            this.StopEditing(false);
             this.StopPlayback();
             this.Player.Close();
             this.MidiFile = null;
@@ -284,7 +353,21 @@ namespace JeffBourdier
         private void Player_MediaOpened(object sender, EventArgs e)
         {
             this.SetPosition();
-            this.DurationTextBox.Text = this.Player.NaturalDuration.TimeSpan.ToString();
+            this.DurationTextBox.Text = (this.Player.NaturalDuration.HasTimeSpan ?
+                this.Player.NaturalDuration.TimeSpan : TimeSpan.Zero).ToString();
+        }
+
+        /* If the MIDI file finishes playing on its own (without being
+         * stopped by the user), playback must still be stopped explicitly.
+         */
+        private void Player_MediaEnded(object sender, EventArgs e)
+        {
+            this.StopPlayback();
+
+            /* For whatever reason, the Edit command's CanExecute event handler is not
+             * automatically called here, so trigger it by raising the CanExecuteChanged event.
+             */
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /* Toggle (play/stop) MIDI file playback. */
@@ -293,32 +376,105 @@ namespace JeffBourdier
             /* If we're stopping, we can be done right here. */
             if (this.StopPlayback()) return;
 
-            /* We're playing, so validate the starting position. */
+            /* If the file is edited, prompt the user to save and reload. */
+            if (this.FileState == FileState.Edited)
+            {
+                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.ReloadForPlayback,
+                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                if (result == MessageBoxResult.Yes)
+                {
+                    ApplicationCommands.Save.Execute(null, null);
+
+                    /* If the file was not saved, don't play. */
+                    if (this.FileState == FileState.Edited) return;
+                }
+            }
+
+            /* If no duration, we can't play. */
+            if (!this.Player.NaturalDuration.HasTimeSpan) return;
+
+            /* Validate the starting position. */
             if (this.StartingPositionControl.Position > this.Player.NaturalDuration.TimeSpan)
             {
                 string s = Text.ParseLabel(Properties.Resources.StartingPosition);
-                s = string.Format(Common.Resources.ValueRangeFormat, s, "00:00:00", this.Player.NaturalDuration.TimeSpan);
+                s = string.Format(Common.Resources.ValueRangeFormat, s, TimeSpan.Zero, this.Player.NaturalDuration.TimeSpan);
                 MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
             /* Start playing at the starting position. */
+            this.UIState = UIState.Play;
             this.Player.Position = this.StartingPositionControl.Position;
             this.PlayStopButton.Text = MediaCommands.Stop.Text;
             this.Player.Play();
-            this._IsPlaybackStopped = false;
 
             /* Signal the other thread so that it can proceed with updating the Position control. */
             this.EventHandle.Set();
         }
 
+        /* Reset the starting position to zero. */
+        private void RewindExecuted(object sender, ExecutedRoutedEventArgs e)
+        { this.StartingPositionControl.Position = TimeSpan.Zero; }
+
         /* Set the starting position to the current position. */
         private void SelectExecuted(object sender, ExecutedRoutedEventArgs e)
         { this.StartingPositionControl.Position = TimeSpan.Parse(this.PositionTextBox.Text); }
 
-        /* A playback command can execute as long as there is a file open. */
+        /* A playback command can execute as long as there is a file open and the panel is enabled. */
         private void PlaybackCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        { e.CanExecute = (this.State != FileState.None); }
+        { e.CanExecute = (this.FileState != FileState.None) && this.PlaybackPanel.IsEnabled; }
+
+        /* Toggle (start/stop) MIDI file editing. */
+        private void EditExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* If we're stopping, we can be done right here. */
+            if (this.StopEditing(true)) return;
+
+            /* Warn the user about the risk of editing the file and confirm that they really want to. */
+            MessageBoxResult result = MessageBox.Show(this, Properties.Resources.EditWarning,
+                Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No) return;
+
+            /* They really do, so start editing. */
+
+            /* Save the last valid version of the hex data to restore in
+             * case the user's changes are invalid and they choose to revert.
+             */
+            this.LastValidHex = this.HexTextBox.Text;
+
+            /* Disallow playback while editing. */
+            this.UIState = UIState.Edit;
+            this.PlaybackPanel.IsEnabled = false;
+
+            /* Instead of highlighting, allow normal selection. */
+            this.NoHighlighting = true;
+            this.CommentsTextBox.SelectionLength = 0;
+            this.HexTextBox.SelectionLength = 0;
+            this.HexTextBox.SelectionBrush = MIDIopsyWindow.SelectionBrush;
+
+            /* Don't show comments while editing. */
+            this.EditingPanel.Children.Remove(this.TextGrid);
+            this.TextGrid.Children.Remove(this.HexTextBox);
+            this.EditingPanel.Children.Add(this.HexTextBox);
+
+            /* Make the hex editable. */
+            this.HexTextBox.IsReadOnly = false;
+
+            /* Finally, change the text of the edit button. */
+            this.EditButton.Text = Properties.Resources.StopEditing;
+
+            /* To be safe/lazy, go ahead and mark the file as edited now (even
+             * though it's not really edited yet--but we assume it soon will be).
+             */
+            this.FileState = FileState.Edited;
+        }
+
+        /* The editing command can execute as long as there is a file open and MIDI file playback is stopped.
+         * (Note:  When a command cannot execute, its button is automatically disabled.  Therefore,
+         * EditButton.IsEnabled cannot be part of the condition here, because then the command could never execute!)
+         */
+        protected void EditCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None) && (this.UIState != UIState.Play); }
 
         /* Give the hex text box initial focus. */
         private void HexTextBox_Loaded(object sender, RoutedEventArgs e) { this.HexTextBox.Focus(); }
@@ -330,10 +486,10 @@ namespace JeffBourdier
         private void TextBox_ScrollChanged(object sender, RoutedEventArgs e)
         { this.GetOtherTextBox(sender).ScrollToVerticalOffset((e as ScrollChangedEventArgs).VerticalOffset); }
 
-        /* Stop MIDI file playback and then signal the other thread so that it will exit. */
+        /* If we're really closing, signal the other thread so that it will exit. */
         private void MIDIopsyWindow_Closing(object sender, CancelEventArgs e)
         {
-            this.StopPlayback();
+            if (e.Cancel) return;
             this.EventHandle.Set();
         }
 
@@ -347,6 +503,7 @@ namespace JeffBourdier
             if (label != null)
             {
                 label.Target = textBox;
+                textBox.TextAlignment = TextAlignment.Right;
                 textBox.GotFocus += UI.TextBox_GotFocus;
                 textBox.Margin = new Thickness(0, UI.HalfSpace, 0, UI.HalfSpace);
                 Grid.SetColumn(textBox, 1);
@@ -358,10 +515,33 @@ namespace JeffBourdier
             textBox.FontFamily = MIDIopsyWindow.Font;
             textBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
             textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            textBox.SelectionBrush = Brushes.DarkKhaki;
+            textBox.SelectionBrush = MIDIopsyWindow.HighlightingBrush;
             textBox.SelectionChanged += this.TextBox_SelectionChanged;
             textBox.AddHandler(ScrollViewer.ScrollChangedEvent, new RoutedEventHandler(this.TextBox_ScrollChanged));
             return textBox;
+        }
+
+        /* Perform all actions necessary to load the MIDI file object into the UI. */
+        private void LoadFile()
+        {
+            this.InitializePlayback();
+            this.PopulateTextBoxes();
+        }
+
+        /* Initialize playback controls for the MIDI file. */
+        private void InitializePlayback()
+        {
+            /* If the file has no path (i.e., it is new), reset its position and duration. */
+            if (string.IsNullOrEmpty(this.FilePath))
+                this.PositionTextBox.Text = this.DurationTextBox.Text = TimeSpan.Zero.ToString();
+
+            /* Otherwise, open it for media playback.  (This should trigger the MediaOpened
+             * event, which will set its initial position and determine its duration.)
+             */
+            else this.Player.Open(new Uri(this.FilePath));
+
+            /* In either event, the starting position needs to be reset. */
+            this.StartingPositionControl.Position = TimeSpan.Zero;
         }
 
         /* This method runs in its own thread to update the Position control during MIDI file playback. */
@@ -372,8 +552,8 @@ namespace JeffBourdier
                 /* Block until signaled. */
                 this.EventHandle.WaitOne();
 
-                /* If MIDI file playback is stopped, then exit. */
-                if (this.IsPlaybackStopped) return;
+                /* If MIDI file playback is stopped, exit. */
+                if (this.UIState != UIState.Play) return;
 
                 /* Because the media player and the Position control are dispatcher objects owned by the main UI thread,
                  * this thread cannot access them, so the position must be set on the main UI thread via the dispatcher.
@@ -385,25 +565,11 @@ namespace JeffBourdier
             }
         }
 
-        /* Perform all actions necessary to load the MIDI file object into the UI. */
-        private void LoadFile()
-        {
-            /* Open the MIDI file for media playback.
-             * (Note: duration cannot be determined until the MediaOpened event has been raised.)
-             */
-            this.Player.Open(new Uri(this.FilePath));
-            this.StartingPositionControl.Position = new TimeSpan();
-
-            /* Populate the text boxes with the appropriate contents from the MIDI file. */
-            this.HexTextBox.Text = this.MidiFile.Hex;
-            this.CommentsTextBox.Text = this.MidiFile.Comments;
-        }
-
         /* If applicable, stop MIDI file playback. */
         private bool StopPlayback()
         {
-            /* If MIDI file playback is already stopped, then not applicable. */
-            if (this.IsPlaybackStopped) return false;
+            /* If MIDI file playback is already stopped, not applicable. */
+            if (this.UIState != UIState.Play) return false;
 
             /* Block the other thread so that it does not continue to update the Position control after playback is stopped. */
             this.EventHandle.Reset();
@@ -416,7 +582,7 @@ namespace JeffBourdier
             /* The MIDI file is playing, so stop it. */
             this.Player.Stop();
             this.PlayStopButton.Text = MediaCommands.Play.Text;
-            this._IsPlaybackStopped = true;
+            this.UIState = UIState.View;
             return true;
         }
 
@@ -425,11 +591,82 @@ namespace JeffBourdier
          */
         private void SetPosition() { this.PositionTextBox.Text = this.Player.Position.ToString(@"hh\:mm\:ss"); }
 
+        /* If applicable, stop editing the MIDI file. */
+        private bool StopEditing(bool validate)
+        {
+            /* If we're not editing to begin with, not applicable. */
+            if (this.UIState != UIState.Edit) return false;
+
+            /* Before we stop editing, if specified, validate the changes. */
+            if (validate && this.ApplyHex() != true) return true;
+
+            /* Changes are valid (or we're not supposed to validate), so stop editing. */
+            this.HexTextBox.IsReadOnly = true;
+
+            /* Reinstate the comments.  (Repopulating the text boxes has the
+             * effect of formatting the hex while replacing the comments.)
+             */
+            this.PopulateTextBoxes();
+            this.EditingPanel.Children.Remove(this.HexTextBox);
+            this.TextGrid.Children.Insert(0, this.HexTextBox);
+            this.EditingPanel.Children.Add(this.TextGrid);
+
+            /* Back to highlighting (instead of normal selection). */
+            this.HexTextBox.SelectionLength = 0;
+            this.HexTextBox.SelectionBrush = MIDIopsyWindow.HighlightingBrush;
+            this.NoHighlighting = false;
+
+            /* Re-allow playback. */
+            this.PlaybackPanel.IsEnabled = true;
+            this.UIState = UIState.View;
+
+            /* Finally, change the text of the edit button. */
+            this.EditButton.Text = Properties.Resources.StartEditing;
+            return true;
+        }
+
+        private bool? ApplyHex()
+        {
+            /* Convert the hex to bytes. */
+            List<byte> bytes = new List<byte>(this.HexTextBox.Text.Length / 3);
+            string[] strings = this.HexTextBox.Text.Split(MIDIopsyWindow.Separators, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                foreach (string s in strings) bytes.Add(byte.Parse(s, NumberStyles.HexNumber));
+
+                /* Replace the contents of the MIDI file with these bytes.  (This is where errors are most likely.) */
+                this.MidiFile.Replace(bytes.ToArray());
+            }
+            catch (Exception ex)
+            {
+                /* Inform the user of the error and ask if they want to revert their changes. */
+                string s = Text.FormatErrorMessage(Properties.Resources.DataInvalid, ex) +
+                    Environment.NewLine + Environment.NewLine + Properties.Resources.RevertToValid;
+                MessageBoxResult result = MessageBox.Show(this, s, Meta.Name,
+                    MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+
+                /* If we don't revert, the data remains invalid.  Otherwise, replace the hex with the last valid hex. */
+                if (result == MessageBoxResult.No) return false;
+                this.HexTextBox.Text = this.LastValidHex;
+                return null;
+            }
+
+            /* It's all good. */
+            return true;
+        }
+
+        /* Populate the text boxes with the appropriate contents from the MIDI file. */
+        private void PopulateTextBoxes()
+        {
+            this.HexTextBox.Text = this.MidiFile.Hex;
+            this.CommentsTextBox.Text = this.MidiFile.Comments;
+        }
+
         /* Highlight a line in a text box. */
         private void Highlight(TextBox textBox)
         {
-            /* Only one highlight operation at a time. */
-            if (this.Highlighting) return;
+            /* Highlight only if we're supposed to. */
+            if (this.NoHighlighting) return;
 
             /* Determine which text box is being highlighted, and on which line the input caret is. */
             int n, j, i = 0;
@@ -452,9 +689,9 @@ namespace JeffBourdier
             if (textBox.IsFocused) this.GetOtherTextBox(textBox).CaretIndex = this.MidiFile.GetIndex(n - 1, !hex);
 
             /* Highlight (select) the line where the input caret is. */
-            this.Highlighting = true;
+            this.NoHighlighting = true;
             textBox.Select(i, j);
-            this.Highlighting = false;
+            this.NoHighlighting = false;
         }
 
         private TextBox GetOtherTextBox(object textBox)

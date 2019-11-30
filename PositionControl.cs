@@ -99,7 +99,7 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private TimeSpan _Position = new TimeSpan();
+        private TimeSpan _Position = TimeSpan.Zero;
 
         private TextBox HoursTextBox;
         private TextBox MinutesTextBox;

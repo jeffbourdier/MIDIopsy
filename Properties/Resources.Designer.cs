@@ -908,6 +908,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Data is invalid.
+        /// </summary>
+        internal static string DataInvalid {
+            get {
+                return ResourceManager.GetString("DataInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delta-time.
         /// </summary>
         internal static string DeltaTime {
@@ -940,6 +949,15 @@ namespace JeffBourdier.Properties {
         internal static string Duration {
             get {
                 return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MIDI file editing is for expert users only.  If not done correctly, it could result in data corruption, making the file unusable.  Are you sure?.
+        /// </summary>
+        internal static string EditWarning {
+            get {
+                return ResourceManager.GetString("EditWarning", resourceCulture);
             }
         }
         
@@ -1460,6 +1478,33 @@ namespace JeffBourdier.Properties {
         internal static string ProgramNumber {
             get {
                 return ResourceManager.GetString("ProgramNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File has been edited and must be reloaded from disk in order to play the most recent version.  Save and reload now?.
+        /// </summary>
+        internal static string ReloadForPlayback {
+            get {
+                return ResourceManager.GetString("ReloadForPlayback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revert to last valid version?.
+        /// </summary>
+        internal static string RevertToValid {
+            get {
+                return ResourceManager.GetString("RevertToValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data reverted.  Save this version?.
+        /// </summary>
+        internal static string SaveReverted {
+            get {
+                return ResourceManager.GetString("SaveReverted", resourceCulture);
             }
         }
         
@@ -2670,11 +2715,29 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start Editing.
+        /// </summary>
+        internal static string StartEditing {
+            get {
+                return ResourceManager.GetString("StartEditing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to S_tarting Position.
         /// </summary>
         internal static string StartingPosition {
             get {
                 return ResourceManager.GetString("StartingPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop Editing.
+        /// </summary>
+        internal static string StopEditing {
+            get {
+                return ResourceManager.GetString("StopEditing", resourceCulture);
             }
         }
         
@@ -2801,6 +2864,15 @@ namespace JeffBourdier.Properties {
         internal static string Velocity {
             get {
                 return ResourceManager.GetString("Velocity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will stop playback.  Proceed?.
+        /// </summary>
+        internal static string WillStopPlayback {
+            get {
+                return ResourceManager.GetString("WillStopPlayback", resourceCulture);
             }
         }
     }

@@ -111,14 +111,14 @@ namespace JeffBourdier
         }
 
         /// <summary>
-        /// Counts the number of childless elements ("leaf" nodes) contained within an
-        /// element.  If the element contains no other elements, then the count is one.
+        /// Counts the number of childless elements ("leaf" nodes) contained within
+        /// an element.  If the element contains no other elements, the count is one.
         /// </summary>
         /// <param name="element">The element whose contained elements are counted.</param>
         /// <returns>The number of elements contained within the element.</returns>
         public static int CountElements(UIElement element)
         {
-            /* If the element cannot contain other elements, then return one for the element itself. */
+            /* If the element cannot contain other elements, return one for the element itself. */
             Panel panel = element as Panel;
             if (panel == null) return 1;
 

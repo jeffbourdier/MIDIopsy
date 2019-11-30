@@ -124,6 +124,15 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file cannot be saved.
+        /// </summary>
+        internal static string FileNotSaved {
+            get {
+                return ResourceManager.GetString("FileNotSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
         internal static string Help {

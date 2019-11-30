@@ -138,6 +138,9 @@
   <data name="FileNotOpened" xml:space="preserve">
     <value>The file cannot be opened</value>
   </data>
+  <data name="FileNotSaved" xml:space="preserve">
+    <value>The file cannot be saved</value>
+  </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>

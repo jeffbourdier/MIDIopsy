@@ -251,7 +251,7 @@ namespace JeffBourdier
             if (this.ItemCheckInProgress) return;
             this.ItemCheckInProgress = true;
 
-            /* If all options are checked, then check the "All" box; otherwise, uncheck it. */
+            /* If all options are checked, check the "All" box; otherwise, uncheck it. */
             this.AllCheckBox.IsChecked = this.AreAllOptionsChecked();
 
             this.ItemCheckInProgress = false;
@@ -263,7 +263,7 @@ namespace JeffBourdier
         /// <returns>True if all logging options are checked; otherwise, false.</returns>
         private bool AreAllOptionsChecked()
         {
-            /* If any one of the options is not checked, then return false. */
+            /* If any one of the options is not checked, return false. */
             if (this.TimestampsCheckBox.IsChecked != true) return false;
             if (this.ProcedureNamesCheckBox.IsChecked != true) return false;
             if (this.IndentsCheckBox.IsChecked != true) return false;
