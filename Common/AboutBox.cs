@@ -98,7 +98,7 @@ namespace JeffBourdier
             textBlock.Inlines.Add(AppHelper.Copyright);
             textBlock.Inlines.Add(new LineBreak());
             Hyperlink hyperlink = new Hyperlink();
-            hyperlink.NavigateUri = new Uri("https://github.com/jeffbourdier/" + AppHelper.Title);
+            hyperlink.NavigateUri = new Uri("https://jeffbourdier.github.io/" + AppHelper.Title.ToLower());
             hyperlink.Inlines.Add(hyperlink.NavigateUri.AbsoluteUri);
             hyperlink.RequestNavigate += AboutBox.Hyperlink_RequestNavigate;
             textBlock.Inlines.Add(hyperlink);

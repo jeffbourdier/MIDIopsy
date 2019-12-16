@@ -130,7 +130,7 @@
     <value>Done</value>
   </data>
   <data name="ErrorMessageFormat" xml:space="preserve">
-    <value>{0} for the following reason:  {1}</value>
+    <value>{0} for the following reason:{1}{1}{2}</value>
   </data>
   <data name="ExceptionDetail" xml:space="preserve">
     <value>_Exception detail</value>

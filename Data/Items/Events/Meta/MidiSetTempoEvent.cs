@@ -35,7 +35,9 @@ namespace JeffBourdier
             this._Tempo = MidiData.ReadNumber(bytes, 3, index + this.DataLengthSize);
             this.TypeComment = string.Format(Properties.Resources.MetaEventFormat,
                 Properties.Resources.SetTempo, this.DataLength);
-            this.DataComment = string.Format("{0} {1}", this.Tempo, Properties.Resources.MicrosecondsPerQuarterNote);
+            this.DataComment = string.Format("{0} {1} ({2} {3})",
+                this.Tempo, Properties.Resources.MicrosecondsPerQuarterNote,
+                (60000000 / this.Tempo), Properties.Resources.BeatsPerMinute);
             this.SetComment();
         }
 

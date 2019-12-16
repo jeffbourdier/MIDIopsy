@@ -97,7 +97,7 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} for the following reason:  {1}.
+        ///   Looks up a localized string similar to {0} for the following reason:{1}{1}{2}.
         /// </summary>
         internal static string ErrorMessageFormat {
             get {

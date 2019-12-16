@@ -11,7 +11,7 @@
  */
 
 
-/* Exception */
+/* Exception, Environment */
 using System;
 
 
@@ -31,7 +31,7 @@ namespace JeffBourdier
         /// <param name="ex">The exception associated with the error.</param>
         /// <returns>An error message using the standard format.</returns>
         public static string FormatErrorMessage(string text, Exception ex)
-        { return string.Format(Common.Resources.ErrorMessageFormat, text, ex.Message); }
+        { return string.Format(Common.Resources.ErrorMessageFormat, text, Environment.NewLine, ex.Message); }
 
         /// <summary>Indicates whether a character is considered printable according to Windows-1252 encoding.</summary>
         /// <param name="c">The character to evaluate.</param>

@@ -13,11 +13,14 @@
 /* TimeSpan */
 using System;
 
-/* GridLength, TextAlignment */
+/* GridLength, TextAlignment, FontWeights */
 using System.Windows;
 
 /* UserControl, Grid, ColumnDefinition, RowDefinition, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
+
+/* Brush, Brushes */
+using System.Windows.Media;
 
 
 namespace JeffBourdier
@@ -36,7 +39,7 @@ namespace JeffBourdier
         /// <param name="readOnly">Indicates whether or not the control should be read-only.</param>
         public PositionControl(string text, bool readOnly)
         {
-            const double width = UI.IndentSpace;
+            const double width = 34;
 
             int i = -1;
             StandardLabel label;
@@ -46,11 +49,11 @@ namespace JeffBourdier
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions[++i].Width = new GridLength(width);
             grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = GridLength.Auto;
+            grid.ColumnDefinitions[++i].Width = new GridLength(UI.DoubleSpace);
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions[++i].Width = new GridLength(width);
             grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = GridLength.Auto;
+            grid.ColumnDefinitions[++i].Width = new GridLength(UI.DoubleSpace);
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions[++i].Width = new GridLength(width);
             grid.RowDefinitions.Add(new RowDefinition());
@@ -135,6 +138,30 @@ namespace JeffBourdier
         /***********
          * Methods *
          ***********/
+
+        #region Public Methods
+
+        public void Highlight(Brush brush)
+        {
+            this.SecondsTextBox.FontWeight = FontWeights.Bold;
+            this.SecondsTextBox.Background = brush;
+            this.MinutesTextBox.FontWeight = FontWeights.Bold;
+            this.MinutesTextBox.Background = brush;
+            this.HoursTextBox.FontWeight = FontWeights.Bold;
+            this.HoursTextBox.Background = brush;
+        }
+
+        public void Unhighlight()
+        {
+            this.HoursTextBox.Background = Brushes.White;
+            this.HoursTextBox.FontWeight = FontWeights.Normal;
+            this.MinutesTextBox.Background = Brushes.White;
+            this.MinutesTextBox.FontWeight = FontWeights.Normal;
+            this.SecondsTextBox.Background = Brushes.White;
+            this.SecondsTextBox.FontWeight = FontWeights.Normal;
+        }
+
+        #endregion
 
         #region Private Methods
 

@@ -71,6 +71,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BPM.
+        /// </summary>
+        internal static string BeatsPerMinute {
+            get {
+                return ResourceManager.GetString("BeatsPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Centiframe.
         /// </summary>
         internal static string Centiframe {
@@ -1095,15 +1104,15 @@ namespace JeffBourdier.Properties {
         ///    &lt;title&gt;MIDIopsy Help&lt;/title&gt;
         ///    &lt;meta name=&quot;author&quot; content=&quot;Jeff Bourdier&quot; /&gt;
         ///    &lt;style&gt;
-        ///      h2 { text-align: center; border-bottom: 1px solid; }
+        ///      h1, h4 { text-align: center; }
+        ///      h2, h4 { border-top: 1px solid; padding-top: 4px; }
         ///      table { margin: auto; border-collapse: collapse; }
-        ///      table, th, td { border: 1px solid black; padding: 4px; }
-        ///      th { background-color: silver; }
-        ///      h4 { border-top: 1px solid; text-align: center; }
+        ///      table, th, td { border: 1px solid black; padding: 8px; }
+        ///      th, blockquote { background-color: silver; }
+        ///      blockquote { padding: 8px; }
         ///    &lt;/style&gt;
         ///  &lt;/head&gt;
-        ///  &lt;body&gt;
-        ///    &lt;h2&gt;MIDIopsy Help [rest of string was truncated]&quot;;.
+        ///  &lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpText {
             get {
@@ -1247,7 +1256,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MIDI Files (*.midi;*.mid;*.rmi;*.smf)|*.midi;*.mid;*.rmi;*.smf.
+        ///   Looks up a localized string similar to MIDI Files (*.mid;*.midi)|*.mid;*.midi.
         /// </summary>
         internal static string MidiFiles {
             get {
@@ -1487,6 +1496,15 @@ namespace JeffBourdier.Properties {
         internal static string ReloadForPlayback {
             get {
                 return ResourceManager.GetString("ReloadForPlayback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset SP.
+        /// </summary>
+        internal static string Reset {
+            get {
+                return ResourceManager.GetString("Reset", resourceCulture);
             }
         }
         
@@ -2724,7 +2742,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to S_tarting Position.
+        ///   Looks up a localized string similar to S_tarting Position (SP).
         /// </summary>
         internal static string StartingPosition {
             get {
@@ -2747,6 +2765,15 @@ namespace JeffBourdier.Properties {
         internal static string StronglyTypedClass {
             get {
                 return ResourceManager.GetString("StronglyTypedClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync SP.
+        /// </summary>
+        internal static string Sync {
+            get {
+                return ResourceManager.GetString("Sync", resourceCulture);
             }
         }
         

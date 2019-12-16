@@ -1004,7 +1004,7 @@
     <value>Invalid status byte.</value>
   </data>
   <data name="MidiFiles" xml:space="preserve">
-    <value>MIDI Files (*.midi;*.mid;*.rmi;*.smf)|*.midi;*.mid;*.rmi;*.smf</value>
+    <value>MIDI Files (*.mid;*.midi)|*.mid;*.midi</value>
   </data>
   <data name="DeltaTimeDivision" xml:space="preserve">
     <value>Delta-time division</value>
@@ -1019,7 +1019,7 @@
     <value>_Time-code-based time</value>
   </data>
   <data name="StartingPosition" xml:space="preserve">
-    <value>S_tarting Position</value>
+    <value>S_tarting Position (SP)</value>
   </data>
   <data name="Duration" xml:space="preserve">
     <value>_Duration:</value>
@@ -1050,5 +1050,14 @@
   </data>
   <data name="ReloadForPlayback" xml:space="preserve">
     <value>File has been edited and must be reloaded from disk in order to play the most recent version.  Save and reload now?</value>
+  </data>
+  <data name="BeatsPerMinute" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset SP</value>
+  </data>
+  <data name="Sync" xml:space="preserve">
+    <value>Sync SP</value>
   </data>
 </root>
