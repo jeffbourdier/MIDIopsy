@@ -276,6 +276,11 @@ namespace JeffBourdier
                 return false;
             }
 
+            if (!(this.MidiFile.CreationException==null)){
+                MessageBox.Show(String.Format("warning: {0}", this.MidiFile.CreationException.Message), Meta.Name, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
             /* Load the file object into the UI. */
             this.LoadFile();
             return true;

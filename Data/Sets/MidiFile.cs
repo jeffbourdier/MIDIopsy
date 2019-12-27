@@ -25,6 +25,8 @@ namespace JeffBourdier
     /// <summary>Represents a standard MIDI file (essentially, a collection of MidiChunk objects).</summary>
     public class MidiFile : MidiSet
     {
+
+ 
         /****************
          * Constructors *
          ****************/
@@ -36,7 +38,14 @@ namespace JeffBourdier
         public MidiFile(string filePath) : base(new List<MidiChunk>())
         {
             byte[] bytes = File.ReadAllBytes(filePath);
-            this.Replace(bytes);
+            try
+            {
+                this.Replace(bytes);
+            }
+            catch (Exception ex)
+            {
+                CreationException = ex;
+            }
         }
 
         /// <summary>Initializes a new instance of the MidiFile class with a header (MThd) chunk.</summary>
@@ -54,6 +63,9 @@ namespace JeffBourdier
          ***********/
 
         #region Public Methods
+
+        public Exception CreationException { get; set; }
+
 
         /// <summary>Gets the chunk at the specified index.</summary>
         /// <param name="index">The zero-based index of the chunk to get.</param>

@@ -100,8 +100,14 @@ namespace JeffBourdier
             /* A variable-length quantity is in big-endian order, and only the lowest seven bits of each byte are part of the
              * quantity.  The Most Significant Bit (MSB) is set in all bytes except the last.  It can be up to four bytes long.
              */
+
             for (int i = 0, n = 0; i < 4; ++i)
             {
+                if ((index + i) >= bytes.Length)
+                {
+                    throw new ApplicationException(Properties.Resources.InvalidVLQ + string.Format(" offset {0}", index + i));
+                }
+
                 /* As appropriate, initialize the result (or shift it seven bits
                  * to the left) and add to it the lowest seven bits of this byte.
                  */
