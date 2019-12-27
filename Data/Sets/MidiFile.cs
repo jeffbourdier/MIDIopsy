@@ -44,7 +44,7 @@ namespace JeffBourdier
             }
             catch (Exception ex)
             {
-                this.CreationException = ex;
+                CreationException = ex;
             }
         }
 

@@ -105,7 +105,7 @@ namespace JeffBourdier
             {
                 if ((index + i) >= bytes.Length)
                 {
-                    throw new ApplicationException(Properties.Resources.InvalidVLQ +String.Format(" offset {0}",index+i));
+                    throw new ApplicationException(Properties.Resources.InvalidVLQ + string.Format(" offset {0}", index + i));
                 }
 
                 /* As appropriate, initialize the result (or shift it seven bits
