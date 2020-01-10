@@ -1,6 +1,6 @@
 ﻿/* MidiData.cs - Implementation of MidiData class, which provides common functionality for objects that encapsulate MIDI data.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -10,7 +10,7 @@
  */
 
 
-/* Array, ApplicationException, Math */
+/* Environment, Array, ApplicationException, Math */
 using System;
 
 
@@ -30,11 +30,49 @@ namespace JeffBourdier
 
         #endregion
 
+        #region Private Fields
+
+        private string _ErrorText = string.Empty;
+
+        #endregion
+
+        /**************
+         * Properties *
+         **************/
+
+        #region Public Properties
+
+        /// <summary>Gets a string describing any errors associated with this object.</summary>
+        public string ErrorText { get { return this._ErrorText; } }
+
+        #endregion
+
         /***********
          * Methods *
          ***********/
 
         #region Protected Methods
+
+        /// <summary>Resets this object's error text to an empty string.</summary>
+        protected void ClearErrorText() { this._ErrorText = string.Empty; }
+
+        /// <summary>Adds text to the beginning of this object's error text.</summary>
+        /// <param name="text">Text to add.</param>
+        protected void PrependErrorText(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+            if (!string.IsNullOrEmpty(this.ErrorText)) this._ErrorText = Environment.NewLine + this.ErrorText;
+            this._ErrorText = text + this.ErrorText;
+        }
+
+        /// <summary>Adds text to the end of this object's error text.</summary>
+        /// <param name="text">Text to add.</param>
+        protected void AppendErrorText(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+            if (!string.IsNullOrEmpty(this.ErrorText)) this._ErrorText += Environment.NewLine;
+            this._ErrorText += text;
+        }
 
         /// <summary>Converts a numeric value to a string representation of its assigned note(s).</summary>
         /// <param name="n">Numeric value assigned to note (middle C has a reference value of 60).</param>

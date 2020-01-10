@@ -1,7 +1,7 @@
 ﻿/* HelpViewer.cs - Implementation of HelpViewer class, which allows the user to view help for an application.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -88,6 +88,9 @@ namespace JeffBourdier
             try { s = manager.GetString(HelpViewer.HelpTextResourceName); }
             catch (Exception ex)
             {
+                Logger.WriteMessage(Common.Resources.NoHelp);
+                Logger.WriteException(ex);
+
                 s = Text.FormatErrorMessage(Common.Resources.NoHelp, ex);
                 MessageBox.Show(Application.Current.MainWindow, s,
                     AppHelper.Title, MessageBoxButton.OK, MessageBoxImage.Error);

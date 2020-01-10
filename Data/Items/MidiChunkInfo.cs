@@ -1,6 +1,6 @@
 ﻿/* MidiChunkInfo.cs - Implementation of MidiChunkInfo class, which encapsulates the type and length of a MIDI file chunk.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -95,11 +95,13 @@ namespace JeffBourdier
 
             switch (this.ChunkType)
             {
-                case "MThd": s = Properties.Resources.HeaderChunk; break;
-                case "MTrk": s = Properties.Resources.TrackChunk; break;
-                default: s = Properties.Resources.UnknownChunkType; break;
+                case "MThd": s = Properties.Resources.Header; break;
+                case "MTrk": s = Properties.Resources.Track; break;
+                default: s = null; break;
             }
-            this._Comment = string.Format(Properties.Resources.ChunkCommentFormat, this.ChunkType, s, this.ChunkLength);
+            this._Comment = string.Format(Properties.Resources.ChunkCommentFormat,
+                this.ChunkType + (string.IsNullOrEmpty(s) ? string.Empty : string.Format(" ({0})", s)),
+                Properties.Resources.Chunk, this.ChunkLength);
         }
 
         #endregion

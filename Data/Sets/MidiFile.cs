@@ -1,6 +1,6 @@
 ﻿/* MidiFile.cs - Implementation of MidiFile class, which represents a standard MIDI file.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -71,6 +71,9 @@ namespace JeffBourdier
             /* Make sure we start with a clean slate. */
             this.Clear();
 
+            s = string.Format("parsing {0} bytes", bytes.Length);
+            Logger.WriteMessage(s);
+
             /* Process each chunk from the byte array. */
             for (i = 0; i < bytes.Length; i += n)
             {
@@ -92,6 +95,17 @@ namespace JeffBourdier
                 this.AddChunk(chunk);
             }
             this.AddIndex(-1);
+
+            /* Detect errors (track number mismatch). */
+            n = (int)((this.GetChunk(0) as MidiHeaderChunk).GetItem(1) as MidiHeaderData).NumberOfTracks;
+            i = this.DataCount - 1;
+            if (n != i)
+            {
+                s = string.Format(Properties.Resources.MismatchFormat, Properties.Resources.Track, n, i);
+                Logger.WriteMessage(s);
+                if (!string.IsNullOrEmpty(this.ErrorText)) s += Environment.NewLine;
+                this.PrependErrorText(s);
+            }
         }
 
         /// <summary>Writes this MIDI file to disk at the specified path.</summary>
@@ -136,6 +150,16 @@ namespace JeffBourdier
             for (int i = 0; i < chunk.LineCount; this.AddIndex(i++)) ;
             this.AddHex(chunk.Hex);
             this.AddComments(chunk.Comments);
+
+            if (!string.IsNullOrEmpty(chunk.ErrorText))
+            {
+                if (!string.IsNullOrEmpty(this.ErrorText)) this.AppendErrorText(Environment.NewLine);
+                string s = Text.ChangeCase(Properties.Resources.Chunk, TextCase.Title);
+                s = string.Format("{0} {1}", s, this.DataCount);
+                if (chunk is MidiTrackChunk) s += string.Format(" ({0} {1})", Properties.Resources.Track, this.DataCount - 1);
+                this.AppendErrorText(s + ":");
+                this.AppendErrorText(chunk.ErrorText);
+            }
         }
 
         #endregion

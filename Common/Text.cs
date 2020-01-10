@@ -1,7 +1,7 @@
 ﻿/* Text.cs - Implementation of Text class, which provides static methods for processing text.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -17,6 +17,9 @@ using System;
 
 namespace JeffBourdier
 {
+    /// <summary>Specifies enumerated constants to define text cases.</summary>
+    public enum TextCase { Title, Sentence }
+
     /// <summary>Provides static methods for processing text.</summary>
     public static class Text
     {
@@ -60,7 +63,7 @@ namespace JeffBourdier
         /// within the parentheses is returned.  Otherwise, the string with underscores and colons removed is returned.
         /// </summary>
         /// <param name="s">The string to parse.</param>
-        /// <returns>The string with underscores and colons removed.</returns>
+        /// <returns>A copy of the string s with underscores and colons removed.</returns>
         public static string ParseLabel(string s)
         {
             int i, n;
@@ -72,18 +75,41 @@ namespace JeffBourdier
         }
 
         /// <summary>
-        /// Inserts a space before each capital letter in a string.  This is useful for making a
-        /// mixed-case identifier (e.g., "SpaceWords") more human-readable (e.g., "Space Words").
+        /// Returns a copy of a string with a space inserted before each capital letter.  This is useful for
+        /// making a mixed-case identifier (e.g., "SpaceWords") more human-readable (e.g., "Space Words").
         /// </summary>
         /// <param name="s">The string to parse.</param>
-        /// <returns>The string s with a space before each capital letter.</returns>
+        /// <returns>A copy of the string s with a space before each capital letter.</returns>
         public static string SpaceWords(string s)
         {
-            string r = null;
+            string r = string.Empty;
             foreach (char c in s)
             {
                 if (char.IsUpper(c)) r += ' ';
                 r += c;
+            }
+            return r;
+        }
+
+        /// <summary>Returns a copy of a string with each word capitalized as specified.</summary>
+        /// <param name="s">The string to parse.</param>
+        /// <param name="textCase">Specifies how to capitalize each word.</param>
+        /// <returns>A copy of the string s with each word capitalized as specified.</returns>
+        public static string ChangeCase(string s, TextCase textCase)
+        {
+            string r = string.Empty;
+            bool initial = true;
+            for (int i = 0; i < s.Length; ++i)
+            {
+                if (char.IsWhiteSpace(s[i])) { initial = true; continue; }
+                if (initial)
+                {
+                    r += s.Substring(i, 1).ToUpper();
+                    initial = false;
+                    continue;
+                }
+                if (textCase == TextCase.Sentence) return r + s.Substring(i).ToLower();
+                r += s.Substring(i, 1).ToLower();
             }
             return r;
         }

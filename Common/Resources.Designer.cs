@@ -97,6 +97,15 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to entering.
+        /// </summary>
+        internal static string Entering {
+            get {
+                return ResourceManager.GetString("Entering", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} for the following reason:{1}{1}{2}.
         /// </summary>
         internal static string ErrorMessageFormat {
@@ -111,6 +120,15 @@ namespace JeffBourdier.Common {
         internal static string ExceptionDetail {
             get {
                 return ResourceManager.GetString("ExceptionDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to exiting.
+        /// </summary>
+        internal static string Exiting {
+            get {
+                return ResourceManager.GetString("Exiting", resourceCulture);
             }
         }
         
@@ -193,6 +211,15 @@ namespace JeffBourdier.Common {
         internal static string LoggingOptions {
             get {
                 return ResourceManager.GetString("LoggingOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log file cannot be opened.
+        /// </summary>
+        internal static string LogNotOpen {
+            get {
+                return ResourceManager.GetString("LogNotOpen", resourceCulture);
             }
         }
         

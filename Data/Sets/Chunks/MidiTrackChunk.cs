@@ -1,6 +1,6 @@
 ﻿/* MidiTrackChunk.cs - Implementation of MidiTrackChunk class, which represents a MIDI track (MTrk) chunk.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -34,14 +34,26 @@ namespace JeffBourdier
         public MidiTrackChunk(int length, byte[] bytes, int index)
             : base("MTrk", length)
         {
-            int n, i, dt, j;
+            int n = index + length, i, dt, j;
+            string s;
             uint u;
-            MidiEvent mtrkEvent;
+            MidiEvent mtrkEvent = null;
+
+            s = string.Format("parsing MTrk events at bytes {0} through {1}", index, n);
+            Logger.WriteMessage(s);
 
             /* A track chunk is a stream of MIDI (MTrk) events.  Process each such event in the byte array. */
-            n = index + length;
             for (i = index; i < n; i += mtrkEvent.Length)
             {
+                /* Ensure that we're not trying to read past the end of our data. */
+                if (i >= bytes.Length)
+                {
+                    s = string.Format(Properties.Resources.MismatchFormat, Properties.Resources.Byte, length, i - index);
+                    Logger.WriteMessage(s);
+                    this.AppendErrorText(s);
+                    break;
+                }
+
                 /* Read the event's delta-time (stored as a variable-length quantity) from the byte array. */
                 dt = MidiData.ReadVLQ(bytes, i);
                 j = i + MidiData.SizeVLQ(dt);
@@ -58,6 +70,11 @@ namespace JeffBourdier
                 }
                 this.AddItem(mtrkEvent);
             }
+
+            /* The last event in a track chunk should be an End of Track meta-event. */
+            if (mtrkEvent is MidiEndOfTrackEvent) return;
+            Logger.WriteMessage(Properties.Resources.NoEndOfTrack);
+            this.AppendErrorText(Properties.Resources.NoEndOfTrack);
         }
 
         #endregion

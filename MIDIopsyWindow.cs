@@ -1,6 +1,6 @@
 ﻿/* MIDIopsyWindow.cs - Implementation of MIDIopsyWindow class, which makes up this application's user interface.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -10,7 +10,7 @@
  */
 
 
-/* Uri, Exception, Environment, EventArgs, Action, StringSplitOptions */
+/* Uri, Exception, Environment, EventArgs, Action, StringSplitOptions, ApplicationException */
 using System;
 
 /* List */
@@ -270,6 +270,9 @@ namespace JeffBourdier
             try { this.MidiFile = new MidiFile(this.FilePath); }
             catch (Exception ex)
             {
+                Logger.WriteMessage(Common.Resources.FileNotOpened);
+                Logger.WriteException(ex);
+
                 string s = Text.FormatErrorMessage(Common.Resources.FileNotOpened, ex);
                 MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Error);
                 this.FilePath = null;
@@ -278,6 +281,7 @@ namespace JeffBourdier
 
             /* Load the file object into the UI. */
             this.LoadFile();
+            this.ShowFileErrors();
             return true;
         }
 
@@ -328,6 +332,9 @@ namespace JeffBourdier
             try { this.MidiFile.WriteToDisk(this.FilePath); }
             catch (Exception ex)
             {
+                Logger.WriteMessage(Common.Resources.FileNotSaved);
+                Logger.WriteException(ex);
+
                 string s = Text.FormatErrorMessage(Common.Resources.FileNotSaved, ex);
                 MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -541,7 +548,11 @@ namespace JeffBourdier
                 this.EventHandle.WaitOne();
 
                 /* If MIDI file playback is stopped, exit. */
-                if (this.UIState != UIState.Play) return;
+                if (this.UIState != UIState.Play)
+                {
+                    Logger.WriteMessage("thread exiting");
+                    return;
+                }
 
                 /* Because the media player and the Position control are dispatcher objects owned by the main UI thread,
                  * this thread cannot access them, so the position must be set on the main UI thread via the dispatcher.
@@ -602,7 +613,11 @@ namespace JeffBourdier
         private void PlayMedia()
         {
             /* If no duration, we can't play. */
-            if (!this.Player.NaturalDuration.HasTimeSpan) return;
+            if (!this.Player.NaturalDuration.HasTimeSpan)
+            {
+                this.ShowFileErrors();
+                return;
+            }
 
             /* Validate the starting position. */
             if (this.StartingPositionControl.Position > this.Player.NaturalDuration.TimeSpan)
@@ -621,6 +636,15 @@ namespace JeffBourdier
 
             /* Signal the other thread so that it can proceed with updating the Position control. */
             this.EventHandle.Set();
+        }
+
+        /* Show any errors associated with the open MIDI file. */
+        private void ShowFileErrors()
+        {
+            if (string.IsNullOrEmpty(this.MidiFile.ErrorText)) return;
+
+            MessageBox.Show(this, Properties.Resources.FileHasErrors + Environment.NewLine + Environment.NewLine +
+                this.MidiFile.ErrorText, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         /* Set the Position control to the current position.  (When called by the other thread, this method must be run via
@@ -687,9 +711,13 @@ namespace JeffBourdier
 
                 /* Replace the contents of the MIDI file with these bytes.  (This is where errors are most likely.) */
                 this.MidiFile.Replace(bytes.ToArray());
+                if (!string.IsNullOrEmpty(this.MidiFile.ErrorText)) throw new ApplicationException(this.MidiFile.ErrorText);
             }
             catch (Exception ex)
             {
+                Logger.WriteMessage(Properties.Resources.DataInvalid);
+                Logger.WriteException(ex);
+
                 /* Inform the user of the error and ask if they want to revert their changes. */
                 string s = Text.FormatErrorMessage(Properties.Resources.DataInvalid, ex) +
                     Environment.NewLine + Environment.NewLine + Properties.Resources.RevertToValid;

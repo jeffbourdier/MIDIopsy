@@ -1,7 +1,7 @@
 ﻿/* SettingsDialog.cs - Implementation of SettingsDialog class, which allows the user to view and update configuration settings.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -13,6 +13,12 @@
 
 /* OpenFileDialog */
 using Microsoft.Win32;
+
+/* Exception */
+using System;
+
+/* StreamWriter */
+using System.IO;
 
 /* Window, WindowStyle, ResizeMode, Thickness, SizeToContent, RoutedEventArgs */
 using System.Windows;
@@ -54,6 +60,7 @@ namespace JeffBourdier
             this.LogPathTextBox.Margin = new Thickness(0, 0, UI.HalfSpace, 0);
             this.LogPathTextBox.Text = Common.Settings.Default.LogPath;
             this.LogPathTextBox.TabIndex = ++i;
+            this.LogPathTextBox.LostFocus += this.LogPathTextBox_LostFocus;
             this.LogPathLabel.Target = this.LogPathTextBox;
 
             /* Initialize the browse button. */
@@ -171,7 +178,6 @@ namespace JeffBourdier
         private CheckBox IndentsCheckBox;
         private CheckBox ExceptionDetailCheckBox;
         private GroupBox OptionsGroupBox;
-
         private bool ItemCheckInProgress;
 
         #endregion
@@ -210,6 +216,19 @@ namespace JeffBourdier
 
         #region Event Handlers
 
+        private void LogCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            this.ValidateLogFile();
+
+            /* Enable or disable other controls based on whether or not the "Write messages to log file" box is checked. */
+            bool b = this.Log;
+            this.LogPathLabel.IsEnabled = b;
+            this.BrowsePanel.IsEnabled = b;
+            this.OptionsGroupBox.IsEnabled = b;
+        }
+
+        private void LogPathTextBox_LostFocus(object sender, RoutedEventArgs e) { this.ValidateLogFile(); }
+
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             /* Prompt the user for a file whose path to copy into the log path text box. */
@@ -218,15 +237,7 @@ namespace JeffBourdier
             bool? result = dialog.ShowDialog(this);
             if (result != true) return;
             this.LogPathTextBox.Text = dialog.FileName;
-        }
-
-        private void LogCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            /* Enable or disable other controls based on whether or not the "Write messages to log file" box is checked. */
-            bool b = (bool)this.LogCheckBox.IsChecked;
-            this.LogPathLabel.IsEnabled = b;
-            this.BrowsePanel.IsEnabled = b;
-            this.OptionsGroupBox.IsEnabled = b;
+            this.ValidateLogFile();
         }
 
         private void AllCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -241,7 +252,6 @@ namespace JeffBourdier
             this.ProcedureNamesCheckBox.IsChecked = b;
             this.IndentsCheckBox.IsChecked = b;
             this.ExceptionDetailCheckBox.IsChecked = b;
-
             this.ItemCheckInProgress = false;
         }
 
@@ -253,7 +263,6 @@ namespace JeffBourdier
 
             /* If all options are checked, check the "All" box; otherwise, uncheck it. */
             this.AllCheckBox.IsChecked = this.AreAllOptionsChecked();
-
             this.ItemCheckInProgress = false;
         }
 
@@ -271,6 +280,18 @@ namespace JeffBourdier
 
             /* We made it all the way through, so they must all be checked. */
             return true;
+        }
+
+        /* If applicable, test the log file to make sure it can be written to. */
+        private void ValidateLogFile()
+        {
+            if (!this.Log || string.IsNullOrEmpty(this.LogPath)) return;
+            try { using (StreamWriter writer = new StreamWriter(this.LogPath, true)) { } }
+            catch (Exception ex)
+            {
+                string s = Text.FormatErrorMessage(Common.Resources.LogNotOpen, ex);
+                MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         #endregion

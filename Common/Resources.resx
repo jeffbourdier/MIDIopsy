@@ -129,11 +129,17 @@
   <data name="Done" xml:space="preserve">
     <value>Done</value>
   </data>
+  <data name="Entering" xml:space="preserve">
+    <value>entering</value>
+  </data>
   <data name="ErrorMessageFormat" xml:space="preserve">
     <value>{0} for the following reason:{1}{1}{2}</value>
   </data>
   <data name="ExceptionDetail" xml:space="preserve">
     <value>_Exception detail</value>
+  </data>
+  <data name="Exiting" xml:space="preserve">
+    <value>exiting</value>
   </data>
   <data name="FileNotOpened" xml:space="preserve">
     <value>The file cannot be opened</value>
@@ -162,6 +168,9 @@
   </data>
   <data name="LoggingOptions" xml:space="preserve">
     <value>Logging options</value>
+  </data>
+  <data name="LogNotOpen" xml:space="preserve">
+    <value>The log file cannot be opened</value>
   </data>
   <data name="NoHelp" xml:space="preserve">
     <value>Help for this application cannot be viewed</value>

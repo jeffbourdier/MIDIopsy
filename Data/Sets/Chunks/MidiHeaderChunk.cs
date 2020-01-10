@@ -1,6 +1,6 @@
 ﻿/* MidiHeaderChunk.cs - Implementation of MidiHeaderChunk class, which represents a MIDI header (MThd) chunk.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -33,6 +33,9 @@ namespace JeffBourdier
         {
             MidiHeaderData data = new MidiHeaderData(bytes, index);
             this.AddItem(data);
+
+            string s = string.Format("expecting {0} tracks", data.NumberOfTracks);
+            Logger.WriteMessage(s);
         }
 
         /// <summary>Initializes a new instance of the MidiHeaderChunk class using metrical time.</summary>

@@ -1,6 +1,6 @@
 ﻿/* MidiSet.cs - Implementation of MidiSet class, which represents a collection of MidiData objects (e.g., a file or a chunk).
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -113,6 +113,7 @@ namespace JeffBourdier
 
         protected void Clear()
         {
+            this.ClearErrorText();
             this.Indexes.Clear();
             this._Comments = string.Empty;
             this._Hex = string.Empty;

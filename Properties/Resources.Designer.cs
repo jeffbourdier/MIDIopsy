@@ -80,6 +80,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to byte.
+        /// </summary>
+        internal static string Byte {
+            get {
+                return ResourceManager.GetString("Byte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Centiframe.
         /// </summary>
         internal static string Centiframe {
@@ -125,7 +134,16 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}) | {2} bytes of data.
+        ///   Looks up a localized string similar to chunk.
+        /// </summary>
+        internal static string Chunk {
+            get {
+                return ResourceManager.GetString("Chunk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} {1} | {2} bytes of data.
         /// </summary>
         internal static string ChunkCommentFormat {
             get {
@@ -989,6 +1007,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File has the following errors (prohibiting playback):.
+        /// </summary>
+        internal static string FileHasErrors {
+            get {
+                return ResourceManager.GetString("FileHasErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Format:.
         /// </summary>
         internal static string Format {
@@ -1079,11 +1106,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to header chunk.
+        ///   Looks up a localized string similar to header.
         /// </summary>
-        internal static string HeaderChunk {
+        internal static string Header {
             get {
-                return ResourceManager.GetString("HeaderChunk", resourceCulture);
+                return ResourceManager.GetString("Header", resourceCulture);
             }
         }
         
@@ -1104,8 +1131,8 @@ namespace JeffBourdier.Properties {
         ///    &lt;title&gt;MIDIopsy Help&lt;/title&gt;
         ///    &lt;meta name=&quot;author&quot; content=&quot;Jeff Bourdier&quot; /&gt;
         ///    &lt;style&gt;
-        ///      h1, h4 { text-align: center; }
-        ///      h2, h4 { border-top: 1px solid; padding-top: 4px; }
+        ///      h1, h6 { text-align: center; }
+        ///      h2, h6 { border-top: 1px solid; padding-top: 4px; }
         ///      table { margin: auto; border-collapse: collapse; }
         ///      table, th, td { border: 1px solid black; padding: 8px; }
         ///      th, blockquote { background-color: silver; }
@@ -1293,6 +1320,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {1} {0}s reported, {2} {0}s present..
+        /// </summary>
+        internal static string MismatchFormat {
+            get {
+                return ResourceManager.GetString("MismatchFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All Sound Off.
         /// </summary>
         internal static string Mode120 {
@@ -1361,6 +1397,15 @@ namespace JeffBourdier.Properties {
         internal static string Mode127 {
             get {
                 return ResourceManager.GetString("Mode127", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No End of Track event..
+        /// </summary>
+        internal static string NoEndOfTrack {
+            get {
+                return ResourceManager.GetString("NoEndOfTrack", resourceCulture);
             }
         }
         
@@ -2841,11 +2886,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to track chunk.
+        ///   Looks up a localized string similar to track.
         /// </summary>
-        internal static string TrackChunk {
+        internal static string Track {
             get {
-                return ResourceManager.GetString("TrackChunk", resourceCulture);
+                return ResourceManager.GetString("Track", resourceCulture);
             }
         }
         
@@ -2855,15 +2900,6 @@ namespace JeffBourdier.Properties {
         internal static string Undefined {
             get {
                 return ResourceManager.GetString("Undefined", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to unknown chunk type.
-        /// </summary>
-        internal static string UnknownChunkType {
-            get {
-                return ResourceManager.GetString("UnknownChunkType", resourceCulture);
             }
         }
         

@@ -1,7 +1,7 @@
 ﻿/* AppWindow.cs - Implementation of AppWindow class, which makes up an application's user interface.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -184,6 +184,7 @@ namespace JeffBourdier
             Common.Settings.Default.LogIndent = dialog.LogIndents;
             Common.Settings.Default.LogExceptionDetail = dialog.LogExceptionDetail;
             Common.Settings.Default.Save();
+            Logger.ReadSettings();
         }
 
         private void HelpExecuted(object sender, ExecutedRoutedEventArgs e) { HelpViewer.Show(); }
