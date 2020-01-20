@@ -1,6 +1,6 @@
 ﻿/* MidiHeaderDialog.cs - Implementation of MidiHeaderDialog class, used for editing the header (MThd) chunk of a MIDI file.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -171,15 +171,15 @@ namespace JeffBourdier
 
         #region Public Methods
 
-        /// <summary>Creates a new MidiHeaderChunk object based on the user's input.</summary>
-        /// <returns>A new MidiHeaderChunk object (based on the user's input).</returns>
-        public MidiHeaderChunk CreateChunk()
+        /// <summary>Creates a new MidiHeaderData object based on the user's input.</summary>
+        /// <returns>A new MidiHeaderData object (based on the user's input).</returns>
+        public MidiHeaderData CreateData()
         {
             if (this.MetricalTimeRadioButton.IsChecked == true)
-                return new MidiHeaderChunk((uint)this.FormatComboBox.SelectedIndex, this.NumberOfTracks,
+                return new MidiHeaderData((uint)this.FormatComboBox.SelectedIndex, this.NumberOfTracks,
                     this.TicksPerQuarterNote);
             else if (this.TimeCodeBasedTimeRadioButton.IsChecked == true)
-                return new MidiHeaderChunk((uint)this.FormatComboBox.SelectedIndex, this.NumberOfTracks,
+                return new MidiHeaderData((uint)this.FormatComboBox.SelectedIndex, this.NumberOfTracks,
                     MidiHeaderData.FramesPerSecondValues[this.FramesPerSecondComboBox.SelectedIndex], this.TicksPerFrame);
             return null;
         }

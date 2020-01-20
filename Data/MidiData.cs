@@ -74,29 +74,6 @@ namespace JeffBourdier
             this._ErrorText += text;
         }
 
-        /// <summary>Converts a numeric value to a string representation of its assigned note(s).</summary>
-        /// <param name="n">Numeric value assigned to note (middle C has a reference value of 60).</param>
-        /// <returns>String representation of note(s) to which numeric value is assigned.</returns>
-        protected static string NumberToNote(uint n)
-        {
-            switch (n % 12)
-            {
-                case 0: return "C  / B#";
-                case 1: return "Db / C#";
-                case 2: return "D  / D ";
-                case 3: return "Eb / D#";
-                case 4: return "Fb / E ";
-                case 5: return "F  / E#";
-                case 6: return "Gb / F#";
-                case 7: return "G  / G ";
-                case 8: return "Ab / G#";
-                case 9: return "A  / A ";
-                case 10: return "Bb / A#";
-                case 11: return "Cb / B ";
-                default: return string.Empty;
-            }
-        }
-
         /// <summary>Reads text as a string of ASCII characters from a byte array.</summary>
         /// <param name="bytes">Array of bytes containing the text.</param>
         /// <param name="length">The number of bytes (ASCII characters) to read.</param>

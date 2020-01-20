@@ -33,19 +33,52 @@ namespace JeffBourdier
 
         /// <summary>Initializes a new instance of the MidiFile class by loading an existing MIDI file from disk.</summary>
         /// <param name="filePath">The path of the MIDI file.</param>
-        public MidiFile(string filePath) : base(new List<MidiChunk>())
+        public MidiFile(string filePath)
+            : base(new List<MidiChunk>())
         {
             byte[] bytes = File.ReadAllBytes(filePath);
             this.Replace(bytes);
         }
 
-        /// <summary>Initializes a new instance of the MidiFile class with a header (MThd) chunk.</summary>
-        /// <param name="header">MidiHeaderChunk object representing the header chunk.</param>
-        public MidiFile(MidiHeaderChunk header) : base(new List<MidiChunk>(1))
+        /// <summary>Initializes a new instance of the MidiFile class with a MidiHeaderData object.</summary>
+        /// <param name="data">A MidiHeaderData object (based on user input).</param>
+        /// <remarks>
+        /// A header (MThd) chunk, as well as the appropriate number of track (MTrk) chunks
+        /// (with End of Track events), will be created and added to the file automatically.
+        /// </remarks>
+        public MidiFile(MidiHeaderData data)
+            : base(new List<MidiChunk>(1 + (int)data.NumberOfTracks))
         {
-            this.AddChunk(header);
+            this.Header = new MidiHeaderChunk(this, data);
+            this.AddChunk(this.Header);
+            for (int i = 0; i < data.NumberOfTracks; ++i)
+            {
+                MidiTrackChunk track = new MidiTrackChunk(this);
+                this.AddChunk(track);
+            }
             this.AddIndex(-1);
         }
+
+        #endregion
+
+        /**********
+         * Fields *
+         **********/
+
+        #region Private Fields
+
+        private MidiHeaderChunk Header;
+
+        #endregion
+
+        /**************
+         * Properties *
+         **************/
+
+        #region Public Properties
+
+        /// <summary>Specifies the overall organization of the MIDI file.</summary>
+        public uint Format { get { return this.Header.Format; } }
 
         #endregion
 
@@ -69,6 +102,7 @@ namespace JeffBourdier
             MidiChunk chunk;
 
             /* Make sure we start with a clean slate. */
+            this.Header = null;
             this.Clear();
 
             s = string.Format("parsing {0} bytes", bytes.Length);
@@ -88,16 +122,19 @@ namespace JeffBourdier
                 /* Instantiate a chunk object of the appropriate type. */
                 switch (s)
                 {
-                    case "MThd": chunk = new MidiHeaderChunk(n, bytes, i); break;
-                    case "MTrk": chunk = new MidiTrackChunk(n, bytes, i); break;
-                    default: chunk = new MidiChunk(s, n, bytes, i); break;
+                    case "MThd":
+                        chunk = new MidiHeaderChunk(this, n, bytes, i);
+                        if (this.Header == null) this.Header = chunk as MidiHeaderChunk;
+                        break;
+                    case "MTrk": chunk = new MidiTrackChunk(this, n, bytes, i); break;
+                    default: chunk = new MidiChunk(this, s, n, bytes, i); break;
                 }
                 this.AddChunk(chunk);
             }
             this.AddIndex(-1);
 
             /* Detect errors (track number mismatch). */
-            n = (int)((this.GetChunk(0) as MidiHeaderChunk).GetItem(1) as MidiHeaderData).NumberOfTracks;
+            n = (int)this.Header.NumberOfTracks;
             i = this.DataCount - 1;
             if (n != i)
             {

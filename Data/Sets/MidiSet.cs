@@ -13,7 +13,7 @@
 /* IList */
 using System.Collections;
 
-/* List */
+/* List, Dictionary */
 using System.Collections.Generic;
 
 
@@ -30,13 +30,7 @@ namespace JeffBourdier
 
         /// <summary>Initializes a new instance of the MidiSet class.</summary>
         /// <param name="list">The list to contain MidiData objects.</param>
-        protected MidiSet(IList list)
-        {
-            this.DataList = list;
-            this._Hex = string.Empty;
-            this._Comments = string.Empty;
-            this.Indexes = new List<int>();
-        }
+        protected MidiSet(IList list) { this.DataList = list; }
 
         #endregion
 
@@ -47,9 +41,10 @@ namespace JeffBourdier
         #region Private Fields
 
         private IList DataList;
-        private string _Hex;
-        private string _Comments;
-        private List<int> Indexes;
+        private string _Hex = string.Empty;
+        private string _Comments = string.Empty;
+        private List<int> Indexes = new List<int>();
+        private Dictionary<int, MidiKeySignature> KeySignatureMap = new Dictionary<int, MidiKeySignature>();
 
         #endregion
 
@@ -86,6 +81,26 @@ namespace JeffBourdier
         /// </param>
         /// <returns>The character index of the specified line.</returns>
         public int GetIndex(int lineNumber, bool hex) { return this.Indexes[lineNumber * 2 + (hex ? 0 : 1)]; }
+
+        /// <summary>Adds an entry to this set's key signature map.</summary>
+        /// <param name="keySignatureEvent">A MidiKeySignatureEvent object.</param>
+        public void AddKeySignature(MidiKeySignatureEvent keySignatureEvent)
+        { this.KeySignatureMap[keySignatureEvent.CumulativeTime] = keySignatureEvent.KeySignature; }
+
+        /// <summary>Gets the key signature at a given (cumulative) time.</summary>
+        /// <param name="time">The cumulative time (in ticks) at which to get the key signature.</param>
+        /// <returns>The key signature at the specified time.</returns>
+        public virtual MidiKeySignature GetKeySignature(int time)
+        {
+            MidiKeySignature keySignature = MidiKeySignature.NA;
+
+            foreach (KeyValuePair<int, MidiKeySignature> pair in this.KeySignatureMap)
+            {
+                if (time < pair.Key) break;
+                if (keySignature == MidiKeySignature.NA) keySignature = pair.Value;
+            }
+            return keySignature;
+        }
 
         #endregion
 

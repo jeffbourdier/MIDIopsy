@@ -1,7 +1,7 @@
 ﻿/* MidiNoteOnEvent.cs - Implementation of MidiNoteOnEvent class, which
  * corresponds to a "Note On" channel message/event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -23,20 +23,22 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiNoteOnEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="channel">One of the sixteen logical MIDI channels on which this event is transmitted.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
         /// <remarks>To create an event with running status, use the other constructor.</remarks>
-        public MidiNoteOnEvent(int deltaTime, uint channel, byte[] bytes, int index)
-            : base(deltaTime, 0x9, channel, 3, Properties.Resources.NoteOn) { this.Initialize(bytes, index); }
+        public MidiNoteOnEvent(MidiTrackChunk owner, int deltaTime, uint channel, byte[] bytes, int index)
+            : base(owner, deltaTime, 0x9, channel, 3, Properties.Resources.NoteOn) { this.Initialize(bytes, index); }
 
         /// <summary>Initializes a new instance of the MidiNoteOnEvent class using running status.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        public MidiNoteOnEvent(int deltaTime, byte[] bytes, int index)
-            : base(deltaTime, 2) { this.Initialize(bytes, index); }
+        public MidiNoteOnEvent(MidiTrackChunk owner, int deltaTime, byte[] bytes, int index)
+            : base(owner, deltaTime, 2) { this.Initialize(bytes, index); }
 
         #endregion
 
@@ -109,7 +111,7 @@ namespace JeffBourdier
 
         private void SetDataComment()
         {
-            this.DataComment = string.Format("{0} | {1,3}", MidiData.NumberToNote(this.NoteNumber), this.Velocity);
+            this.DataComment = string.Format("{0} | {1,3}", this.NumberToNote(this.NoteNumber, true), this.Velocity);
             this.SetComment();
         }
 

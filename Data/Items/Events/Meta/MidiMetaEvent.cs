@@ -1,6 +1,6 @@
 ﻿/* MidiMetaEvent.cs - Implementation of MidiMetaEvent class, which corresponds to a meta-event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -26,6 +26,7 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiMetaEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="type">Meta-event type (always less than 128).</param>
         /// <param name="bytes">
@@ -33,14 +34,15 @@ namespace JeffBourdier
         /// </param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
         /// <remarks>A strongly typed class must be used for a meta-event of known type.</remarks>
-        public MidiMetaEvent(int deltaTime, uint type, byte[] bytes, int index)
-            : base(deltaTime, 3) { this.Initialize(type, false, bytes, index); }
+        public MidiMetaEvent(MidiTrackChunk owner, int deltaTime, uint type, byte[] bytes, int index)
+            : base(owner, deltaTime, 3) { this.Initialize(type, false, bytes, index); }
 
         #endregion
 
         #region Protected Constructors
 
         /// <summary>Initializes a new instance of the MidiMetaEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="type">Meta-event type (always less than 128).</param>
         /// <param name="bytes">
@@ -50,8 +52,8 @@ namespace JeffBourdier
         /// Minimum number of bytes in the event (not counting delta-time), used to instantiate the byte array.
         /// </param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        protected MidiMetaEvent(int deltaTime, uint type, byte[] bytes, int length, int index)
-            : base(deltaTime, length) { this.Initialize(type, true, bytes, index); }
+        protected MidiMetaEvent(MidiTrackChunk owner, int deltaTime, uint type, byte[] bytes, int length, int index)
+            : base(owner, deltaTime, length) { this.Initialize(type, true, bytes, index); }
 
         #endregion
 

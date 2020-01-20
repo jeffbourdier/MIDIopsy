@@ -1,7 +1,7 @@
 ﻿/* MidiTimeSignatureEvent.cs - Implementation of MidiTimeSignatureEvent class,
  * which corresponds to a Time Signature meta-event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -27,13 +27,14 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiTimeSignatureEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="bytes">
         /// Array of bytes containing the event data (not including the delta-time, status byte, or type byte).
         /// </param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        public MidiTimeSignatureEvent(int deltaTime, byte[] bytes, int index)
-            : base(deltaTime, 0x58, bytes, 7, index)
+        public MidiTimeSignatureEvent(MidiTrackChunk owner, int deltaTime, byte[] bytes, int index)
+            : base(owner, deltaTime, 0x58, bytes, 7, index)
         {
             this.ValidateDataLength(4, Properties.Resources.TimeSignature);
             this._Numerator = MidiData.ReadNumber(bytes, 1, index + this.DataLengthSize);

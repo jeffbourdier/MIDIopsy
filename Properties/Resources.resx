@@ -1072,4 +1072,145 @@
   <data name="NoEndOfTrack" xml:space="preserve">
     <value>No End of Track event.</value>
   </data>
+  <data name="Percussion35" xml:space="preserve">
+    <value>Acoustic Bass Drum</value>
+  </data>
+  <data name="Percussion36" xml:space="preserve">
+    <value>Bass Drum 1</value>
+  </data>
+  <data name="Percussion37" xml:space="preserve">
+    <value>Side Stick</value>
+  </data>
+  <data name="Percussion38" xml:space="preserve">
+    <value>Acoustic Snare</value>
+  </data>
+  <data name="Percussion39" xml:space="preserve">
+    <value>Hand Clap</value>
+  </data>
+  <data name="Percussion40" xml:space="preserve">
+    <value>Electric Snare</value>
+  </data>
+  <data name="Percussion41" xml:space="preserve">
+    <value>Low Floor Tom</value>
+  </data>
+  <data name="Percussion42" xml:space="preserve">
+    <value>Closed Hi Hat</value>
+  </data>
+  <data name="Percussion43" xml:space="preserve">
+    <value>High Floor Tom</value>
+  </data>
+  <data name="Percussion44" xml:space="preserve">
+    <value>Pedal Hi-Hat</value>
+  </data>
+  <data name="Percussion45" xml:space="preserve">
+    <value>Low Tom</value>
+  </data>
+  <data name="Percussion46" xml:space="preserve">
+    <value>Open Hi-Hat</value>
+  </data>
+  <data name="Percussion47" xml:space="preserve">
+    <value>Low-Mid Tom</value>
+  </data>
+  <data name="Percussion48" xml:space="preserve">
+    <value>Hi Mid Tom</value>
+  </data>
+  <data name="Percussion49" xml:space="preserve">
+    <value>Crash Cymbal 1</value>
+  </data>
+  <data name="Percussion50" xml:space="preserve">
+    <value>High Tom</value>
+  </data>
+  <data name="Percussion51" xml:space="preserve">
+    <value>Ride Cymbal 1</value>
+  </data>
+  <data name="Percussion52" xml:space="preserve">
+    <value>Chinese Cymbal</value>
+  </data>
+  <data name="Percussion53" xml:space="preserve">
+    <value>Ride Bell</value>
+  </data>
+  <data name="Percussion54" xml:space="preserve">
+    <value>Tambourine</value>
+  </data>
+  <data name="Percussion55" xml:space="preserve">
+    <value>Splash Cymbal</value>
+  </data>
+  <data name="Percussion56" xml:space="preserve">
+    <value>Cowbell</value>
+  </data>
+  <data name="Percussion57" xml:space="preserve">
+    <value>Crash Cymbal 2</value>
+  </data>
+  <data name="Percussion58" xml:space="preserve">
+    <value>Vibraslap</value>
+  </data>
+  <data name="Percussion59" xml:space="preserve">
+    <value>Ride Cymbal 2</value>
+  </data>
+  <data name="Percussion60" xml:space="preserve">
+    <value>Hi Bongo</value>
+  </data>
+  <data name="Percussion61" xml:space="preserve">
+    <value>Low Bongo</value>
+  </data>
+  <data name="Percussion62" xml:space="preserve">
+    <value>Mute Hi Conga</value>
+  </data>
+  <data name="Percussion63" xml:space="preserve">
+    <value>Open Hi Conga</value>
+  </data>
+  <data name="Percussion64" xml:space="preserve">
+    <value>Low Conga</value>
+  </data>
+  <data name="Percussion65" xml:space="preserve">
+    <value>High Timbale</value>
+  </data>
+  <data name="Percussion66" xml:space="preserve">
+    <value>Low Timbale</value>
+  </data>
+  <data name="Percussion67" xml:space="preserve">
+    <value>High Agogo</value>
+  </data>
+  <data name="Percussion68" xml:space="preserve">
+    <value>Low Agogo</value>
+  </data>
+  <data name="Percussion69" xml:space="preserve">
+    <value>Cabasa</value>
+  </data>
+  <data name="Percussion70" xml:space="preserve">
+    <value>Maracas</value>
+  </data>
+  <data name="Percussion71" xml:space="preserve">
+    <value>Short Whistle</value>
+  </data>
+  <data name="Percussion72" xml:space="preserve">
+    <value>Long Whistle</value>
+  </data>
+  <data name="Percussion73" xml:space="preserve">
+    <value>Short Guiro</value>
+  </data>
+  <data name="Percussion74" xml:space="preserve">
+    <value>Long Guiro</value>
+  </data>
+  <data name="Percussion75" xml:space="preserve">
+    <value>Claves</value>
+  </data>
+  <data name="Percussion76" xml:space="preserve">
+    <value>Hi Wood Block</value>
+  </data>
+  <data name="Percussion77" xml:space="preserve">
+    <value>Low Wood Block</value>
+  </data>
+  <data name="Percussion78" xml:space="preserve">
+    <value>Mute Cuica</value>
+  </data>
+  <data name="Percussion79" xml:space="preserve">
+    <value>Open Cuica</value>
+  </data>
+  <data name="Percussion80" xml:space="preserve">
+    <value>Mute Triangle</value>
+  </data>
+  <data name="Percussion81" xml:space="preserve">
+    <value>Open Triangle</value>
+  </data>
 </root>

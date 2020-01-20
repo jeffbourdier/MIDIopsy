@@ -1,7 +1,7 @@
 ﻿/* MidiProgramChangeEvent.cs - Implementation of MidiProgramChangeEvent class, which
  * corresponds to a "Program Change" channel message/event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -27,20 +27,22 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiProgramChangeEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="channel">One of the sixteen logical MIDI channels on which this event is transmitted.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
         /// <remarks>To create an event with running status, use the other constructor.</remarks>
-        public MidiProgramChangeEvent(int deltaTime, uint channel, byte[] bytes, int index)
-            : base(deltaTime, 0xC, channel, 2, Properties.Resources.ProgramChange) { this.Initialize(bytes, index); }
+        public MidiProgramChangeEvent(MidiTrackChunk owner, int deltaTime, uint channel, byte[] bytes, int index)
+            : base(owner, deltaTime, 0xC, channel, 2, Properties.Resources.ProgramChange) { this.Initialize(bytes, index); }
 
         /// <summary>Initializes a new instance of the MidiProgramChangeEvent class using running status.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        public MidiProgramChangeEvent(int deltaTime, byte[] bytes, int index)
-            : base(deltaTime, 1) { this.Initialize(bytes, index); }
+        public MidiProgramChangeEvent(MidiTrackChunk owner, int deltaTime, byte[] bytes, int index)
+            : base(owner, deltaTime, 1) { this.Initialize(bytes, index); }
 
         #endregion
 
@@ -227,6 +229,7 @@ namespace JeffBourdier
         {
             this.DataComment = string.Format("{0} {1} ({2})",
                 Properties.Resources.ProgramNumber, this.ProgramNumber, this.Instrument);
+            this.ShortenDataComment();
             this.SetComment();
         }
 

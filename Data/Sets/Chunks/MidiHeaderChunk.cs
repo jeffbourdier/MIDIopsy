@@ -22,48 +22,57 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiHeaderChunk class.</summary>
+        /// <param name="owner">The MIDI file to which this chunk belongs.</param>
         /// <param name="length">Number of bytes in the chunk (not including the eight bytes of type and length).</param>
         /// <param name="bytes">Array of bytes containing the chunk data.</param>
         /// <param name="index">
         /// Index in the byte array at which the chunk data begins (not including the eight bytes of type and length).
         /// </param>
         /// <remarks>This constructor is to be used when reading an existing MIDI file from disk.</remarks>
-        public MidiHeaderChunk(int length, byte[] bytes, int index)
-            : base("MThd", length)
+        public MidiHeaderChunk(MidiFile owner, int length, byte[] bytes, int index)
+            : base(owner, "MThd", length)
         {
-            MidiHeaderData data = new MidiHeaderData(bytes, index);
-            this.AddItem(data);
+            this.Data = new MidiHeaderData(bytes, index);
+            this.AddItem(this.Data);
 
-            string s = string.Format("expecting {0} tracks", data.NumberOfTracks);
+            string s = string.Format("expecting {0} tracks", this.Data.NumberOfTracks);
             Logger.WriteMessage(s);
         }
 
-        /// <summary>Initializes a new instance of the MidiHeaderChunk class using metrical time.</summary>
-        /// <param name="format">Specifies the overall organization of the MIDI file.</param>
-        /// <param name="numberOfTracks">Number of track chunks in the MIDI file.</param>
-        /// <param name="ticksPerQuarterNote">Number of delta-time "ticks" which make up a quarter-note.</param>
+        /// <summary>Initializes a new instance of the MidiHeaderChunk class using a MidiHeaderData object.</summary>
+        /// <param name="owner">The MIDI file to which this chunk belongs.</param>
+        /// <param name="data">A MidiHeaderData object (based on user input).</param>
         /// <remarks>This constructor is to be used when creating a new MIDI file from scratch.</remarks>
-        public MidiHeaderChunk(uint format, uint numberOfTracks, uint ticksPerQuarterNote)
-            : base("MThd", 6)
+        public MidiHeaderChunk(MidiFile owner, MidiHeaderData data)
+            : base(owner, "MThd", 6)
         {
-            MidiHeaderData data = new MidiHeaderData(format, numberOfTracks, ticksPerQuarterNote);
+            this.Data = data;
             this.AddItem(data);
         }
 
-        /// <summary>Initializes a new instance of the MidiHeaderChunk class using time-code-based time.</summary>
-        /// <param name="format">Specifies the overall organization of the MIDI file.</param>
-        /// <param name="numberOfTracks">Number of track chunks in the MIDI file.</param>
-        /// <param name="framesPerSecond">
-        /// Standard SMPTE and MIDI time code format representing the number of frames per second.
-        /// </param>
-        /// <param name="ticksPerFrame">Resolution within a frame (ticks per frame).</param>
-        /// <remarks>This constructor is to be used when creating a new MIDI file from scratch.</remarks>
-        public MidiHeaderChunk(uint format, uint numberOfTracks, uint framesPerSecond, uint ticksPerFrame)
-            : base("MThd", 6)
-        {
-            MidiHeaderData data = new MidiHeaderData(format, numberOfTracks, framesPerSecond, ticksPerFrame);
-            this.AddItem(data);
-        }
+        #endregion
+
+        /**********
+         * Fields *
+         **********/
+
+        #region Private Fields
+
+        private MidiHeaderData Data;
+
+        #endregion
+
+        /**************
+         * Properties *
+         **************/
+
+        #region Public Properties
+
+        /// <summary>Specifies the overall organization of the MIDI file.</summary>
+        public uint Format { get { return this.Data.Format; } }
+
+        /// <summary>Returns the number of track chunks in the MIDI file.</summary>
+        public uint NumberOfTracks { get { return this.Data.NumberOfTracks; } }
 
         #endregion
     }

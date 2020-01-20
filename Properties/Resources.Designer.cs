@@ -1473,6 +1473,429 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Acoustic Bass Drum.
+        /// </summary>
+        internal static string Percussion35 {
+            get {
+                return ResourceManager.GetString("Percussion35", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bass Drum 1.
+        /// </summary>
+        internal static string Percussion36 {
+            get {
+                return ResourceManager.GetString("Percussion36", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Side Stick.
+        /// </summary>
+        internal static string Percussion37 {
+            get {
+                return ResourceManager.GetString("Percussion37", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Acoustic Snare.
+        /// </summary>
+        internal static string Percussion38 {
+            get {
+                return ResourceManager.GetString("Percussion38", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hand Clap.
+        /// </summary>
+        internal static string Percussion39 {
+            get {
+                return ResourceManager.GetString("Percussion39", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Electric Snare.
+        /// </summary>
+        internal static string Percussion40 {
+            get {
+                return ResourceManager.GetString("Percussion40", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Floor Tom.
+        /// </summary>
+        internal static string Percussion41 {
+            get {
+                return ResourceManager.GetString("Percussion41", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed Hi Hat.
+        /// </summary>
+        internal static string Percussion42 {
+            get {
+                return ResourceManager.GetString("Percussion42", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Floor Tom.
+        /// </summary>
+        internal static string Percussion43 {
+            get {
+                return ResourceManager.GetString("Percussion43", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pedal Hi-Hat.
+        /// </summary>
+        internal static string Percussion44 {
+            get {
+                return ResourceManager.GetString("Percussion44", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Tom.
+        /// </summary>
+        internal static string Percussion45 {
+            get {
+                return ResourceManager.GetString("Percussion45", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Hi-Hat.
+        /// </summary>
+        internal static string Percussion46 {
+            get {
+                return ResourceManager.GetString("Percussion46", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low-Mid Tom.
+        /// </summary>
+        internal static string Percussion47 {
+            get {
+                return ResourceManager.GetString("Percussion47", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi Mid Tom.
+        /// </summary>
+        internal static string Percussion48 {
+            get {
+                return ResourceManager.GetString("Percussion48", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crash Cymbal 1.
+        /// </summary>
+        internal static string Percussion49 {
+            get {
+                return ResourceManager.GetString("Percussion49", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Tom.
+        /// </summary>
+        internal static string Percussion50 {
+            get {
+                return ResourceManager.GetString("Percussion50", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ride Cymbal 1.
+        /// </summary>
+        internal static string Percussion51 {
+            get {
+                return ResourceManager.GetString("Percussion51", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chinese Cymbal.
+        /// </summary>
+        internal static string Percussion52 {
+            get {
+                return ResourceManager.GetString("Percussion52", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ride Bell.
+        /// </summary>
+        internal static string Percussion53 {
+            get {
+                return ResourceManager.GetString("Percussion53", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tambourine.
+        /// </summary>
+        internal static string Percussion54 {
+            get {
+                return ResourceManager.GetString("Percussion54", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Splash Cymbal.
+        /// </summary>
+        internal static string Percussion55 {
+            get {
+                return ResourceManager.GetString("Percussion55", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cowbell.
+        /// </summary>
+        internal static string Percussion56 {
+            get {
+                return ResourceManager.GetString("Percussion56", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crash Cymbal 2.
+        /// </summary>
+        internal static string Percussion57 {
+            get {
+                return ResourceManager.GetString("Percussion57", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vibraslap.
+        /// </summary>
+        internal static string Percussion58 {
+            get {
+                return ResourceManager.GetString("Percussion58", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ride Cymbal 2.
+        /// </summary>
+        internal static string Percussion59 {
+            get {
+                return ResourceManager.GetString("Percussion59", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi Bongo.
+        /// </summary>
+        internal static string Percussion60 {
+            get {
+                return ResourceManager.GetString("Percussion60", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Bongo.
+        /// </summary>
+        internal static string Percussion61 {
+            get {
+                return ResourceManager.GetString("Percussion61", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mute Hi Conga.
+        /// </summary>
+        internal static string Percussion62 {
+            get {
+                return ResourceManager.GetString("Percussion62", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Hi Conga.
+        /// </summary>
+        internal static string Percussion63 {
+            get {
+                return ResourceManager.GetString("Percussion63", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Conga.
+        /// </summary>
+        internal static string Percussion64 {
+            get {
+                return ResourceManager.GetString("Percussion64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Timbale.
+        /// </summary>
+        internal static string Percussion65 {
+            get {
+                return ResourceManager.GetString("Percussion65", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Timbale.
+        /// </summary>
+        internal static string Percussion66 {
+            get {
+                return ResourceManager.GetString("Percussion66", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Agogo.
+        /// </summary>
+        internal static string Percussion67 {
+            get {
+                return ResourceManager.GetString("Percussion67", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Agogo.
+        /// </summary>
+        internal static string Percussion68 {
+            get {
+                return ResourceManager.GetString("Percussion68", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cabasa.
+        /// </summary>
+        internal static string Percussion69 {
+            get {
+                return ResourceManager.GetString("Percussion69", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maracas.
+        /// </summary>
+        internal static string Percussion70 {
+            get {
+                return ResourceManager.GetString("Percussion70", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Short Whistle.
+        /// </summary>
+        internal static string Percussion71 {
+            get {
+                return ResourceManager.GetString("Percussion71", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long Whistle.
+        /// </summary>
+        internal static string Percussion72 {
+            get {
+                return ResourceManager.GetString("Percussion72", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Short Guiro.
+        /// </summary>
+        internal static string Percussion73 {
+            get {
+                return ResourceManager.GetString("Percussion73", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long Guiro.
+        /// </summary>
+        internal static string Percussion74 {
+            get {
+                return ResourceManager.GetString("Percussion74", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Claves.
+        /// </summary>
+        internal static string Percussion75 {
+            get {
+                return ResourceManager.GetString("Percussion75", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi Wood Block.
+        /// </summary>
+        internal static string Percussion76 {
+            get {
+                return ResourceManager.GetString("Percussion76", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Wood Block.
+        /// </summary>
+        internal static string Percussion77 {
+            get {
+                return ResourceManager.GetString("Percussion77", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mute Cuica.
+        /// </summary>
+        internal static string Percussion78 {
+            get {
+                return ResourceManager.GetString("Percussion78", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Cuica.
+        /// </summary>
+        internal static string Percussion79 {
+            get {
+                return ResourceManager.GetString("Percussion79", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mute Triangle.
+        /// </summary>
+        internal static string Percussion80 {
+            get {
+                return ResourceManager.GetString("Percussion80", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Triangle.
+        /// </summary>
+        internal static string Percussion81 {
+            get {
+                return ResourceManager.GetString("Percussion81", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pitch Bend Change.
         /// </summary>
         internal static string PitchBend {

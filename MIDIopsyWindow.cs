@@ -30,8 +30,8 @@ using System.Threading;
  */
 using System.Windows;
 
-/* StackPanel, Orientation, Canvas, TextBox, GridSplitter, Grid, ColumnDefinition,
- * DockPanel, Dock, ScrollChangedEventArgs, ScrollBarVisibility, ScrollViewer, Label
+/* StackPanel, Orientation, Canvas, TextBox, GridSplitter, Grid, ColumnDefinition, DockPanel,
+ * Dock, TextChangedEventArgs, ScrollChangedEventArgs, ScrollBarVisibility, ScrollViewer, Label
  */
 using System.Windows.Controls;
 
@@ -157,6 +157,7 @@ namespace JeffBourdier
             this.HexTextBox = this.CreateTextBox(null);
             this.HexTextBox.AcceptsReturn = true;
             this.HexTextBox.Loaded += this.HexTextBox_Loaded;
+            this.HexTextBox.TextChanged += HexTextBox_TextChanged;
             this.CommentsTextBox = this.CreateTextBox(null);
 
             /* Initialize the grid splitter. */
@@ -250,8 +251,8 @@ namespace JeffBourdier
             base.NewFile();
 
             /* Create a new file object using the header data supplied by the user. */
-            MidiHeaderChunk chunk = dialog.CreateChunk();
-            this.MidiFile = new MidiFile(chunk);
+            MidiHeaderData data = dialog.CreateData();
+            this.MidiFile = new MidiFile(data);
 
             /* Load the file object into the UI. */
             this.LoadFile();
@@ -495,6 +496,13 @@ namespace JeffBourdier
 
         /* Give the hex text box initial focus. */
         private void HexTextBox_Loaded(object sender, RoutedEventArgs e) { this.HexTextBox.Focus(); }
+
+        /* When the hex changes while editing, make sure the file is marked as edited. */
+        private void HexTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (this.UIState != UIState.Edit || this.FileState == FileState.Edited) return;
+            this.FileState = FileState.Edited;
+        }
 
         /* When the caret (or current selection) of a text box changes, highlight accordingly. */
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e) { this.Highlight(sender as TextBox); }

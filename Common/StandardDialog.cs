@@ -1,7 +1,7 @@
 ﻿/* StandardDialog.cs - Implementation of StandardDialog class, which standardizes the way dialogs are created.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -35,7 +35,6 @@ namespace JeffBourdier
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
             this.SizeToContent = SizeToContent.WidthAndHeight;
-            this.MainPanel = new StackPanel();
         }
 
         #endregion
@@ -46,7 +45,7 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private StackPanel MainPanel;
+        private StackPanel MainPanel = new StackPanel();
         private Button _OkButton = null;
 
         #endregion

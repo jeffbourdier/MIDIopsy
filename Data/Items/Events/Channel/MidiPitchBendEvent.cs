@@ -1,7 +1,7 @@
 ﻿/* MidiPitchBendEvent.cs - Implementation of MidiPitchBendEvent class, which
  * corresponds to a "Pitch Bend Change" channel message/event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -23,20 +23,22 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the MidiPitchBendEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="channel">One of the sixteen logical MIDI channels on which this event is transmitted.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
         /// <remarks>To create an event with running status, use the other constructor.</remarks>
-        public MidiPitchBendEvent(int deltaTime, uint channel, byte[] bytes, int index)
-            : base(deltaTime, 0xE, channel, 3, Properties.Resources.PitchBend) { this.Initialize(bytes, index); }
+        public MidiPitchBendEvent(MidiTrackChunk owner, int deltaTime, uint channel, byte[] bytes, int index)
+            : base(owner, deltaTime, 0xE, channel, 3, Properties.Resources.PitchBend) { this.Initialize(bytes, index); }
 
         /// <summary>Initializes a new instance of the MidiPitchBendEvent class using running status.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="bytes">Array of bytes containing the event data (not including the delta-time or status byte).</param>
         /// <param name="index">Index in the byte array at which the event data begins.</param>
-        public MidiPitchBendEvent(int deltaTime, byte[] bytes, int index)
-            : base(deltaTime, 2) { this.Initialize(bytes, index); }
+        public MidiPitchBendEvent(MidiTrackChunk owner, int deltaTime, byte[] bytes, int index)
+            : base(owner, deltaTime, 2) { this.Initialize(bytes, index); }
 
         #endregion
 

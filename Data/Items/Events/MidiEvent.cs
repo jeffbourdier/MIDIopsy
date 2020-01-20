@@ -1,6 +1,6 @@
 ﻿/* MidiEvent.cs - Implementation of MidiEvent class, which corresponds to an MTrk event in the MIDI file spec.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -26,14 +26,15 @@ namespace JeffBourdier
         #region Protected Constructors
 
         /// <summary>Initializes a new instance of the MidiEvent class.</summary>
+        /// <param name="owner">The track (MTrk) chunk to which this event belongs.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
         /// <param name="length">
         /// Minimum number of bytes in the event (not counting delta-time), used to instantiate the byte array.
         /// </param>
-        protected MidiEvent(int deltaTime, int length)
+        protected MidiEvent(MidiTrackChunk owner, int deltaTime, int length)
             : base(1 + length)
         {
-            this.DeltaTimeSize = 1;
+            this._Track = owner;
             this.DeltaTime = deltaTime;
         }
 
@@ -45,7 +46,7 @@ namespace JeffBourdier
 
         #region Protected Fields
 
-        protected int DeltaTimeSize;
+        protected int DeltaTimeSize = 1;
         protected string TypeComment;
         protected string DataComment;
 
@@ -53,7 +54,9 @@ namespace JeffBourdier
 
         #region Private Fields
 
+        private MidiTrackChunk _Track;
         private int _DeltaTime;
+        private int _CumulativeTime;
 
         #endregion
 
@@ -65,6 +68,9 @@ namespace JeffBourdier
 
         /// <summary>Representation of the byte array in hexadecimal format.</summary>
         public override string Hex { get { return new string(' ', (4 - this.DeltaTimeSize) * 3) + base.Hex; } }
+
+        /// <summary>Gets the track (MTrk) chunk to which this event belongs (set by constructor).</summary>
+        public MidiTrackChunk Track { get { return this._Track; } }
 
         /// <summary>The amount of time (in ticks) between the previous event in the track and this one.</summary>
         public int DeltaTime
@@ -78,6 +84,14 @@ namespace JeffBourdier
                 this._DeltaTime = value;
                 this.SetComment();
             }
+        }
+
+        /// <summary>The amount of time (in ticks) between the beginning of the track and this event.</summary>
+        /// <remarks>This should be greater than or equal to the delta-time.</remarks>
+        public int CumulativeTime
+        {
+            get { return this._CumulativeTime; }
+            set { this._CumulativeTime = value; }
         }
 
         #endregion
@@ -136,6 +150,13 @@ namespace JeffBourdier
         {
             this.DataComment = string.Format("\"{0}\"", MidiData.ReadText(this.Bytes, this.Bytes.Length - index, index));
             this.SetComment();
+        }
+
+        /// <summary>Shortens the "data" portion of the comment (e.g., replace "number" with "no.").</summary>
+        protected void ShortenDataComment()
+        {
+            if (string.IsNullOrEmpty(this.DataComment)) return;
+            this.DataComment = this.DataComment.Replace(" number ", " no. ");
         }
 
         /// <summary>Sets the comment text for this event.  (Delta-time is handled automatically.)</summary>
