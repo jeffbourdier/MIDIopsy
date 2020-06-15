@@ -1,7 +1,7 @@
 ﻿/* StandardWindow.cs - Implementation of StandardWindow class, which standardizes the way windows are created.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -11,7 +11,7 @@
  */
 
 
-/* Window, WindowState, Rect, WindowStartupLocation */
+/* Rect, Window, WindowStartupLocation, WindowState */
 using System.Windows;
 
 

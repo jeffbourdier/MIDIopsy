@@ -11,7 +11,7 @@
  */
 
 
-/* Exception, Environment */
+/* Environment, Exception */
 using System;
 
 
@@ -28,13 +28,6 @@ namespace JeffBourdier
          ***********/
 
         #region Public Methods
-
-        /// <summary>Returns an error message using the standard format.</summary>
-        /// <param name="text">Error-specific text.</param>
-        /// <param name="ex">The exception associated with the error.</param>
-        /// <returns>An error message using the standard format.</returns>
-        public static string FormatErrorMessage(string text, Exception ex)
-        { return string.Format(Common.Resources.ErrorMessageFormat, text, Environment.NewLine, ex.Message); }
 
         /// <summary>Indicates whether a character is considered printable according to Windows-1252 encoding.</summary>
         /// <param name="c">The character to evaluate.</param>
@@ -58,6 +51,25 @@ namespace JeffBourdier
             return false;
         }
 
+        /// <summary>Double-quotes a text string.</summary>
+        /// <param name="text">The text string to double-quote.</param>
+        /// <returns>The text string in double-quotes.</returns>
+        public static string DoubleQuote(string text) { return string.Format("\"{0}\"", text); }
+
+        /// <summary>Returns an error message using the standard format.</summary>
+        /// <param name="text">Error-specific text.</param>
+        /// <param name="ex">The exception associated with the error.</param>
+        /// <returns>An error message using the standard format.</returns>
+        public static string FormatErrorMessage(string text, Exception ex)
+        { return string.Format(Common.Resources.ErrorMessageFormat, text, Environment.NewLine, ex.Message); }
+
+        /// <summary>Returns a string representing a quantity of some unit.</summary>
+        /// <param name="n">The quantity to represent.</param>
+        /// <param name="unit">The unit of the quantity (e.g., "byte").</param>
+        /// <returns>A string representation of the quantity and units (e.g., "32 bytes").</returns>
+        public static string FormatCount(int n, string unit)
+        { return n + " " + Text.ParseLabel(unit).ToLower() + ((n == 1) ? string.Empty : "s"); }
+
         /// <summary>
         /// Parses a string meant to serve as the content of a label.  If the string contains parentheses, the text
         /// within the parentheses is returned.  Otherwise, the string with underscores and colons removed is returned.
@@ -66,10 +78,8 @@ namespace JeffBourdier
         /// <returns>A copy of the string s with underscores and colons removed.</returns>
         public static string ParseLabel(string s)
         {
-            int i, n;
-
-            i = s.IndexOf('(') + 1;
-            n = s.LastIndexOf(')') - i;
+            int i = s.IndexOf('(') + 1;
+            int n = s.LastIndexOf(')') - i;
             if (i > 0 && n > 0) return s.Substring(i, n);
             return s.Replace("_", null).Replace(":", null);
         }

@@ -30,12 +30,12 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the StandardLabel class.</summary>
-        /// <param name="content">The content of the label.</param>
+        /// <param name="content">The content of the label (a colon is appended).</param>
         /// <param name="fit">True if the label is to be fit to its content; otherwise, false.</param>
         public StandardLabel(object content, bool fit)
         {
             /* Set the content of the label. */
-            this.Content = content;
+            this.Content = content + ":";
 
             /* If the label is not to be fit to its content, we're done. */
             if (!fit) return;

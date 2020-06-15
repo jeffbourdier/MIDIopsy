@@ -2,4 +2,4 @@ MIDIopsy is a Windows application that is used to view, play, and edit the binar
 
 Home Page:  https://jeffbourdier.github.io/midiopsy
 
-![screenshot](screenshot.png)
+![screenshot](EditingScreen.png)

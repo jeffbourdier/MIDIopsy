@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JeffBourdier</RootNamespace>
     <AssemblyName>MIDIopsy</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -49,7 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Logger.cs" />
-    <Compile Include="Data\Sets\Chunks\MidiTrackChunk.cs" />
     <Compile Include="Common\AboutBox.cs" />
     <Compile Include="Common\AppHelper.cs" />
     <Compile Include="Common\AppWindow.cs" />
@@ -74,43 +73,22 @@
     <Compile Include="Common\StandardWindow.cs" />
     <Compile Include="Common\Text.cs" />
     <Compile Include="Common\UI.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiChannelEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiChannelModeEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiChannelPressureEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiControlChangeEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiNoteOffEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiNoteOnEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiPitchBendEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiPolyKeyPressureEvent.cs" />
-    <Compile Include="Data\Items\Events\Channel\MidiProgramChangeEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiChannelPrefixEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiCopyrightNoticeEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiCuePointEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiEndOfTrackEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiInstrumentNameEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiLyricEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiMarkerEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiMetaEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiSequenceNumberEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiSequencerSpecificMetaEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiSequenceTrackNameEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiSetTempoEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiSmpteOffsetEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiTextEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiTimeSignatureEvent.cs" />
-    <Compile Include="Data\Items\Events\Meta\MidiKeySignatureEvent.cs" />
-    <Compile Include="Data\Items\Events\MidiSysExEvent.cs" />
-    <Compile Include="Data\Items\MidiItem.cs" />
-    <Compile Include="Data\Sets\MidiSet.cs" />
+    <Compile Include="MidiItemDialogs\MidiMetaEventDialog.cs" />
+    <Compile Include="MidiItemDialogs\MidiSysExEventDialog.cs" />
+    <Compile Include="MidiItems\MidiChannelEvent.cs" />
+    <Compile Include="MidiItemDialogs\MidiChannelEventDialog.cs" />
+    <Compile Include="MidiItems\MidiMetaEvent.cs" />
+    <Compile Include="MidiItems\MidiSysExEvent.cs" />
+    <Compile Include="MidiItems\MidiItem.cs" />
     <Compile Include="Meta.cs" />
-    <Compile Include="Data\Sets\Chunks\MidiChunk.cs" />
-    <Compile Include="Data\Items\MidiChunkInfo.cs" />
-    <Compile Include="Data\MidiData.cs" />
-    <Compile Include="Data\Items\Events\MidiEvent.cs" />
-    <Compile Include="Data\Sets\Chunks\MidiHeaderChunk.cs" />
-    <Compile Include="Data\Items\MidiHeaderData.cs" />
-    <Compile Include="Data\Sets\MidiFile.cs" />
-    <Compile Include="MidiHeaderDialog.cs" />
+    <Compile Include="MidiItems\MidiChunkInfo.cs" />
+    <Compile Include="Midi.cs" />
+    <Compile Include="MidiItems\MidiEvent.cs" />
+    <Compile Include="MidiItems\MidiHeader.cs" />
+    <Compile Include="MidiFile.cs" />
+    <Compile Include="MidiItemDialogs\MidiEventDialog.cs" />
+    <Compile Include="MidiItemDialogs\MidiHeaderDialog.cs" />
+    <Compile Include="MidiItemDialogs\MidiItemDialog.cs" />
     <Compile Include="MIDIopsyApp.cs" />
     <Compile Include="MIDIopsyWindow.cs" />
     <Compile Include="PositionControl.cs" />
@@ -126,7 +104,6 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -137,10 +114,13 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\OpeningScreen.png" />
     <Resource Include="Resources\Banner.bmp" />
+    <None Include="Resources\EditingScreen.png" />
     <Content Include="Resources\Help.html">
       <SubType>Designer</SubType>
     </Content>

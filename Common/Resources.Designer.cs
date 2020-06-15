@@ -188,7 +188,7 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Log file path:.
+        ///   Looks up a localized string similar to _Log file path.
         /// </summary>
         internal static string LogFilePath {
             get {
@@ -242,7 +242,7 @@ namespace JeffBourdier.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open Recent:.
+        ///   Looks up a localized string similar to Open Recent.
         /// </summary>
         internal static string OpenRecent {
             get {

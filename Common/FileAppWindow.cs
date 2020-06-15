@@ -1,7 +1,7 @@
 ﻿/* FileAppWindow.cs - Implementation of FileAppWindow class, which extends the class by adds file functionality.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2018-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -11,7 +11,7 @@
  */
 
 
-/* OpenFileDialog, SaveFileDialog, FileDialog */
+/* FileDialog, OpenFileDialog, SaveFileDialog */
 using Microsoft.Win32;
 
 /* Math */
@@ -29,13 +29,13 @@ using System.ComponentModel;
 /* Path */
 using System.IO;
 
-/* RoutedEventArgs, MessageBoxResult, MessageBox, Thickness, HorizontalAlignment */
+/* HorizontalAlignment, MessageBox, MessageBoxResult, RoutedEventArgs, Thickness */
 using System.Windows;
 
-/* StackPanel, Grid, ColumnDefinition, Panel, Button */
+/* Button, ColumnDefinition, Grid, Panel, StackPanel */
 using System.Windows.Controls;
 
-/* CommandBinding, RoutedUICommand, KeyGesture, ApplicationCommands, Key, ExecutedRoutedEventArgs, CanExecuteRoutedEventArgs */
+/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, ExecutedRoutedEventArgs, Key, KeyGesture, RoutedUICommand */
 using System.Windows.Input;
 
 
@@ -134,16 +134,15 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private const int MruMax = 5;
-
-        private FileState _FileState;
-        private string _FilePath;
+        private const int MruMax = 9;
 
         private CommandPanel OpeningPanel;
         private CommandPanel SavingPanel;
         private StackPanel MruPanel;
         private string[] MruArray;
         private int MruTabIndexOffset;
+        private FileState _FileState;
+        private string _FilePath;
 
         #endregion
 
@@ -355,7 +354,7 @@ namespace JeffBourdier
         }
 
         private void SaveAsCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        { e.CanExecute = (this.FileState == FileState.OpenedOrSaved) || (this.FileState == FileState.Edited); }
+        { e.CanExecute = (this.FileState == FileState.OpenedOrSaved || this.FileState == FileState.Edited); }
 
         private void DoneExecuted(object sender, ExecutedRoutedEventArgs e)
         {

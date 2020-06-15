@@ -1,7 +1,7 @@
 ﻿/* CommandButton.cs - Implementation of CommandButton class (a button that invokes a command).
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -20,7 +20,7 @@ using System.Windows;
 /* Button */
 using System.Windows.Controls;
 
-/* RoutedUICommand, InputGesture, KeyGesture */
+/* InputGesture, KeyGesture, RoutedUICommand */
 using System.Windows.Input;
 
 
@@ -37,6 +37,7 @@ namespace JeffBourdier
 
         /// <summary>Initializes a new instance of the Button class that invokes a command when pressed.</summary>
         /// <param name="command">A command to invoke when the button is pressed.</param>
+        /// <remarks>When a command cannot execute, its button is automatically disabled.</remarks>
         public CommandButton(RoutedUICommand command)
         {
             /* Initialize the button. */
@@ -67,7 +68,7 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private string Shortcut = null;
+        private string Shortcut;
 
         #endregion
 

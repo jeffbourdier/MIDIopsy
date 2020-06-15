@@ -1,6 +1,6 @@
 ﻿/* PositionControl.cs - Implementation of PositionControl class, used to display or edit a media playback position.
  *
- * Copyright (c) 2019 Jeffrey Paul Bourdier
+ * Copyright (c) 2019-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -13,13 +13,13 @@
 /* TimeSpan */
 using System;
 
-/* GridLength, TextAlignment, FontWeights */
+/* FontWeights, GridLength, TextAlignment */
 using System.Windows;
 
-/* UserControl, Grid, ColumnDefinition, RowDefinition, TextBox, TextChangedEventArgs */
+/* ColumnDefinition, Grid, RowDefinition, TextBox, TextChangedEventArgs, UserControl */
 using System.Windows.Controls;
 
-/* Brush, Brushes */
+/* Brush, SystemColors */
 using System.Windows.Media;
 
 
@@ -102,12 +102,11 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private TimeSpan _Position = TimeSpan.Zero;
-
         private TextBox HoursTextBox;
         private TextBox MinutesTextBox;
         private TextBox SecondsTextBox;
         private bool NoValidation = false;
+        private TimeSpan _Position = TimeSpan.Zero;
 
         #endregion
 
@@ -151,13 +150,13 @@ namespace JeffBourdier
             this.HoursTextBox.Background = brush;
         }
 
-        public void Unhighlight()
+        public void Unhighlight(object unused)
         {
-            this.HoursTextBox.Background = Brushes.White;
+            this.HoursTextBox.Background = SystemColors.WindowBrush;
             this.HoursTextBox.FontWeight = FontWeights.Normal;
-            this.MinutesTextBox.Background = Brushes.White;
+            this.MinutesTextBox.Background = SystemColors.WindowBrush;
             this.MinutesTextBox.FontWeight = FontWeights.Normal;
-            this.SecondsTextBox.Background = Brushes.White;
+            this.SecondsTextBox.Background = SystemColors.WindowBrush;
             this.SecondsTextBox.FontWeight = FontWeights.Normal;
         }
 
@@ -192,7 +191,7 @@ namespace JeffBourdier
 
         private static StandardLabel CreateLabel(string text, int row, int column)
         {
-            StandardLabel label = new StandardLabel(text + ":", true);
+            StandardLabel label = new StandardLabel(text, true);
             label.HorizontalContentAlignment = HorizontalAlignment.Center;
             Grid.SetRow(label, row);
             Grid.SetColumn(label, column);
@@ -211,7 +210,7 @@ namespace JeffBourdier
             return textBox;
         }
 
-        private bool ValidateNumericInput(TextBox textBox, ref int value, uint max, string description)
+        private bool ValidateNumericInput(TextBox textBox, ref int value, int max, string description)
         {
             /* Prevent unnecessary recursion. */
             if (this.NoValidation) return false;
@@ -227,9 +226,9 @@ namespace JeffBourdier
             }
 
             /* Otherwise, normal validation rules apply. */
-            uint n = (uint)value;
-            bool b = UI.ValidateNumericInput(textBox, ref n, max, description + "s");
-            if (b) value = (int)n;
+            int n = value;
+            bool b = UI.ValidateNumericInput(textBox, ref n, 0, max, description + "s");
+            if (b) value = n;
 
             /* Number should be two digits. */
             while (textBox.Text.Length > 2) if (textBox.Text.StartsWith("0")) textBox.Text = textBox.Text.Substring(1);

@@ -11,10 +11,10 @@
  */
 
 
-/* Window, WindowStyle, ResizeMode, SizeToContent, UIElement */
+/* ResizeMode, SizeToContent, UIElement, Window, WindowStyle */
 using System.Windows;
 
-/* StackPanel, Button */
+/* Button, StackPanel */
 using System.Windows.Controls;
 
 
@@ -46,7 +46,7 @@ namespace JeffBourdier
         #region Private Fields
 
         private StackPanel MainPanel = new StackPanel();
-        private Button _OkButton = null;
+        private Button _OkButton;
 
         #endregion
 
@@ -76,6 +76,13 @@ namespace JeffBourdier
 
         #endregion
 
+        #region Protected Properties
+
+        /// <summary>Gets the number of controls on the main panel of the dialog.</summary>
+        protected int ControlCount { get { return this.MainPanel.Children.Count; } }
+
+        #endregion
+
         /***********
          * Methods *
          ***********/
@@ -98,6 +105,15 @@ namespace JeffBourdier
         /// <summary>Adds a top-level UI element to the main stack panel.</summary>
         /// <param name="element">The UI element to add.</param>
         protected void AddUIElement(UIElement element) { this.MainPanel.Children.Add(element); }
+
+        /// <summary>Inserts a UI element into the main stack panel at a specified index.</summary>
+        /// <param name="index">The index at which to insert the UI element.</param>
+        /// <param name="element">The UI element to insert.</param>
+        protected void InsertUIElement(int index, UIElement element) { this.MainPanel.Children.Insert(index, element); }
+
+        /// <summary>Removes from the main stack panel the UI element at a specified index.</summary>
+        /// <param name="index">The index of the UI element to remove.</param>
+        protected void RemoveUIElement(int index) { this.MainPanel.Children.RemoveAt(index); }
 
         /// <summary>
         /// Builds out the window by adding an area containing an OK button and a Cancel button

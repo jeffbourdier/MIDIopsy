@@ -20,10 +20,10 @@ using System.Collections.Generic;
 /* CancelEventArgs */
 using System.ComponentModel;
 
-/* Button, Canvas, Panel, DockPanel, Dock */
+/* Button, Canvas, Dock, DockPanel, Panel */
 using System.Windows.Controls;
 
-/* CommandBinding, RoutedUICommand, ApplicationCommands, ExecutedRoutedEventArgs, CanExecuteRoutedEventArgs */
+/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, ExecutedRoutedEventArgs, RoutedUICommand */
 using System.Windows.Input;
 
 
@@ -100,7 +100,6 @@ namespace JeffBourdier
         private DockPanel MainPanel;
         private DockPanel HeaderPanel;
         private CommandPanel HeaderCommandPanel;
-
         private int _HeaderControlCount;
 
         #endregion

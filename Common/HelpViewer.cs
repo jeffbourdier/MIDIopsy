@@ -11,11 +11,17 @@
  */
 
 
-/* Uri, Exception */
+/* Exception, Uri */
 using System;
 
 /* CancelEventArgs */
 using System.ComponentModel;
+
+/* Bitmap */
+using System.Drawing;
+
+/* MemoryStream */
+using System.IO;
 
 /* Assembly */
 using System.Reflection;
@@ -23,7 +29,7 @@ using System.Reflection;
 /* ResourceManager */
 using System.Resources;
 
-/* MessageBox, Application, MessageBoxButton, MessageBoxImage */
+/* Application, MessageBox, MessageBoxButton, MessageBoxImage */
 using System.Windows;
 
 /* WebBrowser */
@@ -45,17 +51,15 @@ namespace JeffBourdier
          * Fields *
          **********/
 
-        #region Public Fields
+        #region Private Fields
 
         /// <summary>
-        /// The name of the resource in the entry assembly (presumably the application .exe file) containing
-        /// the text to show in the help window.  If there is no such resource, the help window cannot be shown.
+        /// The text (from an HTML file resource of the same name in the entry assembly, presumably the application
+        /// .exe file) to show in the help window.  (If there is no such resource, the help window cannot be shown.)
         /// </summary>
-        public const string HelpTextResourceName = "HelpText";
+        private static string HelpText;
 
-        #endregion
-
-        #region Private Fields
+        private static ResourceManager ResourceManager;
 
         /// <summary>The help window.  There is one per application instance.</summary>
         private static StandardWindow Window;
@@ -71,8 +75,6 @@ namespace JeffBourdier
         /// <summary>Displays a help viewer for the application.</summary>
         public static void Show()
         {
-            string s;
-
             /* If the help window is already shown, activate it. */
             if (HelpViewer.Window != null)
             {
@@ -84,18 +86,21 @@ namespace JeffBourdier
              * get the help text, because if it doesn't exist, the help window cannot be shown.
              */
             Assembly assembly = Assembly.GetEntryAssembly();
-            ResourceManager manager = new ResourceManager("JeffBourdier.Properties.Resources", assembly);
-            try { s = manager.GetString(HelpViewer.HelpTextResourceName); }
+            HelpViewer.ResourceManager = new ResourceManager("JeffBourdier.Properties.Resources", assembly);
+            try { HelpViewer.HelpText = HelpViewer.ResourceManager.GetString("HelpText"); }
             catch (Exception ex)
             {
                 Logger.WriteMessage(Common.Resources.NoHelp);
                 Logger.WriteException(ex);
 
-                s = Text.FormatErrorMessage(Common.Resources.NoHelp, ex);
+                string s = Text.FormatErrorMessage(Common.Resources.NoHelp, ex);
                 MessageBox.Show(Application.Current.MainWindow, s,
                     AppHelper.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            /* Replace each image source in the help text with its equivalent base-64 encoded string. */
+            for (int i = 1; i > 0; i = HelpViewer.EncodeImage(i)) ;
 
             /* Start building the window. */
             HelpViewer.Window = new StandardWindow();
@@ -107,7 +112,7 @@ namespace JeffBourdier
 
             /* Set the content of the window to the help text. */
             WebBrowser browser = new WebBrowser();
-            browser.NavigateToString(s);
+            browser.NavigateToString(HelpViewer.HelpText);
             HelpViewer.Window.Content = browser;
 
             /* Finish building the window. */
@@ -141,6 +146,43 @@ namespace JeffBourdier
         }
 
         #endregion
+
+        /* Replace an image source in the help text with its equivalent base-64 encoded string. */
+        private static int EncodeImage(int index)
+        {
+            const string format = "src=\"{0}\"";
+
+            /* Parse out the image source (file name) from the help text. */
+            int i = HelpViewer.HelpText.IndexOf("<img ", index);
+            if (i < 0) return i;
+            i = HelpViewer.HelpText.IndexOf("src=\"", i += 5);
+            if (i < 0) return i;
+            int j = HelpViewer.HelpText.IndexOf('"', i += 5);
+            if (j < 0) return j;
+            string name = HelpViewer.HelpText.Substring(i, j - i);
+
+            /* Extract the image resource. */
+            string s = Path.GetFileNameWithoutExtension(name);
+            Bitmap bitmap = HelpViewer.ResourceManager.GetObject(s) as Bitmap;
+            if (bitmap == null) return j;
+
+            /* Convert the image to a byte array. */
+            byte[] bytes;
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, bitmap.RawFormat);
+                bytes = stream.ToArray();
+            }
+
+            /* Convert the byte array to its equivalent base-64 encoded string, and
+             * use that to replace the image source (file name) in the help text.
+             */
+            s = "data:image/png;base64," + Convert.ToBase64String(bytes);
+            name = string.Format(format, name);
+            s = string.Format(format, s);
+            HelpViewer.HelpText = HelpViewer.HelpText.Replace(name, s);
+            return HelpViewer.HelpText.IndexOf('"', j);
+        }
 
         #endregion
     }

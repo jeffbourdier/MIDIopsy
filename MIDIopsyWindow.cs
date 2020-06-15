@@ -10,7 +10,7 @@
  */
 
 
-/* Uri, Exception, Environment, EventArgs, Action, StringSplitOptions, ApplicationException */
+/* Action, Delegate, Environment, EventArgs, Exception, Uri */
 using System;
 
 /* List */
@@ -19,28 +19,31 @@ using System.Collections.Generic;
 /* CancelEventArgs */
 using System.ComponentModel;
 
-/* NumberStyles */
-using System.Globalization;
-
-/* EventWaitHandle, EventResetMode, ThreadPool, Thread */
+/* EventResetMode, EventWaitHandle, Thread, ThreadPool */
 using System.Threading;
 
-/* Thickness, GridLength, HorizontalAlignment, VerticalAlignment, TextAlignment, MessageBox,
- * MessageBoxButton, MessageBoxImage, MessageBoxResult, RoutedEventArgs, RoutedEventHandler
+/* DataTemplate, FrameworkElementFactory, GridLength, HorizontalAlignment, MessageBox, MessageBoxButton, MessageBoxImage,
+ * MessageBoxResult, Setter, Style, SystemColors, SystemParameters, TextAlignment, TextWrapping, Thickness
  */
 using System.Windows;
 
-/* StackPanel, Orientation, Canvas, TextBox, GridSplitter, Grid, ColumnDefinition, DockPanel,
- * Dock, TextChangedEventArgs, ScrollChangedEventArgs, ScrollBarVisibility, ScrollViewer, Label
+/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox,
+ * Label, ListView, ListViewItem, Orientation, TextBlock, TextBox, StackPanel, WrapPanel
  */
 using System.Windows.Controls;
 
-/* KeyGesture, MediaCommands, RoutedUICommand, CommandBinding,
- * CommandManager, ExecutedRoutedEventArgs, CanExecuteRoutedEventArgs
+/* GeneratorStatus */
+using System.Windows.Controls.Primitives;
+
+/* Binding */
+using System.Windows.Data;
+
+/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, CommandManager,
+ * ExecutedRoutedEventArgs, KeyGesture, MediaCommands, RoutedUICommand
  */
 using System.Windows.Input;
 
-/* FontFamily, Brush, Brushes, MediaPlayer */
+/* Brush, Brushes, MediaPlayer */
 using System.Windows.Media;
 
 /* BitmapFrame */
@@ -49,9 +52,6 @@ using System.Windows.Media.Imaging;
 
 namespace JeffBourdier
 {
-    /// <summary>Specifies enumerated constants to define the state of the UI.</summary>
-    internal enum UIState { View, Play, Edit }
-
     /// <summary>Represents a window that makes up the user interface for the MIDIopsy application.</summary>
     public class MIDIopsyWindow : FileAppWindow
     {
@@ -64,21 +64,82 @@ namespace JeffBourdier
         /// <summary>Initializes a MIDIopsyWindow object.</summary>
         public MIDIopsyWindow()
         {
+            CommandBinding binding;
+            List<RoutedUICommand> commands;
             KeyGesture gesture;
             RoutedUICommand command;
-            CommandBinding binding;
-            StandardLabel label;
+
+            /* Create and bind the command to create a new track. */
+            RoutedUICommand newTrackCommand = new RoutedUICommand();
+            newTrackCommand.Text = Properties.Resources.Track;
+            binding = new CommandBinding(newTrackCommand, this.NewTrackExecuted, this.CommandCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Create and bind the command to create a new channel message/event. */
+            RoutedUICommand newChannelEventCommand = new RoutedUICommand();
+            newChannelEventCommand.Text =
+                Properties.Resources.Channel + Environment.NewLine + "  " + Properties.Resources.Event;
+            binding = new CommandBinding(newChannelEventCommand, this.NewChannelEventExecuted, this.NewEventCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Create and bind the command to create a new system exclusive (SysEx) message/event. */
+            RoutedUICommand newSysExEventCommand = new RoutedUICommand();
+            string s = Text.ParseLabel(Properties.Resources.SysEx);
+            newSysExEventCommand.Text = s.Insert(s.Length - 1, "_") + " " + Properties.Resources.Event;
+            binding = new CommandBinding(newSysExEventCommand, this.NewSysExEventExecuted, this.NewEventCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Create and bind the command to create a new meta-event. */
+            RoutedUICommand newMetaEventCommand = new RoutedUICommand();
+            newMetaEventCommand.Text = "_" + Properties.Resources.MetaEvent;
+            binding = new CommandBinding(newMetaEventCommand, this.NewMetaEventExecuted, this.NewEventCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Build the command list and panel for the "New Items" group box. */
+            commands = new List<RoutedUICommand>();
+            commands.Add(newTrackCommand);
+            commands.Add(newChannelEventCommand);
+            commands.Add(newSysExEventCommand);
+            commands.Add(newMetaEventCommand);
+            this.NewItemsPanel = new CommandPanel(commands, true);
+
+            /* Build out the "New Items" group box. */
+            GroupBox newItemsGroupBox = new GroupBox();
+            newItemsGroupBox.Header = Properties.Resources.NewItems;
+            newItemsGroupBox.Content = this.NewItemsPanel;
+            newItemsGroupBox.Margin = new Thickness(UI.UnitSpace);
+
+            /* Bind the command to edit the properties of the selected item. */
+            binding = new CommandBinding(ApplicationCommands.Properties, this.EditItemExecuted, this.CommandCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Bind the command to delete the selected item. */
+            binding = new CommandBinding(ApplicationCommands.Delete, this.DeleteItemExecuted, this.CommandCanExecute);
+            this.CommandBindings.Add(binding);
+
+            /* Build the command list and panel for the "Edit Items" group box. */
+            commands = new List<RoutedUICommand>();
+            commands.Add(ApplicationCommands.Properties);
+            commands.Add(ApplicationCommands.Delete);
+            this.EditItemsPanel = new CommandPanel(commands, true);
+
+            /* Build out the "Edit Items" group box. */
+            GroupBox editItemsGroupBox = new GroupBox();
+            editItemsGroupBox.Header = Properties.Resources.EditItems;
+            editItemsGroupBox.Content = this.EditItemsPanel;
+            editItemsGroupBox.Margin = new Thickness(UI.UnitSpace);
 
             /* The duration of a MIDI file cannot be determined until it has been
              * opened for media playback (i.e., the MediaOpened event has been raised).
              */
+            this.Player = new MediaPlayer();
             this.Player.MediaOpened += this.Player_MediaOpened;
             this.Player.MediaEnded += this.Player_MediaEnded;
 
             /* Bind the Play/Stop command (for MIDI file playback). */
             gesture = new KeyGesture(Key.F5);
             MediaCommands.Play.InputGestures.Add(gesture);
-            binding = new CommandBinding(MediaCommands.Play, this.PlayStopExecuted, this.PlaybackCommandCanExecute);
+            binding = new CommandBinding(MediaCommands.Play, this.PlayStopExecuted, this.CommandCanExecute);
             this.CommandBindings.Add(binding);
             this.PlayStopButton = new CommandButton(MediaCommands.Play);
 
@@ -86,12 +147,19 @@ namespace JeffBourdier
             this.StartingPositionControl = new PositionControl(Properties.Resources.StartingPosition, false);
             this.StartingPositionControl.Margin = new Thickness(UI.UnitSpace);
 
+            /* Because the Starting Position control is a dispatcher object owned by the main UI thread,
+             * a background thread cannot access it.  These delegates allow a background thread to
+             * highlight (and unhighlight) the starting position on the main UI thread via the dispatcher.
+             */
+            this.HighlightStartingPosition = new Action<Brush>(this.StartingPositionControl.Highlight);
+            this.UnhighlightStartingPosition = new Action<object>(this.StartingPositionControl.Unhighlight);
+
             /* Create and bind the Reset command (to reset/zero starting position). */
             command = new RoutedUICommand();
             gesture = new KeyGesture(Key.F6);
             command.InputGestures.Add(gesture);
             command.Text = Properties.Resources.Reset;
-            binding = new CommandBinding(command, this.ResetExecuted, this.PlaybackCommandCanExecute);
+            binding = new CommandBinding(command, this.ResetExecuted, this.CommandCanExecute);
             this.CommandBindings.Add(binding);
             CommandButton resetButton = new CommandButton(command);
 
@@ -100,91 +168,57 @@ namespace JeffBourdier
             gesture = new KeyGesture(Key.F7);
             command.InputGestures.Add(gesture);
             command.Text = Properties.Resources.Sync;
-            binding = new CommandBinding(command, this.SyncExecuted, this.PlaybackCommandCanExecute);
+            binding = new CommandBinding(command, this.SyncExecuted, this.CommandCanExecute);
             this.CommandBindings.Add(binding);
             CommandButton syncButton = new CommandButton(command);
 
-            /* Initialize the grid for the Position & Duration controls (to be added shortly). */
+            /* Initialize the grid for the Position and Duration controls. */
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[1].Width = new GridLength(16 * UI.UnitSpace);
+            grid.ColumnDefinitions[1].Width = new GridLength(64);
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
-            grid.Margin = new Thickness(0, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
+            this.PositionTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 0, Properties.Resources.Position);
+            this.DurationTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 1, Properties.Resources.Duration);
 
-            /* Add the Position controls. */
-            label = new StandardLabel(Properties.Resources.Position, false);
-            grid.Children.Add(label);
-            this.PositionTextBox = this.CreateTextBox(label);
-            grid.Children.Add(this.PositionTextBox);
+            /* Build the panel for the playback controls (which will serve as the content for the "Playback" group box). */
+            StackPanel stackPanel = new StackPanel();
+            stackPanel.Orientation = Orientation.Horizontal;
+            stackPanel.Children.Add(this.PlayStopButton);
+            stackPanel.Children.Add(this.StartingPositionControl);
+            stackPanel.Children.Add(resetButton);
+            stackPanel.Children.Add(syncButton);
+            stackPanel.Children.Add(grid);
 
-            /* Add the Duration controls. */
-            label = new StandardLabel(Properties.Resources.Duration, false);
-            Grid.SetRow(label, 1);
-            grid.Children.Add(label);
-            this.DurationTextBox = this.CreateTextBox(label);
-            Grid.SetRow(this.DurationTextBox, 1);
-            grid.Children.Add(this.DurationTextBox);
+            /* Build out the "Playback" group box. */
+            GroupBox playbackGroupBox = new GroupBox();
+            playbackGroupBox.Header = Properties.Resources.Playback;
+            playbackGroupBox.Content = stackPanel;
+            playbackGroupBox.Margin = new Thickness(UI.UnitSpace);
 
-            /* Build the panel for the playback controls. */
-            this.PlaybackPanel = new StackPanel();
-            this.PlaybackPanel.Orientation = Orientation.Horizontal;
-            this.PlaybackPanel.Children.Add(this.PlayStopButton);
-            this.PlaybackPanel.Children.Add(this.StartingPositionControl);
-            this.PlaybackPanel.Children.Add(resetButton);
-            this.PlaybackPanel.Children.Add(syncButton);
-            this.PlaybackPanel.Children.Add(grid);
+            /* Build a wrap panel (for all the controls above). */
+            WrapPanel wrapPanel = new WrapPanel();
+            wrapPanel.Children.Add(newItemsGroupBox);
+            wrapPanel.Children.Add(editItemsGroupBox);
+            wrapPanel.Children.Add(playbackGroupBox);
 
-            /* Create and bind the command to toggle (start/stop) editing. */
-            command = new RoutedUICommand();
-            gesture = new KeyGesture(Key.F2);
-            command.InputGestures.Add(gesture);
-            command.Text = Properties.Resources.StartEditing;
-            binding = new CommandBinding(command, this.EditExecuted, this.EditCanExecute);
-            this.CommandBindings.Add(binding);
-            this.EditButton = new CommandButton(command);
-
-            /* Build the dock panel (for all the controls above). */
-            DockPanel.SetDock(this.EditButton, Dock.Left);
-            DockPanel.SetDock(this.PlaybackPanel, Dock.Right);
-            DockPanel panel = new DockPanel();
-            panel.Children.Add(this.EditButton);
-            panel.Children.Add(this.PlaybackPanel);
-            panel.Children.Add(new Canvas());
-
-            /* Initialize the text boxes. */
-            this.HexTextBox = this.CreateTextBox(null);
-            this.HexTextBox.AcceptsReturn = true;
-            this.HexTextBox.Loaded += this.HexTextBox_Loaded;
-            this.HexTextBox.TextChanged += HexTextBox_TextChanged;
-            this.CommentsTextBox = this.CreateTextBox(null);
-
-            /* Initialize the grid splitter. */
-            GridSplitter splitter = new GridSplitter();
-            splitter.HorizontalAlignment = HorizontalAlignment.Center;
-            splitter.VerticalAlignment = VerticalAlignment.Stretch;
-            splitter.Width = UI.UnitSpace;
-
-            /* Build the grid for the text boxes. */
-            this.TextGrid = new Grid();
-            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            this.TextGrid.ColumnDefinitions[0].Width = new GridLength(UI.ClientWidth / 2);
-            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            this.TextGrid.ColumnDefinitions[1].Width = GridLength.Auto;
-            this.TextGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            Grid.SetColumn(this.HexTextBox, 0);
-            Grid.SetColumn(splitter, 1);
-            Grid.SetColumn(this.CommentsTextBox, 2);
-            this.TextGrid.Children.Add(this.HexTextBox);
-            this.TextGrid.Children.Add(splitter);
-            this.TextGrid.Children.Add(this.CommentsTextBox);
+            /* Initialize the grid/list view. */
+            this.ListView = new ListView();
+            this.ListView.ItemContainerStyle = new Style(typeof(ListViewItem));
+            Setter setter = new Setter(ListViewItem.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch);
+            this.ListView.ItemContainerStyle.Setters.Add(setter);
+            this.GridView = new GridView();
+            foreach (MidiItem.DisplayField field in MidiItem.DisplayFields) this.AddViewColumn(field);
+            this.ListView.View = this.GridView;
+            this.ListView.Margin = new Thickness(0, UI.UnitSpace, 0, 0);
+            this.ListView.ItemContainerGenerator.StatusChanged += this.ItemContainerGenerator_StatusChanged;
 
             /* Build out the editing panel. */
-            DockPanel.SetDock(panel, Dock.Top);
+            DockPanel.SetDock(wrapPanel, Dock.Top);
             this.EditingPanel = new DockPanel();
-            this.EditingPanel.Children.Add(panel);
-            this.EditingPanel.Children.Add(this.TextGrid);
+            this.EditingPanel.Children.Add(wrapPanel);
+            this.EditingPanel.Children.Add(this.ListView);
 
             /* Initialize the window object. */
             Uri uri = AppHelper.CreateResourceUri(false, "MIDIopsy.ico");
@@ -192,7 +226,7 @@ namespace JeffBourdier
             this.FileDialogFilter = Properties.Resources.MidiFiles;
             this.Closing += this.MIDIopsyWindow_Closing;
             this.MinWidth = 640;
-            this.MinHeight = 240;
+            this.MinHeight = 320;
 
             /* Start another thread (initally blocked) to update the Position control during MIDI file playback. */
             this.EventHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -207,28 +241,44 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private static FontFamily Font = new FontFamily("Courier New");
-        private static Brush HighlightingBrush = Brushes.DarkKhaki;
-        private static Brush SelectionBrush = Brushes.DodgerBlue;
-        private static int DefaultTimeout = 250;
-        private static string[] Separators = new string[] { " ", Environment.NewLine };
+        private const int DefaultTimeout = 250;
+        private static readonly Thickness CellMargin = new Thickness(-6, -3, -6, -3);
+        private static readonly Thickness CellPadding = new Thickness(6, 3, 6, 3);
 
-        private MediaPlayer Player = new MediaPlayer();
+        private CommandPanel NewItemsPanel;
+        private CommandPanel EditItemsPanel;
+        private MediaPlayer Player;
         private CommandButton PlayStopButton;
         private PositionControl StartingPositionControl;
+        private Delegate HighlightStartingPosition;
+        private Delegate UnhighlightStartingPosition;
         private TextBox PositionTextBox;
         private TextBox DurationTextBox;
-        private StackPanel PlaybackPanel;
-        private CommandButton EditButton;
-        private TextBox HexTextBox;
-        private TextBox CommentsTextBox;
-        private Grid TextGrid;
+        private ListView ListView;
+        private GridView GridView;
         private EventWaitHandle EventHandle;
-        private MidiFile MidiFile;
-        private UIState UIState = UIState.View;
+        private MidiFile MidiFile = new MidiFile();
+        private bool Playing = false;
         private bool AutoPlay = false;
-        private bool NoHighlighting = false;
-        private string LastValidHex;
+
+        #endregion
+
+        /**************
+         * Properties *
+         **************/
+
+        #region Private Properties
+
+        /* Count the number of separators that precede the selected item in the list view. */
+        private int SeparatorCount
+        {
+            get
+            {
+                int i = this.ListView.SelectedIndex, n = 0;
+                while (i > 0) if (this.ListView.Items[--i] is MidiItem.Separator) ++n;
+                return n;
+            }
+        }
 
         #endregion
 
@@ -238,12 +288,20 @@ namespace JeffBourdier
 
         #region Protected Methods
 
+        /// <summary>Adjusts tab indexes as necessary to account for the header.</summary>
+        protected override void AdjustTabIndexes()
+        {
+            if (this.FileState == FileState.None) return;
+            this.NewItemsPanel.TabIndexOffset = this.HeaderControlCount;
+            this.EditItemsPanel.TabIndexOffset = this.HeaderControlCount + this.NewItemsPanel.Children.Count;
+        }
+
         /// <summary>Prompts the user for information needed to create a new MIDI file.</summary>
         /// <returns>True if a new file is to be created; otherwise, false.</returns>
         protected override bool NewFile()
         {
             /* Prompt the user for header data.  If the user cancels, take no further action. */
-            MidiHeaderDialog dialog = new MidiHeaderDialog();
+            MidiHeaderDialog dialog = new MidiHeaderDialog(null);
             bool? result = dialog.ShowDialog(this);
             if (result == false) return false;
 
@@ -251,8 +309,9 @@ namespace JeffBourdier
             base.NewFile();
 
             /* Create a new file object using the header data supplied by the user. */
-            MidiHeaderData data = dialog.CreateData();
-            this.MidiFile = new MidiFile(data);
+            if (dialog.TicksPerQuarterNote < 0)
+                this.MidiFile.Create(dialog.Format, dialog.NumberOfTracks, dialog.FramesPerSecond, dialog.TicksPerFrame);
+            else this.MidiFile.Create(dialog.Format, dialog.NumberOfTracks, dialog.TicksPerQuarterNote);
 
             /* Load the file object into the UI. */
             this.LoadFile();
@@ -268,7 +327,7 @@ namespace JeffBourdier
             if (!base.OpenFile(filePath)) return false;
 
             /* The user does want to open a file, so create a new file object using the file path. */
-            try { this.MidiFile = new MidiFile(this.FilePath); }
+            try { this.MidiFile.Load(this.FilePath); }
             catch (Exception ex)
             {
                 Logger.WriteMessage(Common.Resources.FileNotOpened);
@@ -294,31 +353,12 @@ namespace JeffBourdier
         /// <returns>True if the file is to be saved; otherwise, false.</returns>
         protected override bool SaveFile(bool asNew)
         {
-            MessageBoxResult result;
-
-            switch (this.UIState)
+            /* If the file is playing, warn the user that this will stop it. */
+            if (this.Playing)
             {
-                /* If the file is playing, warn the user that this will stop it. */
-                case UIState.Play:
-                    result = MessageBox.Show(this, Properties.Resources.WillStopPlayback,
-                        Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.No) return false;
-                    break;
-
-                /* If editing, validate the changes. */
-                case UIState.Edit:
-                    bool? valid = this.ApplyHex();
-
-                    /* If the changes are invalid and the user did not revert (so the data remains invalid), don't save. */
-                    if (valid == false) return false;
-
-                    /* If the user reverted the invalid changes (so the data is now valid), ask if they still want to save. */
-                    if (valid == null)
-                    {
-                        result = MessageBox.Show(this, Properties.Resources.SaveReverted, Meta.Name, MessageBoxButton.YesNo);
-                        if (result == MessageBoxResult.No) return false;
-                    }
-                    break;
+                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.WillStopPlayback,
+                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No) return false;
             }
 
             /* Confirm that the user really wants to save, and establish the file path. */
@@ -330,7 +370,7 @@ namespace JeffBourdier
             this.StopPlayback();
             this.Player.Close();
             Thread.Sleep(MIDIopsyWindow.DefaultTimeout);
-            try { this.MidiFile.WriteToDisk(this.FilePath); }
+            try { this.MidiFile.Save(this.FilePath); }
             catch (Exception ex)
             {
                 Logger.WriteMessage(Common.Resources.FileNotSaved);
@@ -352,10 +392,10 @@ namespace JeffBourdier
             if (!base.CloseFile()) return false;
 
             /* They're really done, so unload the file. */
-            if (!this.StopEditing(false)) this.HexTextBox.IsUndoEnabled = false;
             this.StopPlayback();
             this.Player.Close();
-            this.MidiFile = null;
+            this.ListView.Items.Clear();
+            this.MidiFile.Clear();
             return true;
         }
 
@@ -365,10 +405,281 @@ namespace JeffBourdier
 
         #region Event Handlers
 
+        /* Create a new track (MTrk) chunk. */
+        private void NewTrackExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* Tracks cannot be added to a format 0 file. */
+            if ((this.ListView.Items[1] as MidiHeader).Format == 0)
+            {
+                MessageBox.Show(this, Properties.Resources.OneTrack, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                return;
+            }
+
+            MidiItem.Separator separator;
+            MidiChunkInfo chunkInfo;
+            MidiMetaEvent metaEvent;
+
+            /* Starting from the selected item, find the next chunk in the list view, and insert the new track there. */
+            for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
+            {
+                chunkInfo = this.ListView.Items[i] as MidiChunkInfo;
+                if (chunkInfo == null) continue;
+
+                /* We have found the next chunk.  Insert into the file a new track chunk, followed by an End of Track event. */
+                int j = i - this.SeparatorCount;
+                chunkInfo = this.MidiFile.InsertTrack(--j);
+                metaEvent = this.MidiFile.InsertMetaEvent(++j, 0, MidiMetaEvent.EndOfTrackType, null);
+
+                /* Correspondingly, insert into the list view a separator, the new track chunk, and the End of Track event. */
+                separator = new MidiItem.Separator();
+                this.ListView.Items.Insert(--i, separator);
+                this.ListView.Items.Insert(++i, chunkInfo);
+                this.ListView.Items.Insert(++i, metaEvent);
+
+                /* Refresh the view, and mark the file as edited. */
+                this.FinalizeChanges();
+                return;
+            }
+
+            /* If there is no next chunk in the list view, add the new
+             * track chunk and End of Track event to the end of the file.
+             */
+            chunkInfo = this.MidiFile.AddTrack();
+            metaEvent = this.MidiFile.AddMetaEvent(0, MidiMetaEvent.EndOfTrackType, null);
+
+            /* Correspondingly, add to the list view a separator, new track chunk, and End of Track event. */
+            separator = new MidiItem.Separator();
+            this.ListView.Items.Add(separator);
+            this.ListView.Items.Add(chunkInfo);
+            this.ListView.Items.Add(metaEvent);
+
+            /* Refresh the view, and mark the file as edited. */
+            this.FinalizeChanges();
+        }
+
+        /* Create a new MIDI channel message/event. */
+        private void NewChannelEventExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* Prompt the user for event data.  If the user cancels, take no further action. */
+            MidiChannelEventDialog dialog = new MidiChannelEventDialog(null);
+            bool? result = dialog.ShowDialog(this);
+            if (result == false) return;
+
+            /* The user did not cancel.  Create the event based on user input. */
+            MidiChannelEvent channelEvent;
+            int i = this.GetInsertionIndex();
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                channelEvent = dialog.RunningStatus ?
+                    this.MidiFile.AddChannelEvent(dialog.DeltaTime, dialog.Data1, dialog.Data2) :
+                    this.MidiFile.AddChannelEvent(dialog.DeltaTime, dialog.MessageType,
+                        dialog.Channel, dialog.Data1, dialog.Data2);
+                this.ListView.Items.Add(channelEvent);
+            }
+            /* Otherwise, insert the new event right after the selected item. */
+            else
+            {
+                channelEvent = dialog.RunningStatus ?
+                    this.MidiFile.InsertChannelEvent(i, dialog.DeltaTime, dialog.Data1, dialog.Data2) :
+                    this.MidiFile.InsertChannelEvent(i, dialog.DeltaTime, dialog.MessageType,
+                        dialog.Channel, dialog.Data1, dialog.Data2);
+                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, channelEvent);
+            }
+            this.FinalizeChanges();
+        }
+
+        /* Create a new MIDI system exclusive (SysEx) message/event. */
+        private void NewSysExEventExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* Prompt the user for event data.  If the user cancels, take no further action. */
+            MidiSysExEventDialog dialog = new MidiSysExEventDialog(null);
+            bool? result = dialog.ShowDialog(this);
+            if (result == false) return;
+
+            /* The user did not cancel.  Create the event based on user input. */
+            MidiSysExEvent sysExEvent;
+            int i = this.GetInsertionIndex();
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                sysExEvent = this.MidiFile.AddSysExEvent(dialog.DeltaTime, dialog.Escape, dialog.Data);
+                this.ListView.Items.Add(sysExEvent);
+            }
+            /* Otherwise, insert the new event right after the selected item. */
+            else
+            {
+                sysExEvent = this.MidiFile.InsertSysExEvent(i, dialog.DeltaTime, dialog.Escape, dialog.Data);
+                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, sysExEvent);
+            }
+            this.FinalizeChanges();
+        }
+
+        /* Create a new MIDI meta-event. */
+        private void NewMetaEventExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* Prompt the user for event data.  If the user cancels, take no further action. */
+            MidiMetaEventDialog dialog = new MidiMetaEventDialog(null);
+            bool? result = dialog.ShowDialog(this);
+            if (result == false) return;
+
+            /* The user did not cancel.  Create the event based on user input. */
+            MidiMetaEvent metaEvent;
+            int i = this.GetInsertionIndex();
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                metaEvent = this.MidiFile.AddMetaEvent(dialog.DeltaTime, dialog.Type, dialog.Data);
+                this.ListView.Items.Add(metaEvent);
+            }
+            /* Otherwise, insert the new event right after the selected item. */
+            else
+            {
+                metaEvent = this.MidiFile.InsertMetaEvent(i, dialog.DeltaTime, dialog.Type, dialog.Data);
+                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, metaEvent);
+            }
+            this.FinalizeChanges();
+        }
+
+        /* Edit [the properties of] the selected MIDI item. */
+        private void EditItemExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            MidiItemDialog dialog = null;
+
+            /* If the selected MIDI item is header data, use the header dialog. */
+            MidiHeader header = this.ListView.SelectedItem as MidiHeader;
+            if (header != null) dialog = new MidiHeaderDialog(header);
+
+            /* If the selected MIDI item is a channel message/event, use the channel event dialog. */
+            MidiChannelEvent channelEvent = this.ListView.SelectedItem as MidiChannelEvent;
+            if (channelEvent != null) dialog = new MidiChannelEventDialog(channelEvent);
+
+            /* If the selected MIDI item is a system exclusive (SysEx) message/event, use the SysEx event dialog. */
+            MidiSysExEvent sysExEvent = this.ListView.SelectedItem as MidiSysExEvent;
+            if (sysExEvent != null) dialog = new MidiSysExEventDialog(sysExEvent);
+
+            /* If the selected MIDI item is a meta-event, use the meta-event dialog. */
+            MidiMetaEvent metaEvent = this.ListView.SelectedItem as MidiMetaEvent;
+            if (metaEvent != null) dialog = new MidiMetaEventDialog(metaEvent);
+
+            /* If the dialog has not been initialized by now, it means the selected MIDI item is not editable. */
+            if (dialog == null)
+            {
+                MessageBox.Show(this, Properties.Resources.CannotEdit, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                return;
+            }
+
+            /* Prompt the user to edit the item.  If the user cancels, take no further action. */
+            bool? result = dialog.ShowDialog(this);
+            if (result == false) return;
+
+            /* The user did not cancel.  Change the MIDI item based on user input. */
+            if (header != null)
+            {
+                MidiHeaderDialog headerDialog = dialog as MidiHeaderDialog;
+                header.Format = headerDialog.Format;
+                if (headerDialog.TicksPerQuarterNote < 0)
+                    header.SetTimeCodeBasedDivision(headerDialog.FramesPerSecond, headerDialog.TicksPerFrame);
+                else header.SetMetricalDivision(headerDialog.TicksPerQuarterNote);
+            }
+            else
+            {
+                (this.ListView.SelectedItem as MidiEvent).DeltaTime = (dialog as MidiEventDialog).DeltaTime;
+
+                if (channelEvent != null)
+                {
+                    MidiChannelEventDialog channelEventDialog = dialog as MidiChannelEventDialog;
+                    if (!channelEventDialog.RunningStatus)
+                    {
+                        channelEvent.MessageType = channelEventDialog.MessageType;
+                        channelEvent.Channel = channelEventDialog.Channel;
+                    }
+                    channelEvent.Data1 = channelEventDialog.Data1;
+                    channelEvent.Data2 = channelEventDialog.Data2;
+                }
+                else if (sysExEvent != null)
+                {
+                    MidiSysExEventDialog sysExEventDialog = dialog as MidiSysExEventDialog;
+                    sysExEvent.Escape = sysExEventDialog.Escape;
+                    sysExEvent.Data = sysExEventDialog.Data;
+                }
+                else if (metaEvent != null)
+                {
+                    MidiMetaEventDialog metaEventDialog = dialog as MidiMetaEventDialog;
+                    metaEvent.Type = metaEventDialog.Type;
+                    metaEvent.Data = metaEventDialog.Data;
+                }
+            }
+            this.FinalizeChanges();
+        }
+
+        /* Delete the selected MIDI item. */
+        private void DeleteItemExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            /* No part of a header chunk can be deleted. */
+            if (this.ListView.SelectedItem is MidiHeader)
+            {
+                MessageBox.Show(this, Properties.Resources.CannotDelete, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                return;
+            }
+
+            /* If the selected MIDI item is chunk info, special cases apply. */
+            MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
+            if (chunkInfo != null)
+            {
+                /* No part of a header chunk can be deleted. */
+                if (chunkInfo.Type == MidiChunkInfo.HeaderType)
+                {
+                    MessageBox.Show(this, Properties.Resources.CannotDelete,
+                        Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
+                }
+
+                /* If there's only 1 track, it cannot be deleted. */
+                if (chunkInfo.Type == MidiChunkInfo.TrackType &&
+                    (this.ListView.Items[1] as MidiHeader).NumberOfTracks == 1)
+                {
+                    MessageBox.Show(this, Properties.Resources.CannotDelete,
+                        Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
+                }
+
+                /* Otherwise, the entire chunk will be deleted. */
+                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.WillDeleteChunk,
+                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No) return;
+            }
+
+            /* We have clearance.  Delete the selected item. */
+            int i = this.ListView.SelectedIndex;
+            this.MidiFile.DeleteItem(i - this.SeparatorCount);
+            this.ListView.Items.RemoveAt(i);
+
+            /* If the item was chunk info, remove (from the list view) all items in the chunk. */
+            if (chunkInfo != null)
+            {
+                while (i < this.ListView.Items.Count && !(this.ListView.Items[i] is MidiItem.Separator))
+                    this.ListView.Items.RemoveAt(i);
+                this.ListView.Items.RemoveAt(i - 1);
+            }
+
+            /* With the selected item deleted, there is now no selection.
+             * For convenience, select the nearest non-separator item.
+             */
+            while (i < this.ListView.Items.Count && this.ListView.Items[i++] is MidiItem.Separator) ;
+            if (i > this.ListView.Items.Count) i = this.ListView.Items.Count;
+            while (this.ListView.Items[--i] is MidiItem.Separator) ;
+            this.ListView.SelectedIndex = i;
+            this.FinalizeChanges();
+        }
+
         /* Once a MIDI file has been opened for media playback, set its initial position and determine its duration. */
         private void Player_MediaOpened(object sender, EventArgs e)
         {
-            this.SetPosition();
+            this.SetPosition(null);
             this.DurationTextBox.Text = (this.Player.NaturalDuration.HasTimeSpan ?
                 this.Player.NaturalDuration.TimeSpan : TimeSpan.Zero).ToString();
 
@@ -385,8 +696,8 @@ namespace JeffBourdier
         {
             this.StopPlayback();
 
-            /* For whatever reason, the Edit command's CanExecute event handler is not
-             * automatically called here, so trigger it by raising the CanExecuteChanged event.
+            /* For whatever reason, the CanExecute event handler is not automatically
+             * called here, so trigger it by raising the CanExecuteChanged event.
              */
             CommandManager.InvalidateRequerySuggested();
         }
@@ -437,79 +748,29 @@ namespace JeffBourdier
             ThreadPool.QueueUserWorkItem(this.FlashStartingPosition, Brushes.Yellow);
         }
 
-        /* A playback command can execute as long as there is a file open and the panel is enabled. */
-        private void PlaybackCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        { e.CanExecute = (this.FileState != FileState.None) && this.PlaybackPanel.IsEnabled; }
+        /* Most commands can execute as long as there is a file open. */
+        protected void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None); }
 
-        /* Toggle (start/stop) MIDI file editing. */
-        private void EditExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            /* If we're stopping, we can be done right here. */
-            if (this.StopEditing(true)) return;
-
-            /* Warn the user about the risk of editing the file and confirm that they really want to. */
-            MessageBoxResult result = MessageBox.Show(this, Properties.Resources.EditWarning,
-                Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No) return;
-
-            /* They really do, so start editing. */
-
-            /* Save the last valid version of the hex data to restore in
-             * case the user's changes are invalid and they choose to revert.
-             */
-            this.LastValidHex = this.HexTextBox.Text;
-
-            /* Disallow playback while editing. */
-            this.UIState = UIState.Edit;
-            this.PlaybackPanel.IsEnabled = false;
-
-            /* Instead of highlighting, allow normal selection. */
-            this.NoHighlighting = true;
-            this.CommentsTextBox.SelectionLength = 0;
-            this.HexTextBox.SelectionLength = 0;
-            this.HexTextBox.SelectionBrush = MIDIopsyWindow.SelectionBrush;
-
-            /* Don't show comments while editing. */
-            this.EditingPanel.Children.Remove(this.TextGrid);
-            this.TextGrid.Children.Remove(this.HexTextBox);
-            this.EditingPanel.Children.Add(this.HexTextBox);
-
-            /* Make the hex editable. */
-            this.HexTextBox.IsUndoEnabled = true;
-            this.HexTextBox.IsReadOnly = false;
-
-            /* Finally, change the text of the edit button. */
-            this.EditButton.Text = Properties.Resources.StopEditing;
-
-            /* To be safe/lazy, go ahead and mark the file as edited now (even
-             * though it's not really edited yet--but we assume it soon will be).
-             */
-            this.FileState = FileState.Edited;
-        }
-
-        /* The editing command can execute as long as there is a file open and MIDI file playback is stopped.
-         * (Note:  When a command cannot execute, its button is automatically disabled.  Therefore,
-         * EditButton.IsEnabled cannot be part of the condition here, because then the command could never execute!)
+        /* Commands that create new events can execute as long as there is a file open and
+         * the selected item is neither of the first two (presumably, the header chunk).
          */
-        protected void EditCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        { e.CanExecute = (this.FileState != FileState.None) && (this.UIState != UIState.Play); }
+        protected void NewEventCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedIndex > 1); }
 
-        /* Give the hex text box initial focus. */
-        private void HexTextBox_Loaded(object sender, RoutedEventArgs e) { this.HexTextBox.Focus(); }
-
-        /* When the hex changes while editing, make sure the file is marked as edited. */
-        private void HexTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        /* The item container generator acts on behalf of its host (the list view) to generate the UI (including
+         * ListViewItem objects, which contain the data items in the list view).  When the generator has finished
+         * generating the containers (i.e., the ListViewItem objects), give the selected item (if there is one) the focus.
+         */
+        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
-            if (this.UIState != UIState.Edit || this.FileState == FileState.Edited) return;
-            this.FileState = FileState.Edited;
+            if (this.ListView.ItemContainerGenerator.Status != GeneratorStatus.ContainersGenerated) return;
+            int i = this.ListView.SelectedIndex;
+            if (i < 0) return;
+            ListViewItem item = this.ListView.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
+            if (item == null) return;
+            item.Focus();
         }
-
-        /* When the caret (or current selection) of a text box changes, highlight accordingly. */
-        private void TextBox_SelectionChanged(object sender, RoutedEventArgs e) { this.Highlight(sender as TextBox); }
-
-        /* Synchronize the scroll position of the other text box. */
-        private void TextBox_ScrollChanged(object sender, RoutedEventArgs e)
-        { this.GetOtherTextBox(sender).ScrollToVerticalOffset((e as ScrollChangedEventArgs).VerticalOffset); }
 
         /* If we're really closing, signal the other thread so that it will exit. */
         private void MIDIopsyWindow_Closing(object sender, CancelEventArgs e)
@@ -520,52 +781,77 @@ namespace JeffBourdier
 
         #endregion
 
-        private TextBox CreateTextBox(Label label)
+        private static TextBox AddTextBoxWithLabel(Grid grid, int row, object content)
         {
+            /* Create the text box. */
             TextBox textBox = new TextBox();
             textBox.IsUndoEnabled = false;
             textBox.IsReadOnly = true;
+            textBox.TextAlignment = TextAlignment.Right;
+            textBox.GotFocus += UI.TextBox_GotFocus;
+            textBox.Margin = new Thickness(0, UI.HalfSpace, 0, UI.HalfSpace);
+            Grid.SetRow(textBox, row);
+            Grid.SetColumn(textBox, 1);
 
-            if (label != null)
-            {
-                label.Target = textBox;
-                textBox.TextAlignment = TextAlignment.Right;
-                textBox.GotFocus += UI.TextBox_GotFocus;
-                textBox.Margin = new Thickness(0, UI.HalfSpace, 0, UI.HalfSpace);
-                Grid.SetColumn(textBox, 1);
-                return textBox;
-            }
+            /* Create the label. */
+            StandardLabel label = new StandardLabel(content, false);
+            label.Target = textBox;
+            Grid.SetRow(label, row);
 
-            textBox.IsReadOnlyCaretVisible = true;
-            textBox.IsInactiveSelectionHighlightEnabled = true;  /* requires .NET Framework 4.5 */
-            textBox.FontFamily = MIDIopsyWindow.Font;
-            textBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
-            textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
-            textBox.SelectionBrush = MIDIopsyWindow.HighlightingBrush;
-            textBox.SelectionChanged += this.TextBox_SelectionChanged;
-            textBox.AddHandler(ScrollViewer.ScrollChangedEvent, new RoutedEventHandler(this.TextBox_ScrollChanged));
+            /* Add the new controls. */
+            grid.Children.Add(label);
+            grid.Children.Add(textBox);
             return textBox;
+        }
+
+        private void AddViewColumn(MidiItem.DisplayField field)
+        {
+            /* Create the column and set its header content. */
+            GridViewColumn column = new GridViewColumn();
+            column.Header = Text.ParseLabel(field.LabelText);
+
+            /* By default, there is no template used to display cell contents.  Setting this template allows us to improve
+             * readability by adding grid lines (i.e., cell borders) and aligning text (e.g., right-justifying numeric fields).
+             */
+            column.CellTemplate = new DataTemplate();
+            column.CellTemplate.VisualTree = new FrameworkElementFactory(typeof(Border));
+            column.CellTemplate.VisualTree.SetValue(Border.MarginProperty, MIDIopsyWindow.CellMargin);
+            column.CellTemplate.VisualTree.SetValue(Border.BorderBrushProperty, SystemColors.ControlLightBrush);
+            column.CellTemplate.VisualTree.SetValue(Border.BorderThicknessProperty, field.BorderThickness);
+
+            /* Because each column is bound to a different data item, each column needs
+             * its own tree node, including a child factory with a unique data binding.
+             */
+            FrameworkElementFactory factory = new FrameworkElementFactory(typeof(TextBlock));
+            Binding binding = new Binding(field.BindingPath);
+            factory.SetBinding(TextBlock.TextProperty, binding);
+            factory.SetValue(TextBlock.PaddingProperty, MIDIopsyWindow.CellPadding);
+            if (field.Monospace) factory.SetValue(TextBlock.FontFamilyProperty, UI.MonospaceFont);
+            if (field.RightAlign) factory.SetValue(TextBlock.TextAlignmentProperty, TextAlignment.Right);
+            else factory.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
+            column.CellTemplate.VisualTree.AppendChild(factory);
+
+            /* Add the column to the grid/list view. */
+            this.GridView.Columns.Add(column);
         }
 
         /* This method runs in its own thread to update the Position control during MIDI file playback. */
         private void UpdatePosition(object state)
         {
+            Delegate setPosition = new Action<object>(this.SetPosition);
+
             while (true)
             {
                 /* Block until signaled. */
                 this.EventHandle.WaitOne();
 
                 /* If MIDI file playback is stopped, exit. */
-                if (this.UIState != UIState.Play)
-                {
-                    Logger.WriteMessage("thread exiting");
-                    return;
-                }
+                if (!this.Playing) { Logger.WriteMessage("thread exiting"); return; }
 
                 /* Because the media player and the Position control are dispatcher objects owned by the main UI thread,
                  * this thread cannot access them, so the position must be set on the main UI thread via the dispatcher.
                  */
-                this.Dispatcher.Invoke(this.SetPosition);
+                this.Dispatcher.Invoke(setPosition, null as object);
 
                 /* Wait a second, then repeat. */
                 Thread.Sleep(1000);
@@ -575,8 +861,33 @@ namespace JeffBourdier
         /* Perform all actions necessary to load the MIDI file object into the UI. */
         private void LoadFile()
         {
+            int i;
+            MidiItem item;
+            MidiItem.Separator separator;
+
             this.InitializePlayback(true);
-            this.PopulateTextBoxes();
+
+            /* Populate the list view with the contents of the MIDI file. */
+            for (i = 0; i < this.MidiFile.ItemCount; ++i)
+            {
+                item = this.MidiFile.GetItem(i);
+
+                /* Add a separator before each chunk (after the first). */
+                if (i > 0 && item is MidiChunkInfo)
+                {
+                    separator = new MidiItem.Separator();
+                    this.ListView.Items.Add(separator);
+                }
+
+                this.ListView.Items.Add(item);
+            }
+            this.ListView.SelectedIndex = 0;
+            this.ListView.ScrollIntoView(this.ListView.SelectedItem);
+
+            /* Reset the width of each column of the grid/list view. */
+            double d = this.ActualWidth - 50;
+            for (i = 0; i < MidiItem.DisplayFields.Length; ++i)
+                this.GridView.Columns[i].Width = MidiItem.DisplayFields[i].WidthFactor * d;
         }
 
         /* Initialize playback controls for the MIDI file. */
@@ -596,11 +907,36 @@ namespace JeffBourdier
             this.StartingPositionControl.Position = TimeSpan.Zero;
         }
 
+        /* Return the index in the MIDI file's list at which a new event should be inserted (based
+         * on the selected item), or -1 if the event should be added to the end of the file.
+         */
+        private int GetInsertionIndex()
+        {
+            /* If the selected item is last in the list view, the new event should be added to the end of the file. */
+            if (this.ListView.SelectedIndex == this.ListView.Items.Count - 1) return -1;
+
+            /* Otherwise, the new event should be inserted into the file (right after the
+             * selected item).  The index in the MIDI file's list should be the same as
+             * the index in the list view, minus the number of separators that precede it.
+             */
+            return this.ListView.SelectedIndex - this.SeparatorCount + 1;
+        }
+
+        /* This method should be called after any changes to the MIDI file. */
+        private void FinalizeChanges()
+        {
+            /* Refresh the view so that the changes show up. */
+            this.ListView.Items.Refresh();
+
+            /* Mark the file as edited. */
+            this.FileState = FileState.Edited;
+        }
+
         /* If applicable, stop MIDI file playback. */
         private bool StopPlayback()
         {
             /* If MIDI file playback is already stopped, not applicable. */
-            if (this.UIState != UIState.Play) return false;
+            if (!this.Playing) return false;
 
             /* Block the other thread so that it does not continue to update the Position control after playback is stopped. */
             this.EventHandle.Reset();
@@ -608,12 +944,12 @@ namespace JeffBourdier
             /* The Position control should be accurate (or pretty close) since the other thread has been updating it, but it
              * could be a little off due to minor discrepancies in thread synchronization, so make sure it is accurate now.
              */
-            this.SetPosition();
+            this.SetPosition(null);
 
             /* The MIDI file is playing, so stop it. */
             this.Player.Stop();
             this.PlayStopButton.Text = MediaCommands.Play.Text;
-            this.UIState = UIState.View;
+            this.Playing = false;
             return true;
         }
 
@@ -637,7 +973,7 @@ namespace JeffBourdier
             }
 
             /* Start playing at the starting position. */
-            this.UIState = UIState.Play;
+            this.Playing = true;
             this.Player.Position = this.StartingPositionControl.Position;
             this.PlayStopButton.Text = MediaCommands.Stop.Text;
             this.Player.Play();
@@ -650,7 +986,6 @@ namespace JeffBourdier
         private void ShowFileErrors()
         {
             if (string.IsNullOrEmpty(this.MidiFile.ErrorText)) return;
-
             MessageBox.Show(this, Properties.Resources.FileHasErrors + Environment.NewLine + Environment.NewLine +
                 this.MidiFile.ErrorText, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
@@ -658,7 +993,7 @@ namespace JeffBourdier
         /* Set the Position control to the current position.  (When called by the other thread, this method must be run via
          * the dispatcher, since the media player and the Position control are dispatcher objects owned by the main UI thread.)
          */
-        private void SetPosition() { this.PositionTextBox.Text = this.Player.Position.ToString(@"hh\:mm\:ss"); }
+        private void SetPosition(object o) { this.PositionTextBox.Text = this.Player.Position.ToString().Substring(0, 8); }
 
         /* "Flash" (temporarily highlight) the starting position (to indicate that it changed).
          * This method should be run in a background thread.
@@ -668,121 +1003,10 @@ namespace JeffBourdier
          */
         private void FlashStartingPosition(object state)
         {
-            this.Dispatcher.Invoke(new Action<Brush>(this.StartingPositionControl.Highlight), state as Brush);
+            this.Dispatcher.Invoke(this.HighlightStartingPosition, state as Brush);
             Thread.Sleep(MIDIopsyWindow.DefaultTimeout);
-            this.Dispatcher.Invoke(this.StartingPositionControl.Unhighlight);
+            this.Dispatcher.Invoke(this.UnhighlightStartingPosition, null as object);
         }
-
-        /* If applicable, stop editing the MIDI file. */
-        private bool StopEditing(bool validate)
-        {
-            /* If we're not editing to begin with, not applicable. */
-            if (this.UIState != UIState.Edit) return false;
-
-            /* Before we stop editing, if specified, validate the changes. */
-            if (validate && this.ApplyHex() != true) return true;
-
-            /* Changes are valid (or we're not supposed to validate), so stop editing. */
-            this.HexTextBox.IsReadOnly = true;
-            this.HexTextBox.IsUndoEnabled = false;
-
-            /* Reinstate the comments.  (Repopulating the text boxes has the
-             * effect of formatting the hex while replacing the comments.)
-             */
-            this.PopulateTextBoxes();
-            this.EditingPanel.Children.Remove(this.HexTextBox);
-            this.TextGrid.Children.Insert(0, this.HexTextBox);
-            this.EditingPanel.Children.Add(this.TextGrid);
-
-            /* Back to highlighting (instead of normal selection). */
-            this.HexTextBox.SelectionLength = 0;
-            this.HexTextBox.SelectionBrush = MIDIopsyWindow.HighlightingBrush;
-            this.NoHighlighting = false;
-
-            /* Re-allow playback. */
-            this.PlaybackPanel.IsEnabled = true;
-            this.UIState = UIState.View;
-
-            /* Finally, change the text of the edit button. */
-            this.EditButton.Text = Properties.Resources.StartEditing;
-            return true;
-        }
-
-        private bool? ApplyHex()
-        {
-            /* Convert the hex to bytes. */
-            List<byte> bytes = new List<byte>(this.HexTextBox.Text.Length / 3);
-            string[] strings = this.HexTextBox.Text.Split(MIDIopsyWindow.Separators, StringSplitOptions.RemoveEmptyEntries);
-            try
-            {
-                foreach (string s in strings) bytes.Add(byte.Parse(s, NumberStyles.HexNumber));
-
-                /* Replace the contents of the MIDI file with these bytes.  (This is where errors are most likely.) */
-                this.MidiFile.Replace(bytes.ToArray());
-                if (!string.IsNullOrEmpty(this.MidiFile.ErrorText)) throw new ApplicationException(this.MidiFile.ErrorText);
-            }
-            catch (Exception ex)
-            {
-                Logger.WriteMessage(Properties.Resources.DataInvalid);
-                Logger.WriteException(ex);
-
-                /* Inform the user of the error and ask if they want to revert their changes. */
-                string s = Text.FormatErrorMessage(Properties.Resources.DataInvalid, ex) +
-                    Environment.NewLine + Environment.NewLine + Properties.Resources.RevertToValid;
-                MessageBoxResult result = MessageBox.Show(this, s, Meta.Name,
-                    MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
-
-                /* If we don't revert, the data remains invalid.  Otherwise, replace the hex with the last valid hex. */
-                if (result == MessageBoxResult.No) return false;
-                this.HexTextBox.Text = this.LastValidHex;
-                return null;
-            }
-
-            /* It's all good. */
-            return true;
-        }
-
-        /* Populate the text boxes with the appropriate contents from the MIDI file. */
-        private void PopulateTextBoxes()
-        {
-            this.HexTextBox.Text = this.MidiFile.Hex;
-            this.CommentsTextBox.Text = this.MidiFile.Comments;
-        }
-
-        /* Highlight a line in a text box. */
-        private void Highlight(TextBox textBox)
-        {
-            /* Highlight only if we're supposed to. */
-            if (this.NoHighlighting) return;
-
-            /* Determine which text box is being highlighted, and on which line the input caret is. */
-            int n, j, i = 0;
-            bool hex = (textBox == this.HexTextBox);
-            if (textBox.CaretIndex == textBox.Text.Length)
-            {
-                n = this.MidiFile.LineCount;
-                i = textBox.Text.Length;
-                j = 0;
-            }
-            else
-            {
-                for (n = 1; (j = this.MidiFile.GetIndex(n, hex)) <= textBox.CaretIndex; ++n) i = j;
-                j -= Environment.NewLine.Length + i;
-            }
-
-            /* If the text box (being highlighted) has the focus, synchronize the other text
-             * box's input caret.  (This should trigger highlighting in the other text box.)
-             */
-            if (textBox.IsFocused) this.GetOtherTextBox(textBox).CaretIndex = this.MidiFile.GetIndex(n - 1, !hex);
-
-            /* Highlight (select) the line where the input caret is. */
-            this.NoHighlighting = true;
-            textBox.Select(i, j);
-            this.NoHighlighting = false;
-        }
-
-        private TextBox GetOtherTextBox(object textBox)
-        { return (textBox == this.HexTextBox) ? this.CommentsTextBox : this.HexTextBox; }
 
         #endregion
     }

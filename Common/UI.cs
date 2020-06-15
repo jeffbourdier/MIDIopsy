@@ -1,7 +1,7 @@
 ﻿/* UI.cs - Implementation of UI class, which makes certain UI-related tasks easier.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -11,11 +11,14 @@
  */
 
 
-/* Window, RoutedEventArgs, DependencyObject, UIElement, MessageBox, MessageBoxButton, MessageBoxImage */
+/* DependencyObject, MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, UIElement, Window */
 using System.Windows;
 
-/* Panel, Control, TextBox, FrameworkElement */
+/* Control, FrameworkElement, Panel, TextBox */
 using System.Windows.Controls;
+
+/* FontFamily */
+using System.Windows.Media;
 
 
 namespace JeffBourdier
@@ -30,7 +33,7 @@ namespace JeffBourdier
         #region Public Fields
 
         /// <summary>The standard default width for the client area of a window.</summary>
-        public const int ClientWidth = 512;
+        public const int ClientWidth = 480;
 
         /// <summary>
         /// The standard number of pixels between controls that are closely related (e.g., a label and its target).
@@ -59,6 +62,9 @@ namespace JeffBourdier
 
         /// <summary>The maximum valid page width for a flow document.</summary>
         public const double MaxFlowDocPageWidth = 1000000;
+
+        /// <summary>The standard monospace font.</summary>
+        public static readonly FontFamily MonospaceFont = new FontFamily("Courier New");
 
         #endregion
 
@@ -128,41 +134,42 @@ namespace JeffBourdier
             return n;
         }
 
-        /// <summary>Determine whether or not a text box contains a valid number (unsigned integer).</summary>
+        /// <summary>Determine whether or not a text box contains a valid number (integer) within a range.</summary>
         /// <param name="textBox">A TextBox object.</param>
         /// <param name="value">
         /// Previous numeric value, to which the text box is reset if it does not contain a valid number.
         /// If the text box does contain a valid number, receives the numeric value entered in therein.
         /// </param>
+        /// <param name="min">Minimum value for the number.</param>
         /// <param name="max">Maximum value for the number.</param>
         /// <param name="description">
         /// A short description of the numeric value (for display purposes).  May be label content.
         /// </param>
-        /// <returns>True if the text box contains a valid number; otherwise, false.</returns>
-        public static bool ValidateNumericInput(TextBox textBox, ref uint value, uint max, string description)
+        /// <returns>True if the text box contains a valid number within the given range; otherwise, false.</returns>
+        public static bool ValidateNumericInput(TextBox textBox, ref int value, int min, int max, string description)
         {
-            uint n;
+            int n;
             FrameworkElement element;
 
             /* If the user entered something non-numeric, it's invalid. */
-            if (!uint.TryParse(textBox.Text, out n))
+            if (!int.TryParse(textBox.Text, out n))
             {
                 /* Revert text to previous value. */
-                textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
+                textBox.Text = value.ToString();
                 return false;
             }
 
             /* If the user entered a valid number, assign the new value and we're done. */
-            if (n <= max) { value = n; return true; }
+            if (n >= min && n <= max) { value = n; return true; }
 
             /* Give the user a message for an invalid number. */
             string s = Text.ParseLabel(description);
-            s = string.Format(Common.Resources.ValueRangeFormat, s, 0, max);
+            s = string.Format(Common.Resources.ValueRangeFormat, s, min, max);
             for (element = textBox; element.Parent != null; element = element.Parent as FrameworkElement) ;
             MessageBox.Show(element as Window, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
             /* Revert text to previous value. */
-            textBox.Text = (value < uint.MaxValue) ? value.ToString() : null;
+            textBox.Text = value.ToString();
             return false;
         }
 

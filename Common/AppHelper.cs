@@ -1,7 +1,7 @@
 ﻿/* AppHelper.cs - Implementation of AppHelper class, which provides functionality related to the currently running application.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -14,7 +14,7 @@
 /* Type, Uri, UriKind */
 using System;
 
-/* Assembly, AssemblyTitleAttribute, AssemblyProductAttribute, AssemblyFileVersionAttribute, AssemblyCopyrightAttribute */
+/* Assembly, AssemblyCopyrightAttribute, AssemblyFileVersionAttribute, AssemblyProductAttribute, AssemblyTitleAttribute */
 using System.Reflection;
 
 

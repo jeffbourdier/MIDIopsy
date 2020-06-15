@@ -1,7 +1,7 @@
 ﻿/* OkCancelPanel.cs - Implementation of OkCancelPanel class, which defines an area containing an OK button and a Cancel button.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -14,7 +14,7 @@
 /* Thickness */
 using System.Windows;
 
-/* DockPanel, Button, Dock */
+/* Button, Dock, DockPanel */
 using System.Windows.Controls;
 
 

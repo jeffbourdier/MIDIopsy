@@ -89,16 +89,25 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Centiframe.
+        ///   Looks up a localized string similar to This item cannot be deleted..
         /// </summary>
-        internal static string Centiframe {
+        internal static string CannotDelete {
             get {
-                return ResourceManager.GetString("Centiframe", resourceCulture);
+                return ResourceManager.GetString("CannotDelete", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Channel.
+        ///   Looks up a localized string similar to This item cannot be edited..
+        /// </summary>
+        internal static string CannotEdit {
+            get {
+                return ResourceManager.GetString("CannotEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Channel.
         /// </summary>
         internal static string Channel {
             get {
@@ -112,15 +121,6 @@ namespace JeffBourdier.Properties {
         internal static string ChannelMode {
             get {
                 return ResourceManager.GetString("ChannelMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The channel of an event using running status cannot be changed arbitrarily..
-        /// </summary>
-        internal static string ChannelNotChanged {
-            get {
-                return ResourceManager.GetString("ChannelNotChanged", resourceCulture);
             }
         }
         
@@ -139,24 +139,6 @@ namespace JeffBourdier.Properties {
         internal static string Chunk {
             get {
                 return ResourceManager.GetString("Chunk", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} {1} | {2} bytes of data.
-        /// </summary>
-        internal static string ChunkCommentFormat {
-            get {
-                return ResourceManager.GetString("ChunkCommentFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chunk type must be exactly 4 characters..
-        /// </summary>
-        internal static string ChunkTypeLength {
-            get {
-                return ResourceManager.GetString("ChunkTypeLength", resourceCulture);
             }
         }
         
@@ -926,6 +908,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Count.
+        /// </summary>
+        internal static string Count {
+            get {
+                return ResourceManager.GetString("Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cue Point.
         /// </summary>
         internal static string CuePoint {
@@ -935,16 +926,34 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data is invalid.
+        ///   Looks up a localized string similar to D_ata.
         /// </summary>
-        internal static string DataInvalid {
+        internal static string Data {
             get {
-                return ResourceManager.GetString("DataInvalid", resourceCulture);
+                return ResourceManager.GetString("Data", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delta-time.
+        ///   Looks up a localized string similar to Data _1.
+        /// </summary>
+        internal static string Data1 {
+            get {
+                return ResourceManager.GetString("Data1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data _2.
+        /// </summary>
+        internal static string Data2 {
+            get {
+                return ResourceManager.GetString("Data2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Delta-time.
         /// </summary>
         internal static string DeltaTime {
             get {
@@ -962,16 +971,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Time signature denominator.
-        /// </summary>
-        internal static string Denominator {
-            get {
-                return ResourceManager.GetString("Denominator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Duration:.
+        ///   Looks up a localized string similar to _Duration.
         /// </summary>
         internal static string Duration {
             get {
@@ -980,11 +980,21 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MIDI file editing is for expert users only.  If not done correctly, it could result in data corruption, making the file unusable.  Are you sure?.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string EditWarning {
+        internal static System.Drawing.Bitmap EditingScreen {
             get {
-                return ResourceManager.GetString("EditWarning", resourceCulture);
+                object obj = ResourceManager.GetObject("EditingScreen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Items.
+        /// </summary>
+        internal static string EditItems {
+            get {
+                return ResourceManager.GetString("EditItems", resourceCulture);
             }
         }
         
@@ -998,11 +1008,20 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to escape.
+        ///   Looks up a localized string similar to _Escape.
         /// </summary>
         internal static string Escape {
             get {
                 return ResourceManager.GetString("Escape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event.
+        /// </summary>
+        internal static string Event {
+            get {
+                return ResourceManager.GetString("Event", resourceCulture);
             }
         }
         
@@ -1016,7 +1035,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Format:.
+        ///   Looks up a localized string similar to _Format.
         /// </summary>
         internal static string Format {
             get {
@@ -1052,16 +1071,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Frame.
-        /// </summary>
-        internal static string Frame {
-            get {
-                return ResourceManager.GetString("Frame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _SMPTE format (frames per second):.
+        ///   Looks up a localized string similar to _SMPTE format (frames per second).
         /// </summary>
         internal static string FramesPerSecond {
             get {
@@ -1106,20 +1116,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to header.
+        ///   Looks up a localized string similar to Header.
         /// </summary>
         internal static string Header {
             get {
                 return ResourceManager.GetString("Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Format {0} | {1} tracks | {2}.
-        /// </summary>
-        internal static string HeaderDataFormat {
-            get {
-                return ResourceManager.GetString("HeaderDataFormat", resourceCulture);
             }
         }
         
@@ -1134,16 +1135,22 @@ namespace JeffBourdier.Properties {
         ///      h1, h6 { text-align: center; }
         ///      h2, h6 { border-top: 1px solid; padding-top: 4px; }
         ///      table { margin: auto; border-collapse: collapse; }
-        ///      table, th, td { border: 1px solid black; padding: 8px; }
-        ///      th, blockquote { background-color: silver; }
-        ///      blockquote { padding: 8px; }
-        ///    &lt;/style&gt;
-        ///  &lt;/head&gt;
-        ///  &lt; [rest of string was truncated]&quot;;.
+        ///      table, th, td { border: 1px solid black; padding: 4px; }
+        ///      table caption { font-weight: bold; font-size: larger; padding: 4px; }
+        ///      th, blockquote { background-color [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpText {
             get {
                 return ResourceManager.GetString("HelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hex.
+        /// </summary>
+        internal static string Hex {
+            get {
+                return ResourceManager.GetString("Hex", resourceCulture);
             }
         }
         
@@ -1162,15 +1169,6 @@ namespace JeffBourdier.Properties {
         internal static string InstrumentName {
             get {
                 return ResourceManager.GetString("InstrumentName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid status byte..
-        /// </summary>
-        internal static string InvalidStatus {
-            get {
-                return ResourceManager.GetString("InvalidStatus", resourceCulture);
             }
         }
         
@@ -1220,7 +1218,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Message type.
+        ///   Looks up a localized string similar to _Message type.
         /// </summary>
         internal static string MessageType {
             get {
@@ -1229,29 +1227,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Meta-event | {0,-19} | {1,3} bytes.
+        ///   Looks up a localized string similar to Meta-event.
         /// </summary>
-        internal static string MetaEventFormat {
+        internal static string MetaEvent {
             get {
-                return ResourceManager.GetString("MetaEventFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Meta-event type.
-        /// </summary>
-        internal static string MetaEventType {
-            get {
-                return ResourceManager.GetString("MetaEventType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Data length for a {0} meta-event must be at least {1} bytes..
-        /// </summary>
-        internal static string MetaLengthFormat {
-            get {
-                return ResourceManager.GetString("MetaLengthFormat", resourceCulture);
+                return ResourceManager.GetString("MetaEvent", resourceCulture);
             }
         }
         
@@ -1274,6 +1254,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MIDI.
+        /// </summary>
+        internal static string Midi {
+            get {
+                return ResourceManager.GetString("Midi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MIDI Channel Prefix.
         /// </summary>
         internal static string MidiChannelPrefix {
@@ -1288,15 +1277,6 @@ namespace JeffBourdier.Properties {
         internal static string MidiFiles {
             get {
                 return ResourceManager.GetString("MidiFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MIDI Header.
-        /// </summary>
-        internal static string MidiHeader {
-            get {
-                return ResourceManager.GetString("MidiHeader", resourceCulture);
             }
         }
         
@@ -1401,6 +1381,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Items.
+        /// </summary>
+        internal static string NewItems {
+            get {
+                return ResourceManager.GetString("NewItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No End of Track event..
         /// </summary>
         internal static string NoEndOfTrack {
@@ -1446,16 +1435,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Numbers of more than 4 bytes (32 bits) are not supported..
-        /// </summary>
-        internal static string NumberNotSupported {
-            get {
-                return ResourceManager.GetString("NumberNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Number of tracks:.
+        ///   Looks up a localized string similar to _Number of tracks.
         /// </summary>
         internal static string NumberOfTracks {
             get {
@@ -1464,11 +1444,21 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Time signature numerator.
+        ///   Looks up a localized string similar to A format 0 file should have only one track..
         /// </summary>
-        internal static string Numerator {
+        internal static string OneTrack {
             get {
-                return ResourceManager.GetString("Numerator", resourceCulture);
+                return ResourceManager.GetString("OneTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OpeningScreen {
+            get {
+                object obj = ResourceManager.GetObject("OpeningScreen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1905,11 +1895,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pitch bend change value.
+        ///   Looks up a localized string similar to Playback.
         /// </summary>
-        internal static string PitchBendChangeValue {
+        internal static string Playback {
             get {
-                return ResourceManager.GetString("PitchBendChangeValue", resourceCulture);
+                return ResourceManager.GetString("Playback", resourceCulture);
             }
         }
         
@@ -1923,7 +1913,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Position:.
+        ///   Looks up a localized string similar to _Position.
         /// </summary>
         internal static string Position {
             get {
@@ -1977,20 +1967,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Revert to last valid version?.
+        ///   Looks up a localized string similar to _Running status.
         /// </summary>
-        internal static string RevertToValid {
+        internal static string RunningStatus {
             get {
-                return ResourceManager.GetString("RevertToValid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Data reverted.  Save this version?.
-        /// </summary>
-        internal static string SaveReverted {
-            get {
-                return ResourceManager.GetString("SaveReverted", resourceCulture);
+                return ResourceManager.GetString("RunningStatus", resourceCulture);
             }
         }
         
@@ -3201,38 +3182,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start Editing.
-        /// </summary>
-        internal static string StartEditing {
-            get {
-                return ResourceManager.GetString("StartEditing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to S_tarting Position (SP).
         /// </summary>
         internal static string StartingPosition {
             get {
                 return ResourceManager.GetString("StartingPosition", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stop Editing.
-        /// </summary>
-        internal static string StopEditing {
-            get {
-                return ResourceManager.GetString("StopEditing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A strongly typed class must be used for this object..
-        /// </summary>
-        internal static string StronglyTypedClass {
-            get {
-                return ResourceManager.GetString("StronglyTypedClass", resourceCulture);
             }
         }
         
@@ -3246,11 +3200,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SysEx {0} | {1} bytes.
+        ///   Looks up a localized string similar to System Exclusive (SysEx).
         /// </summary>
-        internal static string SysExEventFormat {
+        internal static string SysEx {
             get {
-                return ResourceManager.GetString("SysExEventFormat", resourceCulture);
+                return ResourceManager.GetString("SysEx", resourceCulture);
             }
         }
         
@@ -3264,7 +3218,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Resolution (ticks per frame):.
+        ///   Looks up a localized string similar to _Resolution (ticks per frame).
         /// </summary>
         internal static string TicksPerFrame {
             get {
@@ -3273,7 +3227,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ticks per _quarter note:.
+        ///   Looks up a localized string similar to Ticks per _quarter note.
         /// </summary>
         internal static string TicksPerQuarterNote {
             get {
@@ -3309,11 +3263,29 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to track.
+        ///   Looks up a localized string similar to Total Time.
+        /// </summary>
+        internal static string TotalTime {
+            get {
+                return ResourceManager.GetString("TotalTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trac_k.
         /// </summary>
         internal static string Track {
             get {
                 return ResourceManager.GetString("Track", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Type.
+        /// </summary>
+        internal static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
             }
         }
         
@@ -3327,29 +3299,20 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unrecognized data: &quot;{0}&quot;.
-        /// </summary>
-        internal static string UnrecognizedDataFormat {
-            get {
-                return ResourceManager.GetString("UnrecognizedDataFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} must be one of the following values:.
-        /// </summary>
-        internal static string ValueListFormat {
-            get {
-                return ResourceManager.GetString("ValueListFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Velocity.
         /// </summary>
         internal static string Velocity {
             get {
                 return ResourceManager.GetString("Velocity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entire chunk will be deleted.  Proceed?.
+        /// </summary>
+        internal static string WillDeleteChunk {
+            get {
+                return ResourceManager.GetString("WillDeleteChunk", resourceCulture);
             }
         }
         

@@ -1,7 +1,7 @@
 ﻿/* AboutBox.cs - Implementation of AboutBox class, which displays information about the application.
  * Note that this file is shared across applications.
  *
- * Copyright (c) 2017-9 Jeffrey Paul Bourdier
+ * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -11,19 +11,19 @@
  */
 
 
-/* Uri, Environment */
+/* Environment, Uri */
 using System;
 
 /* Process */
 using System.Diagnostics;
 
-/* Window, ResizeMode, GridLength, Thickness, SizeToContent */
+/* GridLength, ResizeMode, SizeToContent, Thickness, Window */
 using System.Windows;
 
-/* Grid, ColumnDefinition, RowDefinition, Image, TextBlock, Button */
+/* Button, ColumnDefinition, Grid, Image, RowDefinition, TextBlock */
 using System.Windows.Controls;
 
-/* LineBreak, Hyperlink */
+/* Hyperlink, LineBreak */
 using System.Windows.Documents;
 
 /* FocusManager */
