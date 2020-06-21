@@ -11,11 +11,14 @@
  */
 
 
-/* ResizeMode, SizeToContent, UIElement, Window, WindowStyle */
+/* IInputElement, ResizeMode, SizeToContent, UIElement, Window, WindowStyle */
 using System.Windows;
 
 /* Button, StackPanel */
 using System.Windows.Controls;
+
+/* FocusManager */
+using System.Windows.Input;
 
 
 namespace JeffBourdier
@@ -42,6 +45,12 @@ namespace JeffBourdier
         /**********
          * Fields *
          **********/
+
+        #region Protected Fields
+
+        protected IInputElement InitialElement = null;
+
+        #endregion
 
         #region Private Fields
 
@@ -95,6 +104,7 @@ namespace JeffBourdier
         public bool? ShowDialog(Window owner)
         {
             this.Owner = owner;
+            if (this.InitialElement != null) FocusManager.SetFocusedElement(this, this.InitialElement);
             return this.ShowDialog();
         }
 

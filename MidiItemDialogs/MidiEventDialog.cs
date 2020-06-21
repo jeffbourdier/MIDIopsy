@@ -50,6 +50,7 @@ namespace JeffBourdier
             this.DeltaTimeTextBox.GotFocus += UI.TextBox_GotFocus;
             this.DeltaTimeTextBox.TextChanged += this.DeltaTimeTextBox_TextChanged;
             this.DeltaTimeLabel.Target = this.DeltaTimeTextBox;
+            this.InitialElement = this.DeltaTimeTextBox;
 
             /* Build out the window and its content. */
             this.AddUIElement(this.DeltaTimeLabel);

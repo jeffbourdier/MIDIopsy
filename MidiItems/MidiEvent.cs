@@ -64,7 +64,6 @@ namespace JeffBourdier
 
                 /* Before we set delta-time, cascade total time changes through all subsequent events in the track. */
                 int i = this.File.GetItemIndex(this.Offset);
-                if (this.File.GetItem(i).Offset < this.Offset) ++i;
                 this.File.AdjustTotalTimes(i, value - deltaTime);
 
                 /* Now we can set the delta-time. */

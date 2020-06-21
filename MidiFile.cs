@@ -225,11 +225,7 @@ namespace JeffBourdier
         public void WriteBytes(int offset, byte[] bytes, int length)
         {
             int n = ((bytes == null) ? 0 : bytes.Length) - length;
-            if (n != 0)
-            {
-                int i = this.GetItemIndex(offset);
-                this.Resize(n, offset + length, i);
-            }
+            if (n != 0) this.Resize(n, offset + length, 0);
             if (bytes == null) return;
             Array.Copy(bytes, 0, this.Bytes, offset, bytes.Length);
         }
@@ -243,11 +239,7 @@ namespace JeffBourdier
         public void WriteText(int offset, string text, int length)
         {
             int n = ((text == null) ? 0 : text.Length) - length;
-            if (n != 0)
-            {
-                int i = this.GetItemIndex(offset);
-                this.Resize(n, offset + length, i);
-            }
+            if (n != 0) this.Resize(n, offset + length, 0);
             if (text == null) return;
             for (int i = 0; i < text.Length; ++i) this.Bytes[offset + i] = (byte)text[i];
         }
@@ -271,11 +263,7 @@ namespace JeffBourdier
         {
             /* Resize the byte array (if necessary). */
             int i, n = Midi.SizeVLQ(vlq) - length;
-            if (n != 0)
-            {
-                i = this.GetItemIndex(offset);
-                this.Resize(n, offset + length, i);
-            }
+            if (n != 0) this.Resize(n, offset + length, 0);
 
             /* For the simple (and common) case of a single-byte VLQ, take a shortcut. */
             if (vlq < 0x80) { this.Bytes[offset] = (byte)vlq; return; }
@@ -611,8 +599,8 @@ namespace JeffBourdier
         /// <param name="delta">The number of bytes by which to resize the array.</param>
         /// <param name="offset">Offset into the byte array at which to begin preservation.</param>
         /// <param name="index">
-        /// Optional (non-negative) index of the affected MidiItem object in this
-        /// file's list, so that the length of the containing chunk can be adjusted.
+        /// Optional (non-negative) index of the affected MidiItem object in this file's list (or zero to
+        /// determine the index dynamatically), so that the length of the containing chunk can be adjusted.
         /// </param>
         public void Resize(int delta, int offset, int index)
         {
@@ -640,10 +628,10 @@ namespace JeffBourdier
             if (delta < 0) Array.Resize(ref this.Bytes, this.Bytes.Length + delta);
 
             /* If applicable, cascade offset changes through all subsequent items. */
-            if (offset < (this.Bytes.Length - delta))
+            j = offset + delta;
+            if (j < this.Bytes.Length)
             {
-                i = this.GetItemIndex(offset);
-                for (i += (offset > this.Items[i].Offset) ? 1 : 0; i < this.ItemCount; ++i) this.Items[i].Offset += delta;
+                for (i = this.GetItemIndex(offset); i < this.ItemCount; ++i) this.Items[i].Offset += delta;
 
                 /* Since our map of running statuses is keyed by offset, it must also be adjusted correspondingly. */
                 List<int> keys = new List<int>();
@@ -658,7 +646,7 @@ namespace JeffBourdier
                 {
                     status = this.RunningStatusMap[key];
                     this.RunningStatusMap.Remove(key);
-                    if (delta < 0 && key < offset - delta) continue;
+                    if (delta < 0 && key < j) continue;
                     this.RunningStatusMap[key + delta] = status;
                 }
             }
@@ -666,7 +654,8 @@ namespace JeffBourdier
             /* If specified, adjust the length of the containing chunk. */
             if (index < 0) return;
             MidiChunkInfo chunkInfo = null;
-            for (i = index; chunkInfo == null; chunkInfo = this.Items[--i] as MidiChunkInfo) ;
+            for (i = (index > 0) ? index : this.GetItemIndex((delta < 0) ? j : offset);
+                chunkInfo == null; chunkInfo = this.Items[--i] as MidiChunkInfo) ;
             chunkInfo.Length += delta;
         }
 
@@ -675,8 +664,8 @@ namespace JeffBourdier
         /// <returns>The zero-based index of the relevant MidiItem object.</returns>
         public int GetItemIndex(int offset)
         {
-            int i = this.ItemCount;
-            while (offset < this.Items[--i].Offset) ;
+            int i = 0;
+            while (i < this.ItemCount && this.Items[i].Offset < offset) ++i;
             return i;
         }
 

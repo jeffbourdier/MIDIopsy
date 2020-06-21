@@ -269,6 +269,48 @@ namespace JeffBourdier
 
         #region Private Properties
 
+        /* Determine whether or not the selected MIDI item can (or should) be deleted. */
+        private bool? DeletionStatus
+        {
+            get
+            {
+                /* No part of a header chunk can be deleted. */
+                if (this.ListView.SelectedItem is MidiHeader) return false;
+
+                /* If the selected MIDI item is a channel message/event that does not use
+                 * running status, check for dependent events (which do use running status).
+                 */
+                MidiChannelEvent channelEvent = this.ListView.SelectedItem as MidiChannelEvent;
+                if (channelEvent != null && !channelEvent.RunningStatus)
+                {
+                    /* Find the next channel event in the chunk.  If it uses
+                     * running status, the selected MIDI item cannot be deleted.
+                     */
+                    for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
+                    {
+                        if (this.ListView.Items[i] is MidiItem.Separator) return true;
+                        channelEvent = this.ListView.Items[i] as MidiChannelEvent;
+                        if (channelEvent != null) return !channelEvent.RunningStatus;
+                    }
+                    return true;
+                }
+
+                /* Otherwise, as long as the selected MIDI item is not chunk info, it can be deleted. */
+                MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
+                if (chunkInfo == null) return true;
+
+                /* No part of a header chunk can be deleted. */
+                if (chunkInfo.Type == MidiChunkInfo.HeaderType) return false;
+
+                /* If there's only 1 track, it cannot be deleted. */
+                if (chunkInfo.Type == MidiChunkInfo.TrackType && (this.ListView.Items[1] as MidiHeader).NumberOfTracks == 1)
+                    return false;
+
+                /* Otherwise, the user should be prompted/warned that the entire chunk will be deleted. */
+                return null;
+            }
+        }
+
         /* Count the number of separators that precede the selected item in the list view. */
         private int SeparatorCount
         {
@@ -619,35 +661,15 @@ namespace JeffBourdier
         /* Delete the selected MIDI item. */
         private void DeleteItemExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            /* No part of a header chunk can be deleted. */
-            if (this.ListView.SelectedItem is MidiHeader)
+            /* Determine if the selected MIDI item can/should be deleted. */
+            bool? b = this.DeletionStatus;
+            if (b == false)
             {
                 MessageBox.Show(this, Properties.Resources.CannotDelete, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
                 return;
             }
-
-            /* If the selected MIDI item is chunk info, special cases apply. */
-            MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
-            if (chunkInfo != null)
+            if (b == null)
             {
-                /* No part of a header chunk can be deleted. */
-                if (chunkInfo.Type == MidiChunkInfo.HeaderType)
-                {
-                    MessageBox.Show(this, Properties.Resources.CannotDelete,
-                        Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
-                    return;
-                }
-
-                /* If there's only 1 track, it cannot be deleted. */
-                if (chunkInfo.Type == MidiChunkInfo.TrackType &&
-                    (this.ListView.Items[1] as MidiHeader).NumberOfTracks == 1)
-                {
-                    MessageBox.Show(this, Properties.Resources.CannotDelete,
-                        Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
-                    return;
-                }
-
-                /* Otherwise, the entire chunk will be deleted. */
                 MessageBoxResult result = MessageBox.Show(this, Properties.Resources.WillDeleteChunk,
                     Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.No) return;
@@ -658,8 +680,8 @@ namespace JeffBourdier
             this.MidiFile.DeleteItem(i - this.SeparatorCount);
             this.ListView.Items.RemoveAt(i);
 
-            /* If the item was chunk info, remove (from the list view) all items in the chunk. */
-            if (chunkInfo != null)
+            /* If appropriate, remove (from the list view) all items in the chunk. */
+            if (b == null)
             {
                 while (i < this.ListView.Items.Count && !(this.ListView.Items[i] is MidiItem.Separator))
                     this.ListView.Items.RemoveAt(i);

@@ -491,11 +491,7 @@ namespace JeffBourdier
                 {
                     bool had = MidiChannelEvent.HasData2(messageType), has = MidiChannelEvent.HasData2(value);
                     n = (had && !has) ? -1 : (!had && has) ? 1 : 0;
-                    if (n != 0)
-                    {
-                        i = this.File.GetItemIndex(this.Offset);
-                        this.File.Resize(n, this.Data2Offset + ((n < 0) ? 1 : 0), i);
-                    }
+                    if (n != 0) this.File.Resize(n, this.Data2Offset + ((n < 0) ? 1 : 0), 0);
                 }
 
                 /* The file should be sized appropriately now; proceed. */
