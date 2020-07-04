@@ -84,10 +84,6 @@ namespace JeffBourdier
             this.NoValidation = false;
         }
 
-        protected void EnableOkButton() { this.OkButton.IsEnabled = this.CheckRequiredInput(); }
-
-        protected virtual bool CheckRequiredInput() { return true; }
-
         #endregion
     }
 }

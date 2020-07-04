@@ -56,7 +56,6 @@
     <Compile Include="Common\CommandPanel.cs" />
     <Compile Include="Common\FileAppWindow.cs" />
     <Compile Include="Common\HelpViewer.cs" />
-    <Compile Include="Common\OkCancelPanel.cs" />
     <Compile Include="Common\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -73,6 +72,7 @@
     <Compile Include="Common\StandardWindow.cs" />
     <Compile Include="Common\Text.cs" />
     <Compile Include="Common\UI.cs" />
+    <Compile Include="GoToDialog.cs" />
     <Compile Include="MidiItemDialogs\MidiMetaEventDialog.cs" />
     <Compile Include="MidiItemDialogs\MidiSysExEventDialog.cs" />
     <Compile Include="MidiItems\MidiChannelEvent.cs" />

@@ -35,7 +35,7 @@ using System.Windows;
 /* WebBrowser */
 using System.Windows.Controls;
 
-/* Keyboard */
+/* FocusManager */
 using System.Windows.Input;
 
 /* BitmapFrame */
@@ -116,11 +116,12 @@ namespace JeffBourdier
             HelpViewer.Window.Content = browser;
 
             /* Finish building the window. */
-            HelpViewer.Window.RestorePreferences(Common.Settings.Default.HelpWindowMaximized,
+            HelpViewer.Window.RestorePreferences(
+                Common.Settings.Default.HelpWindowMaximized,
                 Common.Settings.Default.HelpWindowBounds);
             HelpViewer.Window.Closing += HelpViewer.Window_Closing;
             HelpViewer.Window.Show();
-            Keyboard.Focus(browser);
+            FocusManager.SetFocusedElement(HelpViewer.Window, browser);
         }
 
         /// <summary>Closes the help viewer.</summary>

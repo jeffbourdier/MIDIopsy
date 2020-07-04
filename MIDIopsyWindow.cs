@@ -27,8 +27,8 @@ using System.Threading;
  */
 using System.Windows;
 
-/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox,
- * Label, ListView, ListViewItem, Orientation, TextBlock, TextBox, StackPanel, WrapPanel
+/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox, Label,
+ * ListView, ListViewItem, Orientation, RowDefinition, StackPanel, TextBlock, TextBox, WrapPanel
  */
 using System.Windows.Controls;
 
@@ -38,8 +38,8 @@ using System.Windows.Controls.Primitives;
 /* Binding */
 using System.Windows.Data;
 
-/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, CommandManager,
- * ExecutedRoutedEventArgs, KeyGesture, MediaCommands, RoutedUICommand
+/* ApplicationCommands, CanExecuteRoutedEventArgs, CanExecuteRoutedEventHandler, CommandBinding, CommandManager,
+ * ExecutedRoutedEventArgs, ExecutedRoutedEventHandler, Key, MediaCommands, ModifierKeys, RoutedUICommand
  */
 using System.Windows.Input;
 
@@ -64,144 +64,56 @@ namespace JeffBourdier
         /// <summary>Initializes a MIDIopsyWindow object.</summary>
         public MIDIopsyWindow()
         {
-            CommandBinding binding;
             List<RoutedUICommand> commands;
-            KeyGesture gesture;
-            RoutedUICommand command;
+            WrapPanel wrapPanel = new WrapPanel();
 
-            /* Create and bind the command to create a new track. */
-            RoutedUICommand newTrackCommand = new RoutedUICommand();
-            newTrackCommand.Text = Properties.Resources.Track;
-            binding = new CommandBinding(newTrackCommand, this.NewTrackExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Create and bind the command to create a new channel message/event. */
-            RoutedUICommand newChannelEventCommand = new RoutedUICommand();
-            newChannelEventCommand.Text =
-                Properties.Resources.Channel + Environment.NewLine + "  " + Properties.Resources.Event;
-            binding = new CommandBinding(newChannelEventCommand, this.NewChannelEventExecuted, this.NewEventCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Create and bind the command to create a new system exclusive (SysEx) message/event. */
-            RoutedUICommand newSysExEventCommand = new RoutedUICommand();
+            /* Build the "New Items" group box. */
+            commands = new List<RoutedUICommand>();
+            this.CreateCommand(Properties.Resources.Track, Key.None, ModifierKeys.None,
+                this.NewTrackExecuted, this.CommandCanExecute, commands);
+            this.CreateCommand(Properties.Resources.Channel + Environment.NewLine + "  " + Properties.Resources.Event,
+                Key.None, ModifierKeys.None, this.NewChannelEventExecuted, this.NewEventCanExecute, commands);
             string s = Text.ParseLabel(Properties.Resources.SysEx);
-            newSysExEventCommand.Text = s.Insert(s.Length - 1, "_") + " " + Properties.Resources.Event;
-            binding = new CommandBinding(newSysExEventCommand, this.NewSysExEventExecuted, this.NewEventCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Create and bind the command to create a new meta-event. */
-            RoutedUICommand newMetaEventCommand = new RoutedUICommand();
-            newMetaEventCommand.Text = "_" + Properties.Resources.MetaEvent;
-            binding = new CommandBinding(newMetaEventCommand, this.NewMetaEventExecuted, this.NewEventCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Build the command list and panel for the "New Items" group box. */
-            commands = new List<RoutedUICommand>();
-            commands.Add(newTrackCommand);
-            commands.Add(newChannelEventCommand);
-            commands.Add(newSysExEventCommand);
-            commands.Add(newMetaEventCommand);
+            s = s.Insert(s.Length - 1, "_") + " " + Properties.Resources.Event;
+            this.CreateCommand(s, Key.None, ModifierKeys.None, this.NewSysExEventExecuted, this.NewEventCanExecute, commands);
+            this.CreateCommand("_" + Properties.Resources.MetaEvent, Key.None, ModifierKeys.None,
+                this.NewMetaEventExecuted, this.NewEventCanExecute, commands);
             this.NewItemsPanel = new CommandPanel(commands, true);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.NewItems, this.NewItemsPanel);
 
-            /* Build out the "New Items" group box. */
-            GroupBox newItemsGroupBox = new GroupBox();
-            newItemsGroupBox.Header = Properties.Resources.NewItems;
-            newItemsGroupBox.Content = this.NewItemsPanel;
-            newItemsGroupBox.Margin = new Thickness(UI.UnitSpace);
-
-            /* Bind the command to edit the properties of the selected item. */
-            binding = new CommandBinding(ApplicationCommands.Properties, this.EditItemExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Bind the command to delete the selected item. */
-            binding = new CommandBinding(ApplicationCommands.Delete, this.DeleteItemExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Build the command list and panel for the "Edit Items" group box. */
+            /* Build the "Edit Items" group box. */
             commands = new List<RoutedUICommand>();
-            commands.Add(ApplicationCommands.Properties);
-            commands.Add(ApplicationCommands.Delete);
+            this.BindCommand(ApplicationCommands.Properties, Key.None, ModifierKeys.None,
+                this.EditItemExecuted, this.CommandCanExecute, commands);
+            this.BindCommand(ApplicationCommands.Delete, Key.None, ModifierKeys.None,
+                this.DeleteItemExecuted, this.CommandCanExecute, commands);
             this.EditItemsPanel = new CommandPanel(commands, true);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.EditItems, this.EditItemsPanel);
 
-            /* Build out the "Edit Items" group box. */
-            GroupBox editItemsGroupBox = new GroupBox();
-            editItemsGroupBox.Header = Properties.Resources.EditItems;
-            editItemsGroupBox.Content = this.EditItemsPanel;
-            editItemsGroupBox.Margin = new Thickness(UI.UnitSpace);
+            /* Build the "Navigation" group box. */
+            commands = new List<RoutedUICommand>();
+            this.CreateCommand(Properties.Resources.GoTo, Key.G, ModifierKeys.Control,
+                this.GoToExecuted, this.CommandCanExecute, commands);
+            this.NavigationPanel = new CommandPanel(commands, true);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.Navigation, this.NavigationPanel);
 
-            /* The duration of a MIDI file cannot be determined until it has been
+            /* Build the "Playback" group box (whose content will be a panel with controls for MIDI file playback). */
+            StackPanel stackPanel = new StackPanel();
+            stackPanel.Orientation = Orientation.Horizontal;
+            this.PlayStopButton = this.InitPlaybackCommand(stackPanel, MediaCommands.Play.Text, Key.F5, this.PlayStopExecuted);
+            this.InitPlaybackPosition(stackPanel);
+            this.InitPlaybackCommand(stackPanel, Properties.Resources.Reset, Key.F6, this.ResetExecuted);
+            this.InitPlaybackCommand(stackPanel, Properties.Resources.Sync, Key.F7, this.SyncExecuted);
+            this.InitPlaybackGrid(stackPanel);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.Playback, stackPanel);
+
+            /* Initialize the media player (used for MIDI file playback).
+             * Note that the duration of a MIDI file cannot be determined until it has been
              * opened for media playback (i.e., the MediaOpened event has been raised).
              */
             this.Player = new MediaPlayer();
             this.Player.MediaOpened += this.Player_MediaOpened;
             this.Player.MediaEnded += this.Player_MediaEnded;
-
-            /* Bind the Play/Stop command (for MIDI file playback). */
-            gesture = new KeyGesture(Key.F5);
-            MediaCommands.Play.InputGestures.Add(gesture);
-            binding = new CommandBinding(MediaCommands.Play, this.PlayStopExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-            this.PlayStopButton = new CommandButton(MediaCommands.Play);
-
-            /* Initialize the Starting Position control. */
-            this.StartingPositionControl = new PositionControl(Properties.Resources.StartingPosition, false);
-            this.StartingPositionControl.Margin = new Thickness(UI.UnitSpace);
-
-            /* Because the Starting Position control is a dispatcher object owned by the main UI thread,
-             * a background thread cannot access it.  These delegates allow a background thread to
-             * highlight (and unhighlight) the starting position on the main UI thread via the dispatcher.
-             */
-            this.HighlightStartingPosition = new Action<Brush>(this.StartingPositionControl.Highlight);
-            this.UnhighlightStartingPosition = new Action<object>(this.StartingPositionControl.Unhighlight);
-
-            /* Create and bind the Reset command (to reset/zero starting position). */
-            command = new RoutedUICommand();
-            gesture = new KeyGesture(Key.F6);
-            command.InputGestures.Add(gesture);
-            command.Text = Properties.Resources.Reset;
-            binding = new CommandBinding(command, this.ResetExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-            CommandButton resetButton = new CommandButton(command);
-
-            /* Create and bind the Sync command (to synchronize starting position). */
-            command = new RoutedUICommand();
-            gesture = new KeyGesture(Key.F7);
-            command.InputGestures.Add(gesture);
-            command.Text = Properties.Resources.Sync;
-            binding = new CommandBinding(command, this.SyncExecuted, this.CommandCanExecute);
-            this.CommandBindings.Add(binding);
-            CommandButton syncButton = new CommandButton(command);
-
-            /* Initialize the grid for the Position and Duration controls. */
-            Grid grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[1].Width = new GridLength(64);
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition());
-            this.PositionTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 0, Properties.Resources.Position);
-            this.DurationTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 1, Properties.Resources.Duration);
-
-            /* Build the panel for the playback controls (which will serve as the content for the "Playback" group box). */
-            StackPanel stackPanel = new StackPanel();
-            stackPanel.Orientation = Orientation.Horizontal;
-            stackPanel.Children.Add(this.PlayStopButton);
-            stackPanel.Children.Add(this.StartingPositionControl);
-            stackPanel.Children.Add(resetButton);
-            stackPanel.Children.Add(syncButton);
-            stackPanel.Children.Add(grid);
-
-            /* Build out the "Playback" group box. */
-            GroupBox playbackGroupBox = new GroupBox();
-            playbackGroupBox.Header = Properties.Resources.Playback;
-            playbackGroupBox.Content = stackPanel;
-            playbackGroupBox.Margin = new Thickness(UI.UnitSpace);
-
-            /* Build a wrap panel (for all the controls above). */
-            WrapPanel wrapPanel = new WrapPanel();
-            wrapPanel.Children.Add(newItemsGroupBox);
-            wrapPanel.Children.Add(editItemsGroupBox);
-            wrapPanel.Children.Add(playbackGroupBox);
 
             /* Initialize the grid/list view. */
             this.ListView = new ListView();
@@ -214,9 +126,9 @@ namespace JeffBourdier
             this.ListView.Margin = new Thickness(0, UI.UnitSpace, 0, 0);
             this.ListView.ItemContainerGenerator.StatusChanged += this.ItemContainerGenerator_StatusChanged;
 
-            /* Build out the editing panel. */
-            DockPanel.SetDock(wrapPanel, Dock.Top);
+            /* Build the editing panel. */
             this.EditingPanel = new DockPanel();
+            DockPanel.SetDock(wrapPanel, Dock.Top);
             this.EditingPanel.Children.Add(wrapPanel);
             this.EditingPanel.Children.Add(this.ListView);
 
@@ -247,13 +159,14 @@ namespace JeffBourdier
 
         private CommandPanel NewItemsPanel;
         private CommandPanel EditItemsPanel;
-        private MediaPlayer Player;
+        private CommandPanel NavigationPanel;
         private CommandButton PlayStopButton;
         private PositionControl StartingPositionControl;
         private Delegate HighlightStartingPosition;
         private Delegate UnhighlightStartingPosition;
         private TextBox PositionTextBox;
         private TextBox DurationTextBox;
+        private MediaPlayer Player;
         private ListView ListView;
         private GridView GridView;
         private EventWaitHandle EventHandle;
@@ -303,7 +216,7 @@ namespace JeffBourdier
                 if (chunkInfo.Type == MidiChunkInfo.HeaderType) return false;
 
                 /* If there's only 1 track, it cannot be deleted. */
-                if (chunkInfo.Type == MidiChunkInfo.TrackType && (this.ListView.Items[1] as MidiHeader).NumberOfTracks == 1)
+                if (chunkInfo.Type == MidiChunkInfo.TrackType && this.MidiFile.Header.NumberOfTracks == 1)
                     return false;
 
                 /* Otherwise, the user should be prompted/warned that the entire chunk will be deleted. */
@@ -335,7 +248,8 @@ namespace JeffBourdier
         {
             if (this.FileState == FileState.None) return;
             this.NewItemsPanel.TabIndexOffset = this.HeaderControlCount;
-            this.EditItemsPanel.TabIndexOffset = this.HeaderControlCount + this.NewItemsPanel.Children.Count;
+            this.EditItemsPanel.TabIndexOffset = this.NewItemsPanel.TabIndexOffset + this.NewItemsPanel.Children.Count;
+            this.NavigationPanel.TabIndexOffset = this.EditItemsPanel.TabIndexOffset + this.EditItemsPanel.Children.Count;
         }
 
         /// <summary>Prompts the user for information needed to create a new MIDI file.</summary>
@@ -451,13 +365,13 @@ namespace JeffBourdier
         private void NewTrackExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             /* Tracks cannot be added to a format 0 file. */
-            if ((this.ListView.Items[1] as MidiHeader).Format == 0)
+            if (this.MidiFile.Header.Format == 0)
             {
                 MessageBox.Show(this, Properties.Resources.OneTrack, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
                 return;
             }
 
-            MidiItem.Separator separator;
+            MidiItem.Separator separator = new MidiItem.Separator();
             MidiChunkInfo chunkInfo;
             MidiMetaEvent metaEvent;
 
@@ -473,7 +387,6 @@ namespace JeffBourdier
                 metaEvent = this.MidiFile.InsertMetaEvent(++j, 0, MidiMetaEvent.EndOfTrackType, null);
 
                 /* Correspondingly, insert into the list view a separator, the new track chunk, and the End of Track event. */
-                separator = new MidiItem.Separator();
                 this.ListView.Items.Insert(--i, separator);
                 this.ListView.Items.Insert(++i, chunkInfo);
                 this.ListView.Items.Insert(++i, metaEvent);
@@ -490,7 +403,6 @@ namespace JeffBourdier
             metaEvent = this.MidiFile.AddMetaEvent(0, MidiMetaEvent.EndOfTrackType, null);
 
             /* Correspondingly, add to the list view a separator, new track chunk, and End of Track event. */
-            separator = new MidiItem.Separator();
             this.ListView.Items.Add(separator);
             this.ListView.Items.Add(chunkInfo);
             this.ListView.Items.Add(metaEvent);
@@ -698,33 +610,77 @@ namespace JeffBourdier
             this.FinalizeChanges();
         }
 
-        /* Once a MIDI file has been opened for media playback, set its initial position and determine its duration. */
-        private void Player_MediaOpened(object sender, EventArgs e)
+        /* Go to a given place in the file. */
+        private void GoToExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            this.SetPosition(null);
-            this.DurationTextBox.Text = (this.Player.NaturalDuration.HasTimeSpan ?
-                this.Player.NaturalDuration.TimeSpan : TimeSpan.Zero).ToString();
+            /* Build array of track names. */
+            int i, j = 2, n = this.MidiFile.Header.NumberOfTracks;
+            string[] trackNames = new string[n];
+            for (i = 0; i < n; ++i)
+                for (trackNames[i] = null; j < this.ListView.Items.Count; ++j)
+                {
+                    if (!string.IsNullOrEmpty(trackNames[i])) break;
+                    MidiChunkInfo chunkInfo = this.ListView.Items[j] as MidiChunkInfo;
+                    if (chunkInfo != null)
+                    {
+                        if (trackNames[i] != null) break;
+                        if (chunkInfo.Type == MidiChunkInfo.TrackType) trackNames[i] = string.Empty;
+                        continue;
+                    }
+                    MidiMetaEvent metaEvent = this.ListView.Items[j] as MidiMetaEvent;
+                    if (metaEvent == null) continue;
+                    if (metaEvent.Type != MidiMetaEvent.SequenceTrackNameType) continue;
+                    trackNames[i] = metaEvent.DataField;
+                }
 
-            /* If we're supposed to (e.g., the user saved and reloaded when trying to play), play the file. */
-            if (!this.AutoPlay) return;
-            this.PlayMedia();
-            this.AutoPlay = false;
-        }
+            /* Determine the maximum total time in the MIDI file. */
+            for (n = j = 0, i = this.ListView.Items.Count - 1; i > 2; --i)
+            {
+                if (j == 0)
+                {
+                    MidiEvent mtrkEvent = this.ListView.Items[i] as MidiEvent;
+                    if (mtrkEvent == null) continue;
+                    j = 1;
+                    if (mtrkEvent.TotalTime > n) n = mtrkEvent.TotalTime;
+                }
+                else if (!(this.ListView.Items[i] is MidiEvent)) j = 0;
+            }
 
-        /* If the MIDI file finishes playing on its own (without being
-         * stopped by the user), playback must still be stopped explicitly.
-         */
-        private void Player_MediaEnded(object sender, EventArgs e)
-        {
-            this.StopPlayback();
+            /* Prompt the user for where to go.  If the user cancels, take no further action. */
+            GoToDialog dialog = new GoToDialog(trackNames, n,
+                this.Player.NaturalDuration.HasTimeSpan ? this.Player.NaturalDuration.TimeSpan : TimeSpan.MinValue);
+            bool? result = dialog.ShowDialog(this);
+            if (result == false) return;
 
-            /* For whatever reason, the CanExecute event handler is not automatically
-             * called here, so trigger it by raising the CanExecuteChanged event.
+            /* The user did not cancel.  Determine which item in the list view to select, based on the
+             * track number and total time (in ticks) entered by the user.  If the user entered a position
+             * (hh:mm:ss), convert it to a total time, assuming a uniform (average) number of ticks per second.
              */
-            CommandManager.InvalidateRequerySuggested();
+            n = (dialog.TotalTime < 0) ?
+                (int)(n * dialog.Position.TotalSeconds / this.Player.NaturalDuration.TimeSpan.TotalSeconds) : dialog.TotalTime;
+            for (j = 0, i = 2; i < this.ListView.Items.Count; ++i)
+            {
+                /* First, find the desired track. */
+                if (j < dialog.TrackNumber)
+                {
+                    MidiChunkInfo chunkInfo = this.ListView.Items[i] as MidiChunkInfo;
+                    if (chunkInfo != null && chunkInfo.Type == MidiChunkInfo.TrackType) ++j;
+                    continue;
+                }
+
+                /* We have found the desired track.  Now find (within this track) the first event whose total time
+                 * is equal to (or the last event whose total time is less than) the total time entered by the user.
+                 */
+                MidiEvent mtrkEvent = this.ListView.Items[i] as MidiEvent;
+                if (mtrkEvent == null || mtrkEvent.TotalTime > n) break;
+                if (mtrkEvent.TotalTime == n) { ++i; break; }
+            }
+            while (this.ListView.Items[--i] is MidiItem.Separator) ;
+            this.ListView.SelectedIndex = i;
+            this.ListView.ScrollIntoView(this.ListView.SelectedItem);
         }
 
-        /* Toggle (play/stop) MIDI file playback. */
+        /* Execute the Play/Stop command (toggle MIDI file playback). */
         private void PlayStopExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             /* If we're stopping, we can be done right here. */
@@ -756,14 +712,14 @@ namespace JeffBourdier
             this.PlayMedia();
         }
 
-        /* Reset the starting position to zero. */
+        /* Execute the Reset command (reset the starting position to zero. */
         private void ResetExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             this.StartingPositionControl.Position = TimeSpan.Zero;
             ThreadPool.QueueUserWorkItem(this.FlashStartingPosition, Brushes.Orange);
         }
 
-        /* Set the starting position equal to the current position. */
+        /* Execute the Sync command (set the starting position equal to the current position. */
         private void SyncExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             this.StartingPositionControl.Position = TimeSpan.Parse(this.PositionTextBox.Text);
@@ -779,6 +735,32 @@ namespace JeffBourdier
          */
         protected void NewEventCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedIndex > 1); }
+
+        /* Once a MIDI file has been opened for media playback, set its initial position and determine its duration. */
+        private void Player_MediaOpened(object sender, EventArgs e)
+        {
+            this.SetPosition(null);
+            this.DurationTextBox.Text = (this.Player.NaturalDuration.HasTimeSpan ?
+                this.Player.NaturalDuration.TimeSpan : TimeSpan.Zero).ToString();
+
+            /* If we're supposed to (e.g., the user saved and reloaded when trying to play), play the file. */
+            if (!this.AutoPlay) return;
+            this.PlayMedia();
+            this.AutoPlay = false;
+        }
+
+        /* If the MIDI file finishes playing on its own (without being
+         * stopped by the user), playback must still be stopped explicitly.
+         */
+        private void Player_MediaEnded(object sender, EventArgs e)
+        {
+            this.StopPlayback();
+
+            /* For whatever reason, the CanExecute event handler is not automatically
+             * called here, so trigger it by raising the CanExecuteChanged event.
+             */
+            CommandManager.InvalidateRequerySuggested();
+        }
 
         /* The item container generator acts on behalf of its host (the list view) to generate the UI (including
          * ListViewItem objects, which contain the data items in the list view).  When the generator has finished
@@ -803,7 +785,64 @@ namespace JeffBourdier
 
         #endregion
 
-        private static TextBox AddTextBoxWithLabel(Grid grid, int row, object content)
+        /* Initialize a command button for the "Playback" group box. */
+        private CommandButton InitPlaybackCommand(StackPanel panel, string text, Key key, ExecutedRoutedEventHandler executed)
+        {
+            RoutedUICommand command = this.CreateCommand(text, key, ModifierKeys.None, executed, this.CommandCanExecute, null);
+            CommandButton button = new CommandButton(command);
+            panel.Children.Add(button);
+            return button;
+        }
+
+        /* Initialize the Starting Position control for the "Playback" group box. */
+        private void InitPlaybackPosition(StackPanel panel)
+        {
+            /* This grid will contain the position control and a label. */
+            Grid grid = new Grid();
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions[0].Height = GridLength.Auto;
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions[1].Height = GridLength.Auto;
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.Margin = new Thickness(UI.UnitSpace);
+            panel.Children.Add(grid);
+
+            /* Add a label for the position to the top row. */
+            StandardLabel label = new StandardLabel(Properties.Resources.StartingPosition, true);
+            label.Margin = new Thickness(0, 0, 0, UI.UnitSpace);
+            label.HorizontalContentAlignment = HorizontalAlignment.Center;
+            grid.Children.Add(label);
+
+            /* Add the position control to the bottom row. */
+            this.StartingPositionControl = new PositionControl();
+            Grid.SetRow(this.StartingPositionControl, 1);
+            grid.Children.Add(this.StartingPositionControl);
+            label.Target = this.StartingPositionControl.InitialElement;
+
+            /* Because the Starting Position control is a dispatcher object owned by the main UI thread,
+             * a background thread cannot access it.  These delegates allow a background thread to
+             * highlight (and unhighlight) the starting position on the main UI thread via the dispatcher.
+             */
+            this.HighlightStartingPosition = new Action<Brush>(this.StartingPositionControl.Highlight);
+            this.UnhighlightStartingPosition = new Action<object>(this.StartingPositionControl.Unhighlight);
+        }
+
+        /* Initialize the grid containing the Position and Duration controls for the "Playback" group box. */
+        private void InitPlaybackGrid(StackPanel panel)
+        {
+            Grid grid = new Grid();
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions[1].Width = new GridLength(64);
+            grid.Margin = new Thickness(0, 0, UI.UnitSpace, 0);
+            this.PositionTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 0, Properties.Resources.Position);
+            this.DurationTextBox = MIDIopsyWindow.AddTextBoxWithLabel(grid, 1, Properties.Resources.Duration);
+            panel.Children.Add(grid);
+        }
+
+        private static TextBox AddTextBoxWithLabel(Grid grid, int rowValue, object labelContent)
         {
             /* Create the text box. */
             TextBox textBox = new TextBox();
@@ -812,18 +851,27 @@ namespace JeffBourdier
             textBox.TextAlignment = TextAlignment.Right;
             textBox.GotFocus += UI.TextBox_GotFocus;
             textBox.Margin = new Thickness(0, UI.HalfSpace, 0, UI.HalfSpace);
-            Grid.SetRow(textBox, row);
+            Grid.SetRow(textBox, rowValue);
             Grid.SetColumn(textBox, 1);
 
             /* Create the label. */
-            StandardLabel label = new StandardLabel(content, false);
+            StandardLabel label = new StandardLabel(labelContent, false);
             label.Target = textBox;
-            Grid.SetRow(label, row);
+            Grid.SetRow(label, rowValue);
 
             /* Add the new controls. */
             grid.Children.Add(label);
             grid.Children.Add(textBox);
             return textBox;
+        }
+
+        private static void AddGroup(WrapPanel panel, object header, object content)
+        {
+            GroupBox groupBox = new GroupBox();
+            groupBox.Header = header;
+            groupBox.Content = content;
+            groupBox.Margin = new Thickness(UI.UnitSpace);
+            panel.Children.Add(groupBox);
         }
 
         private void AddViewColumn(MidiItem.DisplayField field)
@@ -883,23 +931,15 @@ namespace JeffBourdier
         /* Perform all actions necessary to load the MIDI file object into the UI. */
         private void LoadFile()
         {
-            int i;
-            MidiItem item;
-            MidiItem.Separator separator;
-
             this.InitializePlayback(true);
 
             /* Populate the list view with the contents of the MIDI file. */
-            for (i = 0; i < this.MidiFile.ItemCount; ++i)
+            for (int i = 0; i < this.MidiFile.ItemCount; ++i)
             {
-                item = this.MidiFile.GetItem(i);
+                MidiItem item = this.MidiFile.GetItem(i);
 
                 /* Add a separator before each chunk (after the first). */
-                if (i > 0 && item is MidiChunkInfo)
-                {
-                    separator = new MidiItem.Separator();
-                    this.ListView.Items.Add(separator);
-                }
+                if (i > 0 && item is MidiChunkInfo) this.ListView.Items.Add(new MidiItem.Separator());
 
                 this.ListView.Items.Add(item);
             }
@@ -908,7 +948,7 @@ namespace JeffBourdier
 
             /* Reset the width of each column of the grid/list view. */
             double d = this.ActualWidth - 50;
-            for (i = 0; i < MidiItem.DisplayFields.Length; ++i)
+            for (int i = 0; i < MidiItem.DisplayFields.Length; ++i)
                 this.GridView.Columns[i].Width = MidiItem.DisplayFields[i].WidthFactor * d;
         }
 

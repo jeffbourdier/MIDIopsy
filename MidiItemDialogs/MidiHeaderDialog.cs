@@ -58,9 +58,9 @@ namespace JeffBourdier
             int i, j = 0;
 
             /* Initialize the "Format" label. */
-            this.FormatLabel = new StandardLabel(Properties.Resources.Format, true);
-            this.FormatLabel.TabIndex = ++j;
-            this.FormatLabel.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.HalfSpace);
+            StandardLabel label = new StandardLabel(Properties.Resources.Format, true);
+            label.TabIndex = ++j;
+            label.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.HalfSpace);
 
             /* Initialize the "Format" combo box. */
             this.FormatComboBox = new ComboBox();
@@ -70,7 +70,8 @@ namespace JeffBourdier
             this.FormatComboBox.Items.Add(Properties.Resources.Format1);
             this.FormatComboBox.Items.Add(Properties.Resources.Format2);
             this.FormatComboBox.SelectionChanged += this.FormatComboBox_SelectionChanged;
-            this.FormatLabel.Target = this.FormatComboBox;
+            label.Target = this.FormatComboBox;
+            this.InitialElement = this.FormatComboBox;
 
             /* Initialize the "Number of tracks" label. */
             this.NumberOfTracksLabel = new StandardLabel(Properties.Resources.NumberOfTracks, true);
@@ -167,7 +168,7 @@ namespace JeffBourdier
             groupBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
 
             /* Build out the window and its content. */
-            this.AddUIElement(this.FormatLabel);
+            this.AddUIElement(label);
             this.AddUIElement(this.FormatComboBox);
             this.AddUIElement(this.NumberOfTracksLabel);
             this.AddUIElement(this.NumberOfTracksTextBox);
@@ -217,7 +218,6 @@ namespace JeffBourdier
         /// <summary>Array containing valid numeric values for frames per second.</summary>
         private static readonly int[] FramesPerSecondValues;
 
-        private StandardLabel FormatLabel;
         private ComboBox FormatComboBox;
         private StandardLabel NumberOfTracksLabel;
         private TextBox NumberOfTracksTextBox;

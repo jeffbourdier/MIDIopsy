@@ -11,10 +11,10 @@
  */
 
 
-/* IInputElement, ResizeMode, SizeToContent, UIElement, Window, WindowStyle */
+/* IInputElement, ResizeMode, SizeToContent, Thickness, UIElement, Window, WindowStyle */
 using System.Windows;
 
-/* Button, StackPanel */
+/* Button, Dock, DockPanel, StackPanel */
 using System.Windows.Controls;
 
 /* FocusManager */
@@ -66,22 +66,7 @@ namespace JeffBourdier
         #region Public Properties
 
         /// <summary>Gets the OK button (e.g., to disable/enable).</summary>
-        public Button OkButton
-        {
-            get
-            {
-                /* If the field has already been set, return it. */
-                if (this._OkButton != null) return this._OkButton;
-
-                /* Set and return the field (if possible; otherwise, return null). */
-                int n = this.MainPanel.Children.Count;
-                if (n < 1) return null;
-                OkCancelPanel panel = this.MainPanel.Children[--n] as OkCancelPanel;
-                if (panel == null) return null;
-                this._OkButton = panel.Children[1] as Button;
-                return this._OkButton;
-            }
-        }
+        public Button OkButton { get { return this._OkButton; } }
 
         #endregion
 
@@ -134,10 +119,61 @@ namespace JeffBourdier
         /// <param name="title">A string that contains the window's title.</param>
         protected void BuildOut(double width, string title)
         {
-            this.MainPanel.Children.Add(new OkCancelPanel());
+            DockPanel panel = new DockPanel();
+            panel.LastChildFill = false;
+            StandardDialog.InitializeButton(panel, false);
+            StandardDialog.InitializeButton(panel, true);
+            this._OkButton = panel.Children[1] as Button;
+            this.MainPanel.Children.Add(panel);
             this.MainPanel.Width = width;
             this.Content = this.MainPanel;
             this.Title = title;
+        }
+
+        /// <summary>Enables or disables the OK button based on whether or not the required input has been entered.</summary>
+        /// <remarks>This method calls CheckRequiredInput, which can be overridden in derived classes.</remarks>
+        protected void EnableOkButton() { this.OkButton.IsEnabled = this.CheckRequiredInput(); }
+
+        /// <summary>
+        /// When overridden in a derived class, determines whether or not the required input has been entered.
+        /// </summary>
+        /// <returns>True if the required input has been entered; otherwise, false.</returns>
+        /// <remarks>This method is called by EnableOkButton.</remarks>
+        protected virtual bool CheckRequiredInput() { return true; }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>Adds an OK or Cancel button to a dock panel.</summary>
+        /// <param name="panel">The dock panel to which the button is added.</param>
+        /// <param name="ok">True for an OK button; otherwise (for a Cancel button), false.</param>
+        private static void InitializeButton(DockPanel panel, bool ok)
+        {
+            /* These attributes are common to both buttons (mostly). */
+            Button button = new Button();
+            button.Width = UI.ButtonWidth;
+            button.Height = UI.ButtonHeight;
+            button.Margin = new Thickness(UI.UnitSpace, UI.DoubleSpace, ok ? UI.UnitSpace : UI.TripleSpace, UI.TripleSpace);
+
+            /* These attributes differ depending on the button. */
+            if (ok)
+            {
+                button.Content = Common.Resources.OK;
+                button.Click += UI.OkButton_Click;
+                button.IsDefault = true;
+                button.TabIndex = int.MaxValue - 1;
+            }
+            else
+            {
+                button.Content = Common.Resources.Cancel;
+                button.IsCancel = true;
+                button.TabIndex = int.MaxValue;
+            }
+
+            /* The rest applies to both buttons. */
+            DockPanel.SetDock(button, Dock.Right);
+            panel.Children.Add(button);
         }
 
         #endregion

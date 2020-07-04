@@ -1,4 +1,4 @@
-﻿/* PositionControl.cs - Implementation of PositionControl class, used to display or edit a media playback position.
+﻿/* PositionControl.cs - Implementation of PositionControl class, used to display/edit a media playback position.
  *
  * Copyright (c) 2019-20 Jeffrey Paul Bourdier
  *
@@ -13,7 +13,7 @@
 /* TimeSpan */
 using System;
 
-/* FontWeights, GridLength, TextAlignment */
+/* FontWeights, GridLength, HorizontalAlignment, RoutedEventArgs, TextAlignment, UIElement */
 using System.Windows;
 
 /* ColumnDefinition, Grid, RowDefinition, TextBox, TextChangedEventArgs, UserControl */
@@ -25,7 +25,7 @@ using System.Windows.Media;
 
 namespace JeffBourdier
 {
-    /// <summary>Represents a control that can be used to display or edit a media playback position.</summary>
+    /// <summary>Represents a control that can be used to display/edit a media playback position.</summary>
     public class PositionControl : UserControl
     {
         /****************
@@ -35,63 +35,50 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the PositionControl object.</summary>
-        /// <param name="text">The content of the label for the position.</param>
-        /// <param name="readOnly">Indicates whether or not the control should be read-only.</param>
-        public PositionControl(string text, bool readOnly)
+        public PositionControl()
         {
-            const double width = 34;
-
-            int i = -1;
-            StandardLabel label;
-
             /* This grid will serve as the content for the control. */
             Grid grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = new GridLength(width);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = new GridLength(UI.DoubleSpace);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = new GridLength(width);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = new GridLength(UI.DoubleSpace);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[++i].Width = new GridLength(width);
             grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions[0].Height = GridLength.Auto;
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions[1].Height = GridLength.Auto;
+            for (int i = 0; i < 5; ++i)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
+
+                /* Even-numbered columns are for hours/minutes/seconds. */
+                int n;
+                if (i % 2 == 0)
+                {
+                    n = 34;
+                    TextBox textBox = new TextBox();
+                    textBox.Text = "00";
+                    textBox.TextAlignment = TextAlignment.Right;
+                    textBox.GotFocus += UI.TextBox_GotFocus;
+                    Grid.SetColumn(textBox, i);
+                    grid.Children.Add(textBox);
+                }
+                /* Odd-numbered columns are for colons between hours/minutes/seconds. */
+                else
+                {
+                    n = UI.DoubleSpace;
+                    StandardLabel label = new StandardLabel(string.Empty, true);
+                    label.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    Grid.SetColumn(label, i);
+                    grid.Children.Add(label);
+                }
+                grid.ColumnDefinitions[i].Width = new GridLength(n);
+            }
             this.Content = grid;
 
-            /* Add a label for the position to the top row, spanning all columns. */
-            label = PositionControl.CreateLabel(text, 0, 0);
-            label.Margin = new Thickness(0, UI.HalfSpace, 0, UI.UnitSpace);
-            Grid.SetColumnSpan(label, 5);
-            grid.Children.Add(label);
-
-            /* Add a text box for hours (bottom row, left column). */
-            i = -1;
-            this.HoursTextBox = PositionControl.CreateTextBox(readOnly, ++i);
+            /* Assign text boxes and event handlers for hours, minutes, and seconds. */
+            this.HoursTextBox = grid.Children[0] as TextBox;
             this.HoursTextBox.TextChanged += this.HoursTextBox_TextChanged;
-            grid.Children.Add(this.HoursTextBox);
-            label.Target = this.HoursTextBox;
-
-            /* Put a colon in between hours and minutes. */
-            label = PositionControl.CreateLabel(string.Empty, 1, ++i);
-            grid.Children.Add(label);
-
-            /* Add a text box for minutes (bottom row, middle column). */
-            this.MinutesTextBox = PositionControl.CreateTextBox(readOnly, ++i);
+            this.MinutesTextBox = grid.Children[2] as TextBox;
             this.MinutesTextBox.TextChanged += this.MinutesTextBox_TextChanged;
-            grid.Children.Add(this.MinutesTextBox);
-
-            /* Put a colon in between minutes and seconds. */
-            label = PositionControl.CreateLabel(string.Empty, 1, ++i);
-            grid.Children.Add(label);
-
-            /* Add a text box for seconds (bottom row, right column). */
-            this.SecondsTextBox = PositionControl.CreateTextBox(readOnly, ++i);
+            this.SecondsTextBox = grid.Children[4] as TextBox;
             this.SecondsTextBox.TextChanged += this.SecondsTextBox_TextChanged;
-            grid.Children.Add(this.SecondsTextBox);
+
+            /* Handle the Loaded event to set tab indexes. */
+            this.Loaded += this.PositionControl_Loaded;
         }
 
         #endregion
@@ -115,6 +102,8 @@ namespace JeffBourdier
          **************/
 
         #region Public Properties
+
+        public UIElement InitialElement { get { return this.HoursTextBox; } }
 
         /// <summary>Gets or sets the media playback position represented by this control.</summary>
         public TimeSpan Position
@@ -166,6 +155,15 @@ namespace JeffBourdier
 
         #region Event Handlers
 
+        private void PositionControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (this.TabIndex == int.MaxValue) return;
+            int i = this.TabIndex;
+            this.HoursTextBox.TabIndex = ++i;
+            this.MinutesTextBox.TabIndex = ++i;
+            this.SecondsTextBox.TabIndex = ++i;
+        }
+
         private void HoursTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int n = this.Position.Hours;
@@ -188,27 +186,6 @@ namespace JeffBourdier
         }
 
         #endregion
-
-        private static StandardLabel CreateLabel(string text, int row, int column)
-        {
-            StandardLabel label = new StandardLabel(text, true);
-            label.HorizontalContentAlignment = HorizontalAlignment.Center;
-            Grid.SetRow(label, row);
-            Grid.SetColumn(label, column);
-            return label;
-        }
-
-        private static TextBox CreateTextBox(bool readOnly, int column)
-        {
-            TextBox textBox = new TextBox();
-            textBox.Text = "00";
-            textBox.IsReadOnly = readOnly;
-            textBox.TextAlignment = TextAlignment.Right;
-            textBox.GotFocus += UI.TextBox_GotFocus;
-            Grid.SetRow(textBox, 1);
-            Grid.SetColumn(textBox, column);
-            return textBox;
-        }
 
         private bool ValidateNumericInput(TextBox textBox, ref int value, int max, string description)
         {

@@ -121,6 +121,7 @@ namespace JeffBourdier
 
         #region Public Fields
 
+        public const int SequenceTrackNameType = 0x03;
         public const int EndOfTrackType = 0x2F;
         public const int KeySignatureType = 0x59;
 

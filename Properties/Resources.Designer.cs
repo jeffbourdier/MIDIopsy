@@ -1116,6 +1116,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Go To.
+        /// </summary>
+        internal static string GoTo {
+            get {
+                return ResourceManager.GetString("GoTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Header.
         /// </summary>
         internal static string Header {
@@ -1135,9 +1144,9 @@ namespace JeffBourdier.Properties {
         ///      h1, h6 { text-align: center; }
         ///      h2, h6 { border-top: 1px solid; padding-top: 4px; }
         ///      table { margin: auto; border-collapse: collapse; }
-        ///      table, th, td { border: 1px solid black; padding: 4px; }
-        ///      table caption { font-weight: bold; font-size: larger; padding: 4px; }
-        ///      th, blockquote { background-color [rest of string was truncated]&quot;;.
+        ///      table caption { font-weight: bold; font-size: larger; padding: 8px; }
+        ///      th, td { border: 1px solid black; padding: 4px; }
+        ///      td.number { text-align: right; font-fami [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpText {
             get {
@@ -1377,6 +1386,15 @@ namespace JeffBourdier.Properties {
         internal static string Mode127 {
             get {
                 return ResourceManager.GetString("Mode127", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Navigation.
+        /// </summary>
+        internal static string Navigation {
+            get {
+                return ResourceManager.GetString("Navigation", resourceCulture);
             }
         }
         
@@ -3214,6 +3232,15 @@ namespace JeffBourdier.Properties {
         internal static string TextEvent {
             get {
                 return ResourceManager.GetString("TextEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ticks.
+        /// </summary>
+        internal static string Ticks {
+            get {
+                return ResourceManager.GetString("Ticks", resourceCulture);
             }
         }
         

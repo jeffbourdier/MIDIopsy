@@ -75,6 +75,9 @@ namespace JeffBourdier
         /// <summary>Gets the number of MidiItem objects contained in this file.</summary>
         public int ItemCount { get { return this.Items.Count; } }
 
+        /// <summary>Gets a MidiHeader object representing the data of this file's MIDI header (MThd) chunk.</summary>
+        public MidiHeader Header { get { return this.Items[1] as MidiHeader; } }
+
         /// <summary>Gets a string describing any errors associated with this file.</summary>
         public string ErrorText { get { return this._ErrorText; } }
 
@@ -199,7 +202,7 @@ namespace JeffBourdier
             /* A variable-length quantity is in big-endian order, and only the lowest seven bits of each byte are part of the
              * quantity.  The Most Significant Bit (MSB) is set in all bytes except the last.  It can be up to four bytes long.
              */
-            for (int i = 0, n = 0; i < 4; ++i)
+            for (int n = 0, i = 0; i < 4; ++i)
             {
                 /* As appropriate, initialize the result (or shift it seven bits
                  * to the left) and add to it the lowest seven bits of this byte.
@@ -468,7 +471,7 @@ namespace JeffBourdier
                 n += chunkInfo.Length;
                 i = this.Bytes.Length - item.Offset;
                 if (n > i) n = i;
-                if (chunkInfo.Type == MidiChunkInfo.TrackType) --(this.Items[1] as MidiHeader).NumberOfTracks;
+                if (chunkInfo.Type == MidiChunkInfo.TrackType) --this.Header.NumberOfTracks;
             }
 
             /* If the item is an MTrk event with a nonzero delta-time, the total time of each subsequent
@@ -478,8 +481,6 @@ namespace JeffBourdier
             int deltaTime = (mtrkEvent == null) ? 0 : mtrkEvent.DeltaTime;
 
             /* Remove from the list all items whose offsets are within the range of data being deleted. */
-            MidiChannelEvent channelEvent;
-            MidiMetaEvent metaEvent;
             for (i = item.Offset + n; index < this.ItemCount && this.Items[index].Offset < i; this.Items.RemoveAt(index))
             {
                 item = this.Items[index];
@@ -487,13 +488,13 @@ namespace JeffBourdier
                 /* If the item being removed is a channel message/event that does not use running status, there
                  * should be a corresponding entry in the map of running statuses that needs to be removed.
                  */
-                channelEvent = item as MidiChannelEvent;
+                MidiChannelEvent channelEvent = item as MidiChannelEvent;
                 if (channelEvent != null && !channelEvent.RunningStatus) this.RunningStatusMap.Remove(item.Offset);
 
                 /* If the item being removed is a meta-event representing a key signature, there should
                  * be a corresponding entry in the key signature map that also needs to be removed.
                  */
-                metaEvent = MidiFile.ItemToKeySignatureEvent(item);
+                MidiMetaEvent metaEvent = MidiFile.ItemToKeySignatureEvent(item);
                 if (metaEvent != null) this.KeySignatureMap.Remove(metaEvent.TotalTime);
             }
 
@@ -561,25 +562,21 @@ namespace JeffBourdier
         {
             if (delta == 0) return;
 
-            MidiEvent mtrkEvent;
-            MidiMetaEvent metaEvent;
-            MidiKeySignature keySignature;
-            List<int> keys = new List<int>();
-
             /* Starting at the specified index, change the total time of each event in the list (until end-
              * of-list or a non-event is encountered, presumably indicating the end of the track/chunk),
              * and collect a list of key signature map "keys" (i.e., total times) affected by the change.
              */
+            List<int> keys = new List<int>();
             for (int i = index; i < this.ItemCount; ++i)
             {
-                mtrkEvent = this.Items[i] as MidiEvent;
+                MidiEvent mtrkEvent = this.Items[i] as MidiEvent;
                 if (mtrkEvent == null) break;
                 mtrkEvent.TotalTime += delta;
 
                 /* If this is a meta-event representing a key signature, add its former
                  * total time to the list of keys (total times) affected by this change.
                  */
-                metaEvent = MidiFile.ItemToKeySignatureEvent(mtrkEvent);
+                MidiMetaEvent metaEvent = MidiFile.ItemToKeySignatureEvent(mtrkEvent);
                 if (metaEvent != null) keys.Add(metaEvent.TotalTime - delta);
             }
 
@@ -589,7 +586,7 @@ namespace JeffBourdier
             if (delta > 0) keys.Reverse();
             foreach (int key in keys)
             {
-                keySignature = this.KeySignatureMap[key];
+                MidiKeySignature keySignature = this.KeySignatureMap[key];
                 this.KeySignatureMap.Remove(key);
                 this.KeySignatureMap[key + delta] = keySignature;
             }
@@ -619,8 +616,7 @@ namespace JeffBourdier
                 n = offset - 1;
                 Array.Resize(ref this.Bytes, this.Bytes.Length + delta);
             }
-            j = delta / Math.Abs(delta);
-            for (i = m; i != n; i -= j)
+            for (j = delta / Math.Abs(delta), i = m; i != n; i -= j)
             {
                 this.Bytes[i + delta] = this.Bytes[i];
                 this.Bytes[i] = 0;
@@ -722,7 +718,6 @@ namespace JeffBourdier
             string s;
             int n = offset + length, i, j = 0;
             MidiEvent mtrkEvent = null;
-            MidiChannelEvent channelEvent;
             MidiMetaEvent metaEvent;
 
             s = string.Format("parsing MTrk events at bytes {0} through {1}", offset, n - 1);
@@ -759,7 +754,7 @@ namespace JeffBourdier
                  * running status, use it to set the running status at this byte offset.
                  */
                 if (++j >= this.Bytes.Length) break;
-                channelEvent = mtrkEvent as MidiChannelEvent;
+                MidiChannelEvent channelEvent = mtrkEvent as MidiChannelEvent;
                 if (channelEvent != null && !channelEvent.RunningStatus)
                     this.SetRunningStatus(i, channelEvent.MessageType, channelEvent.Channel);
 
@@ -807,7 +802,7 @@ namespace JeffBourdier
             MidiChunkInfo chunkInfo = new MidiChunkInfo(this, offset);
             chunkInfo.Type = type;
             chunkInfo.Length = (type == MidiChunkInfo.HeaderType) ? MidiHeader.SizeItem() : 0;
-            if (type == MidiChunkInfo.TrackType) ++(this.Items[1] as MidiHeader).NumberOfTracks;
+            if (type == MidiChunkInfo.TrackType) ++this.Header.NumberOfTracks;
             return chunkInfo;
         }
 

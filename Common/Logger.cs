@@ -167,9 +167,6 @@ namespace JeffBourdier
         {
             const string token = "   at ";
 
-            int i, j, n;
-            string s;
-
             /* The first 3 calls are to the following procedures (in this order), none of which we're interested in:
              *   - Environment.GetStackTrace
              *   - Environment.get_StackTrace
@@ -177,12 +174,13 @@ namespace JeffBourdier
              * The fourth is the procedure that called this method.  This is the first
              * procedure in which we might be interested, so get its starting index.
              */
-            for (i = 0, j = 0; j < 4; j++) i = Environment.StackTrace.IndexOf(token, i) + token.Length;
+            int i = 0;
+            for (int j = 0; j < 4; ++j) i = Environment.StackTrace.IndexOf(token, i) + token.Length;
 
             /* Do we want the name of the procedure that called this method, or the
              * name of the procedure that called the procedure that called this method?
              */
-            for (n = 0; n < level; n++)
+            for (int j = 0; j < level; ++j)
             {
                 /* We want the name of the procedure that called the procedure that called this method, so do one
                  * more iteration.  Note the return value though, because there may not be a procedure at that level.
@@ -193,13 +191,13 @@ namespace JeffBourdier
             }
 
             /* Get the full procedure name. */
-            n = Environment.StackTrace.IndexOf("(", i) - i;
-            s = Environment.StackTrace.Substring(i, n);
+            int n = Environment.StackTrace.IndexOf("(", i) - i;
+            string s = Environment.StackTrace.Substring(i, n);
 
             /* This full procedure name includes namespace, which we don't want,
              * so strip that off, leaving just class name and procedure name.
              */
-            for (n = s.LastIndexOf("."); s[n] == '.'; --n);
+            for (n = s.LastIndexOf("."); s[n] == '.'; --n) ;
             n = s.LastIndexOf(".", n) + 1;
             s = s.Substring(n);
 

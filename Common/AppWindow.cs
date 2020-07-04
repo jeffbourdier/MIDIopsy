@@ -23,7 +23,9 @@ using System.ComponentModel;
 /* Button, Canvas, Dock, DockPanel, Panel */
 using System.Windows.Controls;
 
-/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, ExecutedRoutedEventArgs, RoutedUICommand */
+/* ApplicationCommands, CanExecuteRoutedEventArgs, CanExecuteRoutedEventHandler, CommandBinding,
+ * ExecutedRoutedEventArgs, ExecutedRoutedEventHandler, Key, KeyGesture, ModifierKeys, RoutedUICommand
+ */
 using System.Windows.Input;
 
 
@@ -43,46 +45,30 @@ namespace JeffBourdier
         /// <summary>Initializes an AppWindow object.</summary>
         public AppWindow()
         {
-            CommandBinding binding;
-            RoutedUICommand settingsCommand, aboutCommand;
-
-            /* Create and bind the "Settings" command. */
-            settingsCommand = new RoutedUICommand();
-            settingsCommand.Text = "_" + Common.Resources.Settings;
-            binding = new CommandBinding(settingsCommand, this.SettingsExecuted, this.CanAlwaysExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Bind "Help" command. */
-            binding = new CommandBinding(ApplicationCommands.Help, this.HelpExecuted, this.CanAlwaysExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Create and bind the "About" command. */
-            aboutCommand = new RoutedUICommand();
-            aboutCommand.Text = "_" + Common.Resources.About;
-            binding = new CommandBinding(aboutCommand, this.AboutExecuted, this.CanAlwaysExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Build the command list for the header panel. */
+            /* Create/bind the commands for the header panel. */
             List<RoutedUICommand> commands = new List<RoutedUICommand>();
-            commands.Add(settingsCommand);
-            commands.Add(ApplicationCommands.Help);
-            commands.Add(aboutCommand);
+            this.CreateCommand("_" + Common.Resources.Settings, Key.None,
+                ModifierKeys.None, this.SettingsExecuted, this.CanAlwaysExecute, commands);
+            this.BindCommand(ApplicationCommands.Help, Key.None, ModifierKeys.None,
+                this.HelpExecuted, this.CanAlwaysExecute, commands);
+            this.CreateCommand("_" + Common.Resources.About, Key.None,
+                ModifierKeys.None, this.AboutExecuted, this.CanAlwaysExecute, commands);
             this.HeaderCommandPanel = new CommandPanel(commands, true);
 
-            /* Build header panel. */
+            /* Build the header panel. */
             DockPanel.SetDock(this.HeaderCommandPanel, Dock.Right);
             this.HeaderPanel = new DockPanel();
             this.HeaderPanel.Children.Add(this.HeaderCommandPanel);
             this.HeaderPanel.Children.Add(new Canvas());
             this._HeaderControlCount = this.HeaderCommandPanel.Children.Count;
 
-            /* Build main panel. */
+            /* Build the main panel. */
             DockPanel.SetDock(this.HeaderPanel, Dock.Top);
             this.MainPanel = new DockPanel();
             this.MainPanel.Children.Add(this.HeaderPanel);
             this.MainPanel.Children.Add(new Canvas());
 
-            /* Set title, content, startup location/state, and Closed event handler. */
+            /* Set title, content, startup location/state, and Closing event handler. */
             this.Title = AppHelper.Title;
             this.Content = this.MainPanel;
             this.RestorePreferences(Common.Settings.Default.AppWindowMaximized, Common.Settings.Default.AppWindowBounds);
@@ -123,6 +109,59 @@ namespace JeffBourdier
          ***********/
 
         #region Protected Methods
+
+        /// <summary>
+        /// Creates a new routed UI command with an optional keyboard shortcut (i.e., a key gesture with
+        /// the specified key and modifier keys), associates (binds) the command to the specified event
+        /// handlers, adds the command binding to the UI, and optionally adds the command to a list.
+        /// </summary>
+        /// <param name="text">The text that describes the command.</param>
+        /// <param name="key">The key associated with the gesture.</param>
+        /// <param name="modifiers">The modifier keys associated with the gesture.</param>
+        /// <param name="executed">The handler for the Executed event on the command.</param>
+        /// <param name="canExecute">The handler for the CanExecute event on the command.</param>
+        /// <param name="list">If non-null, a list to which the command is added.</param>
+        /// <returns>The RoutedUICommand object.</returns>
+        protected RoutedUICommand CreateCommand(string text, Key key, ModifierKeys modifiers,
+            ExecutedRoutedEventHandler executed, CanExecuteRoutedEventHandler canExecute, List<RoutedUICommand> list)
+        {
+            /* Create the command and set its text property. */
+            RoutedUICommand command = new RoutedUICommand();
+            command.Text = text;
+
+            /* Bind and return the command. */
+            this.BindCommand(command, key, modifiers, executed, canExecute, list);
+            return command;
+        }
+
+        /// <summary>
+        /// Associates a routed UI command with an optional keyboard shortcut (i.e., a key
+        /// gesture with the specified key and modifier keys) to the specified event handlers,
+        /// adds the command binding to the UI, and optionally adds the command to a list.
+        /// </summary>
+        /// <param name="command">A RoutedUICommand object.</param>
+        /// <param name="key">The key associated with the gesture.</param>
+        /// <param name="modifiers">The modifier keys associated with the gesture.</param>
+        /// <param name="executed">The handler for the Executed event on the command.</param>
+        /// <param name="canExecute">The handler for the CanExecute event on the command.</param>
+        /// <param name="list">If non-null, a list to which the command is added.</param>
+        protected void BindCommand(RoutedUICommand command, Key key, ModifierKeys modifiers,
+            ExecutedRoutedEventHandler executed, CanExecuteRoutedEventHandler canExecute, List<RoutedUICommand> list)
+        {
+            /* If specified, define a key gesture for the command. */
+            if (key != Key.None)
+            {
+                KeyGesture gesture = new KeyGesture(key, modifiers);
+                command.InputGestures.Add(gesture);
+            }
+
+            /* Bind the command and add the binding to the UI. */
+            CommandBinding binding = new CommandBinding(command, executed, canExecute);
+            this.CommandBindings.Add(binding);
+
+            /* If specified, add the command to a list. */
+            if (list != null) list.Add(command);
+        }
 
         /// <summary>Replaces the main subpanel with a specified panel.</summary>
         /// <param name="panel">The panel with which to replace the main subpanel.</param>

@@ -61,18 +61,6 @@ namespace JeffBourdier
 
         #endregion
 
-        /**************
-         * Properties *
-         **************/
-
-        #region Private Properties
-
-        /// <summary>Gets a string describing the version of the executing application.</summary>
-        private static string VersionInfo
-        { get { return string.Format("{0} {1}", Common.Resources.Version, AppHelper.Version); } }
-
-        #endregion
-
         /***********
          * Methods *
          ***********/
@@ -83,17 +71,32 @@ namespace JeffBourdier
         /// <param name="owner">The owner window of the About box.</param>
         public static void Show(Window owner)
         {
-            /* Image (banner) (Note: "Build Action" property must be set to "Resource") */
+            /* Define the grid content panel. */
+            Grid grid = new Grid();
+            grid.Width = AboutBox.BannerWidth;
+            grid.Height = 2 * AboutBox.BannerHeight;
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions[0].Width = new GridLength(AboutBox.BannerWidth - AboutBox.BannerHeight);
+
+            /* Initialize the banner image.  (Note: "Build Action" property must be set to "Resource") */
             Image image = new Image();
             Uri uri = AppHelper.CreateResourceUri(false, "Banner.bmp");
             image.Source = new BitmapImage(uri);
+            Grid.SetRow(image, 0);
+            Grid.SetColumn(image, 0);
+            Grid.SetColumnSpan(image, 2);
+            grid.Children.Add(image);
 
-            /* Info text block */
+            /* Initialize the info text block. */
             TextBlock textBlock = new TextBlock();
             textBlock.Margin = new Thickness(AboutBox.MarginLength, AboutBox.MarginLength / 2, 0, 0);
             textBlock.Inlines.Add(AppHelper.Product);
             textBlock.Inlines.Add(new LineBreak());
-            textBlock.Inlines.Add(AboutBox.VersionInfo);
+            string s = string.Format("{0} {1}", Common.Resources.Version, AppHelper.Version);
+            textBlock.Inlines.Add(s);
             textBlock.Inlines.Add(new LineBreak());
             textBlock.Inlines.Add(AppHelper.Copyright);
             textBlock.Inlines.Add(new LineBreak());
@@ -102,35 +105,19 @@ namespace JeffBourdier
             hyperlink.Inlines.Add(hyperlink.NavigateUri.AbsoluteUri);
             hyperlink.RequestNavigate += AboutBox.Hyperlink_RequestNavigate;
             textBlock.Inlines.Add(hyperlink);
+            Grid.SetRow(textBlock, 1);
+            Grid.SetColumn(textBlock, 0);
+            grid.Children.Add(textBlock);
 
-            /* OK button */
+            /* Initialize the OK button. */
             Button button = new Button();
             button.Margin = new Thickness(AboutBox.MarginLength);
             button.Content = Common.Resources.OK;
             button.Click += UI.OkButton_Click;
             button.IsCancel = true;
             button.IsDefault = true;
-
-            /* Define the grid content panel. */
-            Grid grid = new Grid();
-            grid.Width = AboutBox.BannerWidth;
-            grid.Height = 2 * AboutBox.BannerHeight;
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[0].Width = new GridLength(AboutBox.BannerWidth - AboutBox.BannerHeight);
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.RowDefinitions.Add(new RowDefinition());
-            grid.RowDefinitions.Add(new RowDefinition());
-
-            /* Add controls to the grid. */
-            Grid.SetRow(image, 0);
-            Grid.SetColumn(image, 0);
-            Grid.SetColumnSpan(image, 2);
-            Grid.SetRow(textBlock, 1);
-            Grid.SetColumn(textBlock, 0);
             Grid.SetRow(button, 1);
             Grid.SetColumn(button, 1);
-            grid.Children.Add(image);
-            grid.Children.Add(textBlock);
             grid.Children.Add(button);
 
             /* Build and show the window. */

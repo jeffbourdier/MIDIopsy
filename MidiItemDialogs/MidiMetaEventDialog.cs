@@ -47,18 +47,18 @@ namespace JeffBourdier
             this.TypeLabel.Target = this.TypeTextBox;
 
             /* Initialize the "Data" controls. */
-            this.DataLabel = new StandardLabel(Properties.Resources.Data, true);
-            this.DataLabel.TabIndex = ++i;
-            this.DataLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            StandardLabel label = new StandardLabel(Properties.Resources.Data, true);
+            label.TabIndex = ++i;
+            label.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
             dataPanel = MidiEventDialog.CreateDataPanel(ref this.DataHexTextBox, ref this.DataCommentTextBox, ++i);
             this.DataHexTextBox.TextChanged += this.DataHexTextBox_TextChanged;
             this.DataCommentTextBox.TextChanged += this.DataCommentTextBox_TextChanged;
-            this.DataLabel.Target = this.DataHexTextBox;
+            label.Target = this.DataHexTextBox;
 
             /* Build out the window and its content. */
             this.AddUIElement(this.TypeLabel);
             this.AddUIElement(typePanel);
-            this.AddUIElement(this.DataLabel);
+            this.AddUIElement(label);
             this.AddUIElement(dataPanel);
             this.BuildOut(UI.ClientWidth, Properties.Resources.Midi + " " + Properties.Resources.MetaEvent);
 
@@ -85,7 +85,6 @@ namespace JeffBourdier
         private StandardLabel TypeLabel;
         private TextBox TypeTextBox;
         private TextBlock TypeTextBlock;
-        private StandardLabel DataLabel;
         private TextBox DataHexTextBox;
         private TextBox DataCommentTextBox;
         private int DataLength;

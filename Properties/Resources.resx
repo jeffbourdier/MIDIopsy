@@ -1201,4 +1201,13 @@
   <data name="OpeningScreen" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpeningScreen.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GoTo" xml:space="preserve">
+    <value>Go To</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navigation</value>
+  </data>
+  <data name="Ticks" xml:space="preserve">
+    <value>ticks</value>
+  </data>
 </root>

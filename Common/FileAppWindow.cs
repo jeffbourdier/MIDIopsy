@@ -35,7 +35,7 @@ using System.Windows;
 /* Button, ColumnDefinition, Grid, Panel, StackPanel */
 using System.Windows.Controls;
 
-/* ApplicationCommands, CanExecuteRoutedEventArgs, CommandBinding, ExecutedRoutedEventArgs, Key, KeyGesture, RoutedUICommand */
+/* ApplicationCommands, CanExecuteRoutedEventArgs, ExecutedRoutedEventArgs, Key, ModifierKeys, RoutedUICommand */
 using System.Windows.Input;
 
 
@@ -56,23 +56,14 @@ namespace JeffBourdier
         /// <summary>Initializes a FileAppWindow object.</summary>
         public FileAppWindow()
         {
-            int i, n;
-            CommandBinding binding;
             List<RoutedUICommand> commands;
-            KeyGesture gesture;
-
-            /* Bind the "New" command. */
-            binding = new CommandBinding(ApplicationCommands.New, this.NewExecuted, this.OpeningCommandCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Bind the "Open" command. */
-            binding = new CommandBinding(ApplicationCommands.Open, this.OpenExecuted, this.OpeningCommandCanExecute);
-            this.CommandBindings.Add(binding);
 
             /* Build the opening panel (which goes with the MRU panel, to be built shortly). */
             commands = new List<RoutedUICommand>();
-            commands.Add(ApplicationCommands.New);
-            commands.Add(ApplicationCommands.Open);
+            this.BindCommand(ApplicationCommands.New, Key.None, ModifierKeys.None,
+                this.NewExecuted, this.OpeningCommandCanExecute, commands);
+            this.BindCommand(ApplicationCommands.Open, Key.None, ModifierKeys.None,
+                this.OpenExecuted, this.OpeningCommandCanExecute, commands);
             this.OpeningPanel = new CommandPanel(commands, true);
 
             /* Start building the Most Recently Used (MRU) panel, and initialize the MRU list. */
@@ -82,36 +73,21 @@ namespace JeffBourdier
             if (Common.Settings.Default.Mru != null && Common.Settings.Default.Mru.Count > 0)
             {
                 /* Copy the number of MRU file paths into the MRU array, up to the maximum MRU count. */
-                n = Math.Min(Common.Settings.Default.Mru.Count, FileAppWindow.MruMax);
-                for (i = 0; i < n; ++i) this.MruArray[i] = Common.Settings.Default.Mru[i];
+                int n = Math.Min(Common.Settings.Default.Mru.Count, FileAppWindow.MruMax);
+                for (int i = 0; i < n; ++i) this.MruArray[i] = Common.Settings.Default.Mru[i];
 
                 /* This finishes building the MRU panel. */
                 this.RebuildMruButtons();
             }
 
-            /* Bind the "Save" command. */
-            binding = new CommandBinding(ApplicationCommands.Save, this.SaveExecuted, this.SaveCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Bind the "Save As" command. */
-            gesture = new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift);
-            ApplicationCommands.SaveAs.InputGestures.Add(gesture);
-            binding = new CommandBinding(ApplicationCommands.SaveAs, this.SaveAsExecuted, this.SaveAsCanExecute);
-            this.CommandBindings.Add(binding);
-
-            /* Create and bind the "Done" command. */
-            RoutedUICommand command = new RoutedUICommand();
-            gesture = new KeyGesture(Key.Escape);
-            command.InputGestures.Add(gesture);
-            command.Text = Common.Resources.Done;
-            binding = new CommandBinding(command, this.DoneExecuted, this.DoneCanExecute);
-            this.CommandBindings.Add(binding);
-
             /* Build the saving panel (which goes with the editing panel, to be built by derived classes). */
             commands = new List<RoutedUICommand>();
-            commands.Add(ApplicationCommands.Save);
-            commands.Add(ApplicationCommands.SaveAs);
-            commands.Add(command);
+            this.BindCommand(ApplicationCommands.Save, Key.None, ModifierKeys.None,
+                this.SaveExecuted, this.SaveCanExecute, commands);
+            this.BindCommand(ApplicationCommands.SaveAs, Key.S, ModifierKeys.Control | ModifierKeys.Shift,
+                this.SaveAsExecuted, this.SaveAsCanExecute, commands);
+            this.CreateCommand(Common.Resources.Done, Key.Escape, ModifierKeys.None,
+                this.DoneExecuted, this.DoneCanExecute, commands);
             this.SavingPanel = new CommandPanel(commands, true);
 
             /* Set the initial file state (which also shows the appopriate panels) and assign the closing event handler. */

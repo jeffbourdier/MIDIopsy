@@ -23,7 +23,7 @@ using System.IO;
 /* ResizeMode, RoutedEventArgs, SizeToContent, Thickness, Window, WindowStyle */
 using System.Windows;
 
-/* Button, CheckBox, Dock, DockPanel, GroupBox, StackPanel, TextBox */
+/* Button, CheckBox, Dock, DockPanel, GroupBox, StackPanel, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -44,11 +44,9 @@ namespace JeffBourdier
             int i = 0;
 
             /* Initialize the "Write messages to log file" check box. */
-            this.LogCheckBox = new CheckBox();
-            this.LogCheckBox.TabIndex = ++i;
-            this.LogCheckBox.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.LogCheckBox.Content = Common.Resources.WriteToLog;
-            this.LogCheckBox.IsChecked = Common.Settings.Default.Log;
+            this.LogCheckBox = SettingsDialog.CreateCheckBox(++i, true,
+                Common.Resources.WriteToLog, Common.Settings.Default.Log);
+            this.InitialElement = this.LogCheckBox;
 
             /* Initialize the "Log file path" label. */
             this.LogPathLabel = new StandardLabel(Common.Resources.LogFilePath, true);
@@ -60,6 +58,8 @@ namespace JeffBourdier
             this.LogPathTextBox.TabIndex = ++i;
             this.LogPathTextBox.Margin = new Thickness(0, 0, UI.HalfSpace, 0);
             this.LogPathTextBox.Text = Common.Settings.Default.LogPath;
+            this.LogPathTextBox.GotFocus += UI.TextBox_GotFocus;
+            this.LogPathTextBox.TextChanged += this.LogPathTextBox_TextChanged;
             this.LogPathTextBox.LostFocus += this.LogPathTextBox_LostFocus;
             this.LogPathLabel.Target = this.LogPathTextBox;
 
@@ -80,39 +80,16 @@ namespace JeffBourdier
             this.BrowsePanel.Children.Add(this.LogPathTextBox);
             this.BrowsePanel.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
 
-            /* Initialize the "All" check box. */
-            this.AllCheckBox = new CheckBox();
-            this.AllCheckBox.TabIndex = ++i;
-            this.AllCheckBox.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.AllCheckBox.Content = Common.Resources.All;
-
-            /* Initialize the "Timestamps" check box. */
-            this.TimestampsCheckBox = new CheckBox();
-            this.TimestampsCheckBox.TabIndex = ++i;
-            this.TimestampsCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.TimestampsCheckBox.Content = Common.Resources.Timestamps;
-            this.TimestampsCheckBox.IsChecked = Common.Settings.Default.LogTimestamp;
-
-            /* Initialize the "Procedure names" check box. */
-            this.ProcedureNamesCheckBox = new CheckBox();
-            this.ProcedureNamesCheckBox.TabIndex = ++i;
-            this.ProcedureNamesCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.ProcedureNamesCheckBox.Content = Common.Resources.ProcedureNames;
-            this.ProcedureNamesCheckBox.IsChecked = Common.Settings.Default.LogProcedureName;
-
-            /* Initialize the "Indents" check box. */
-            this.IndentsCheckBox = new CheckBox();
-            this.IndentsCheckBox.TabIndex = ++i;
-            this.IndentsCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.IndentsCheckBox.Content = Common.Resources.Indents;
-            this.IndentsCheckBox.IsChecked = Common.Settings.Default.LogIndent;
-
-            /* Initialize the "Exception detail" check box. */
-            this.ExceptionDetailCheckBox = new CheckBox();
-            this.ExceptionDetailCheckBox.TabIndex = ++i;
-            this.ExceptionDetailCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.ExceptionDetailCheckBox.Content = Common.Resources.ExceptionDetail;
-            this.ExceptionDetailCheckBox.IsChecked = Common.Settings.Default.LogExceptionDetail;
+            /* Initialize the option check boxes. */
+            this.AllCheckBox = SettingsDialog.CreateCheckBox(++i, true, Common.Resources.All, null);
+            this.TimestampsCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+                Common.Resources.Timestamps, Common.Settings.Default.LogTimestamp);
+            this.ProcedureNamesCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+                Common.Resources.ProcedureNames, Common.Settings.Default.LogProcedureName);
+            this.IndentsCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+                Common.Resources.Indents, Common.Settings.Default.LogIndent);
+            this.ExceptionDetailCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+                Common.Resources.ExceptionDetail, Common.Settings.Default.LogExceptionDetail);
 
             /* Build out the options stack panel, which contains the
              * option check boxes and will serve as the group box content.
@@ -212,6 +189,16 @@ namespace JeffBourdier
          * Methods *
          ***********/
 
+        #region Protected Methods
+
+        protected override bool CheckRequiredInput()
+        {
+            /* If the "Write messages to log file" box is checked, a log path is required. */
+            return (!this.Log || !string.IsNullOrEmpty(this.LogPath));
+        }
+
+        #endregion
+
         #region Private Methods
 
         #region Event Handlers
@@ -225,7 +212,10 @@ namespace JeffBourdier
             this.LogPathLabel.IsEnabled = b;
             this.BrowsePanel.IsEnabled = b;
             this.OptionsGroupBox.IsEnabled = b;
+            this.EnableOkButton();
         }
+
+        private void LogPathTextBox_TextChanged(object sender, TextChangedEventArgs e) { this.EnableOkButton(); }
 
         private void LogPathTextBox_LostFocus(object sender, RoutedEventArgs e) { this.ValidateLogFile(); }
 
@@ -267,6 +257,16 @@ namespace JeffBourdier
         }
 
         #endregion
+
+        private static CheckBox CreateCheckBox(int tabIndex, bool top, object content, bool? check)
+        {
+            CheckBox checkBox = new CheckBox();
+            checkBox.TabIndex = tabIndex;
+            checkBox.Margin = new Thickness(UI.TripleSpace, top ? UI.TripleSpace : UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
+            checkBox.Content = content;
+            if (check != null) checkBox.IsChecked = check;
+            return checkBox;
+        }
 
         /// <summary>Determines whether or not all logging options are checked.</summary>
         /// <returns>True if all logging options are checked; otherwise, false.</returns>
