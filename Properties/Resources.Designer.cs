@@ -89,24 +89,6 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This item cannot be deleted..
-        /// </summary>
-        internal static string CannotDelete {
-            get {
-                return ResourceManager.GetString("CannotDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item cannot be edited..
-        /// </summary>
-        internal static string CannotEdit {
-            get {
-                return ResourceManager.GetString("CannotEdit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to _Channel.
         /// </summary>
         internal static string Channel {
@@ -990,11 +972,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit Items.
+        ///   Looks up a localized string similar to Edit Item.
         /// </summary>
-        internal static string EditItems {
+        internal static string EditItem {
             get {
-                return ResourceManager.GetString("EditItems", resourceCulture);
+                return ResourceManager.GetString("EditItem", resourceCulture);
             }
         }
         
@@ -1004,6 +986,15 @@ namespace JeffBourdier.Properties {
         internal static string EndOfTrack {
             get {
                 return ResourceManager.GetString("EndOfTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entire chunk will be removed.  Proceed?.
+        /// </summary>
+        internal static string EntireChunk {
+            get {
+                return ResourceManager.GetString("EntireChunk", resourceCulture);
             }
         }
         
@@ -1169,6 +1160,15 @@ namespace JeffBourdier.Properties {
         internal static string Hour {
             get {
                 return ResourceManager.GetString("Hour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing this item will impact running status.  Proceed?.
+        /// </summary>
+        internal static string ImpactRunningStatus {
+            get {
+                return ResourceManager.GetString("ImpactRunningStatus", resourceCulture);
             }
         }
         
@@ -1399,11 +1399,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New Items.
+        ///   Looks up a localized string similar to New Item.
         /// </summary>
-        internal static string NewItems {
+        internal static string NewItem {
             get {
-                return ResourceManager.GetString("NewItems", resourceCulture);
+                return ResourceManager.GetString("NewItem", resourceCulture);
             }
         }
         
@@ -1467,6 +1467,15 @@ namespace JeffBourdier.Properties {
         internal static string OneTrack {
             get {
                 return ResourceManager.GetString("OneTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will remove the only track in the file.  Proceed?.
+        /// </summary>
+        internal static string OnlyTrack {
+            get {
+                return ResourceManager.GetString("OnlyTrack", resourceCulture);
             }
         }
         
@@ -1969,9 +1978,9 @@ namespace JeffBourdier.Properties {
         /// <summary>
         ///   Looks up a localized string similar to File has been edited and must be reloaded from disk in order to play the most recent version.  Save and reload now?.
         /// </summary>
-        internal static string ReloadForPlayback {
+        internal static string Reload {
             get {
-                return ResourceManager.GetString("ReloadForPlayback", resourceCulture);
+                return ResourceManager.GetString("Reload", resourceCulture);
             }
         }
         
@@ -3209,6 +3218,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will stop playback.  Proceed?.
+        /// </summary>
+        internal static string StopPlayback {
+            get {
+                return ResourceManager.GetString("StopPlayback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sync SP.
         /// </summary>
         internal static string Sync {
@@ -3331,24 +3349,6 @@ namespace JeffBourdier.Properties {
         internal static string Velocity {
             get {
                 return ResourceManager.GetString("Velocity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Entire chunk will be deleted.  Proceed?.
-        /// </summary>
-        internal static string WillDeleteChunk {
-            get {
-                return ResourceManager.GetString("WillDeleteChunk", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This will stop playback.  Proceed?.
-        /// </summary>
-        internal static string WillStopPlayback {
-            get {
-                return ResourceManager.GetString("WillStopPlayback", resourceCulture);
             }
         }
     }

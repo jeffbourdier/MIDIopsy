@@ -27,8 +27,8 @@ using System.Threading;
  */
 using System.Windows;
 
-/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox, Label,
- * ListView, ListViewItem, Orientation, RowDefinition, StackPanel, TextBlock, TextBox, WrapPanel
+/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox, Label, ListView,
+ * ListViewItem, Orientation, RowDefinition, SelectionMode, StackPanel, TextBlock, TextBox, WrapPanel
  */
 using System.Windows.Controls;
 
@@ -55,6 +55,76 @@ namespace JeffBourdier
     /// <summary>Represents a window that makes up the user interface for the MIDIopsy application.</summary>
     public class MIDIopsyWindow : FileAppWindow
     {
+        /*********
+         * Types *
+         *********/
+
+        #region Private Types
+
+        /// <summary>Temporarily stores information on a MIDI channel message/event (for cut/copy/paste operations).</summary>
+        private class ChannelEvent
+        {
+            public ChannelEvent(int deltaTime, int status, int data1, int data2)
+            {
+                this._DeltaTime = deltaTime;
+                this._Status = status;
+                this._Data1 = data1;
+                this._Data2 = data2;
+            }
+
+            private int _DeltaTime;
+            private int _Status;
+            private int _Data1;
+            private int _Data2;
+
+            public int DeltaTime { get { return this._DeltaTime; } }
+            public int Status { get { return this._Status; } }
+            public int Data1 { get { return this._Data1; } }
+            public int Data2 { get { return this._Data2; } }
+        }
+
+        /// <summary>
+        /// Temporarily stores information on a system exclusive (SysEx) message/event (for cut/copy/paste operations).
+        /// </summary>
+        private class SysExEvent
+        {
+            public SysExEvent(int deltaTime, bool escape, byte[] bytes)
+            {
+                this._DeltaTime = deltaTime;
+                this._Escape = escape;
+                this._Data = bytes;
+            }
+
+            private int _DeltaTime;
+            private bool _Escape;
+            private byte[] _Data;
+
+            public int DeltaTime { get { return this._DeltaTime; } }
+            public bool Escape { get { return this._Escape; } }
+            public byte[] Data { get { return this._Data; } }
+        }
+
+        /// <summary>Temporarily stores information on a meta-event (for cut/copy/paste operations).</summary>
+        private class MetaEvent
+        {
+            public MetaEvent(int deltaTime, int type, byte[] bytes)
+            {
+                this._DeltaTime = deltaTime;
+                this._Type = type;
+                this._Data = bytes;
+            }
+
+            private int _DeltaTime;
+            private int _Type;
+            private byte[] _Data;
+
+            public int DeltaTime { get { return this._DeltaTime; } }
+            public int Type { get { return this._Type; } }
+            public byte[] Data { get { return this._Data; } }
+        }
+
+        #endregion
+
         /****************
          * Constructors *
          ****************/
@@ -67,28 +137,34 @@ namespace JeffBourdier
             List<RoutedUICommand> commands;
             WrapPanel wrapPanel = new WrapPanel();
 
-            /* Build the "New Items" group box. */
+            /* Build the "New Item" group box. */
             commands = new List<RoutedUICommand>();
             this.CreateCommand(Properties.Resources.Track, Key.None, ModifierKeys.None,
                 this.NewTrackExecuted, this.CommandCanExecute, commands);
             this.CreateCommand(Properties.Resources.Channel + Environment.NewLine + "  " + Properties.Resources.Event,
-                Key.None, ModifierKeys.None, this.NewChannelEventExecuted, this.NewEventCanExecute, commands);
+                Key.None, ModifierKeys.None, this.NewChannelEventExecuted, this.BodyCommandCanExecute, commands);
             string s = Text.ParseLabel(Properties.Resources.SysEx);
-            s = s.Insert(s.Length - 1, "_") + " " + Properties.Resources.Event;
-            this.CreateCommand(s, Key.None, ModifierKeys.None, this.NewSysExEventExecuted, this.NewEventCanExecute, commands);
+            this.CreateCommand(s.Insert(s.Length - 1, "_") + " " + Properties.Resources.Event, Key.None,
+                ModifierKeys.None, this.NewSysExEventExecuted, this.BodyCommandCanExecute, commands);
             this.CreateCommand("_" + Properties.Resources.MetaEvent, Key.None, ModifierKeys.None,
-                this.NewMetaEventExecuted, this.NewEventCanExecute, commands);
-            this.NewItemsPanel = new CommandPanel(commands, true);
-            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.NewItems, this.NewItemsPanel);
+                this.NewMetaEventExecuted, this.BodyCommandCanExecute, commands);
+            this.NewItemPanel = new CommandPanel(commands, true);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.NewItem, this.NewItemPanel);
 
-            /* Build the "Edit Items" group box. */
+            /* Build the "Edit Item" group box. */
             commands = new List<RoutedUICommand>();
             this.BindCommand(ApplicationCommands.Properties, Key.None, ModifierKeys.None,
-                this.EditItemExecuted, this.CommandCanExecute, commands);
+                this.PropertiesExecuted, this.PropertiesCanExecute, commands);
+            this.BindCommand(ApplicationCommands.Cut, Key.None, ModifierKeys.None,
+                this.CutExecuted, this.EventCommandCanExecute, commands);
+            this.BindCommand(ApplicationCommands.Copy, Key.None, ModifierKeys.None,
+                this.CopyExecuted, this.EventCommandCanExecute, commands);
+            this.BindCommand(ApplicationCommands.Paste, Key.None, ModifierKeys.None,
+                this.PasteExecuted, this.PasteCanExecute, commands);
             this.BindCommand(ApplicationCommands.Delete, Key.None, ModifierKeys.None,
-                this.DeleteItemExecuted, this.CommandCanExecute, commands);
-            this.EditItemsPanel = new CommandPanel(commands, true);
-            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.EditItems, this.EditItemsPanel);
+                this.DeleteExecuted, this.BodyCommandCanExecute, commands);
+            this.EditItemPanel = new CommandPanel(commands, true);
+            MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.EditItem, this.EditItemPanel);
 
             /* Build the "Navigation" group box. */
             commands = new List<RoutedUICommand>();
@@ -124,6 +200,7 @@ namespace JeffBourdier
             foreach (MidiItem.DisplayField field in MidiItem.DisplayFields) this.AddViewColumn(field);
             this.ListView.View = this.GridView;
             this.ListView.Margin = new Thickness(0, UI.UnitSpace, 0, 0);
+            this.ListView.SelectionMode = SelectionMode.Single;
             this.ListView.ItemContainerGenerator.StatusChanged += this.ItemContainerGenerator_StatusChanged;
 
             /* Build the editing panel. */
@@ -157,8 +234,8 @@ namespace JeffBourdier
         private static readonly Thickness CellMargin = new Thickness(-6, -3, -6, -3);
         private static readonly Thickness CellPadding = new Thickness(6, 3, 6, 3);
 
-        private CommandPanel NewItemsPanel;
-        private CommandPanel EditItemsPanel;
+        private CommandPanel NewItemPanel;
+        private CommandPanel EditItemPanel;
         private CommandPanel NavigationPanel;
         private CommandButton PlayStopButton;
         private PositionControl StartingPositionControl;
@@ -171,6 +248,7 @@ namespace JeffBourdier
         private GridView GridView;
         private EventWaitHandle EventHandle;
         private MidiFile MidiFile = new MidiFile();
+        private object Clipboard = null;
         private bool Playing = false;
         private bool AutoPlay = false;
 
@@ -182,45 +260,21 @@ namespace JeffBourdier
 
         #region Private Properties
 
-        /* Determine whether or not the selected MIDI item can (or should) be deleted. */
-        private bool? DeletionStatus
+        /* Return the index in the MIDI file's list at which a new event should be inserted (based
+         * on the selected item), or -1 if the event should be added to the end of the file.
+         */
+        private int InsertionIndex
         {
             get
             {
-                /* No part of a header chunk can be deleted. */
-                if (this.ListView.SelectedItem is MidiHeader) return false;
+                /* If the selected item is last in the list view, the new event should be added to the end of the file. */
+                if (this.ListView.SelectedIndex == this.ListView.Items.Count - 1) return -1;
 
-                /* If the selected MIDI item is a channel message/event that does not use
-                 * running status, check for dependent events (which do use running status).
+                /* Otherwise, the new event should be inserted into the file (right after the
+                 * selected item).  The index in the MIDI file's list should be the same as
+                 * the index in the list view, minus the number of separators that precede it.
                  */
-                MidiChannelEvent channelEvent = this.ListView.SelectedItem as MidiChannelEvent;
-                if (channelEvent != null && !channelEvent.RunningStatus)
-                {
-                    /* Find the next channel event in the chunk.  If it uses
-                     * running status, the selected MIDI item cannot be deleted.
-                     */
-                    for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
-                    {
-                        if (this.ListView.Items[i] is MidiItem.Separator) return true;
-                        channelEvent = this.ListView.Items[i] as MidiChannelEvent;
-                        if (channelEvent != null) return !channelEvent.RunningStatus;
-                    }
-                    return true;
-                }
-
-                /* Otherwise, as long as the selected MIDI item is not chunk info, it can be deleted. */
-                MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
-                if (chunkInfo == null) return true;
-
-                /* No part of a header chunk can be deleted. */
-                if (chunkInfo.Type == MidiChunkInfo.HeaderType) return false;
-
-                /* If there's only 1 track, it cannot be deleted. */
-                if (chunkInfo.Type == MidiChunkInfo.TrackType && this.MidiFile.Header.NumberOfTracks == 1)
-                    return false;
-
-                /* Otherwise, the user should be prompted/warned that the entire chunk will be deleted. */
-                return null;
+                return this.ListView.SelectedIndex - this.SeparatorCount + 1;
             }
         }
 
@@ -247,9 +301,9 @@ namespace JeffBourdier
         protected override void AdjustTabIndexes()
         {
             if (this.FileState == FileState.None) return;
-            this.NewItemsPanel.TabIndexOffset = this.HeaderControlCount;
-            this.EditItemsPanel.TabIndexOffset = this.NewItemsPanel.TabIndexOffset + this.NewItemsPanel.Children.Count;
-            this.NavigationPanel.TabIndexOffset = this.EditItemsPanel.TabIndexOffset + this.EditItemsPanel.Children.Count;
+            this.NewItemPanel.TabIndexOffset = this.HeaderControlCount;
+            this.EditItemPanel.TabIndexOffset = this.NewItemPanel.TabIndexOffset + this.NewItemPanel.Children.Count;
+            this.NavigationPanel.TabIndexOffset = this.EditItemPanel.TabIndexOffset + this.EditItemPanel.Children.Count;
         }
 
         /// <summary>Prompts the user for information needed to create a new MIDI file.</summary>
@@ -310,12 +364,7 @@ namespace JeffBourdier
         protected override bool SaveFile(bool asNew)
         {
             /* If the file is playing, warn the user that this will stop it. */
-            if (this.Playing)
-            {
-                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.WillStopPlayback,
-                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No) return false;
-            }
+            if (this.Playing) if (!this.PromptUser(Properties.Resources.StopPlayback, true)) return false;
 
             /* Confirm that the user really wants to save, and establish the file path. */
             if (!base.SaveFile(asNew)) return false;
@@ -364,51 +413,9 @@ namespace JeffBourdier
         /* Create a new track (MTrk) chunk. */
         private void NewTrackExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            /* Tracks cannot be added to a format 0 file. */
-            if (this.MidiFile.Header.Format == 0)
-            {
-                MessageBox.Show(this, Properties.Resources.OneTrack, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
-                return;
-            }
-
-            MidiItem.Separator separator = new MidiItem.Separator();
-            MidiChunkInfo chunkInfo;
-            MidiMetaEvent metaEvent;
-
-            /* Starting from the selected item, find the next chunk in the list view, and insert the new track there. */
-            for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
-            {
-                chunkInfo = this.ListView.Items[i] as MidiChunkInfo;
-                if (chunkInfo == null) continue;
-
-                /* We have found the next chunk.  Insert into the file a new track chunk, followed by an End of Track event. */
-                int j = i - this.SeparatorCount;
-                chunkInfo = this.MidiFile.InsertTrack(--j);
-                metaEvent = this.MidiFile.InsertMetaEvent(++j, 0, MidiMetaEvent.EndOfTrackType, null);
-
-                /* Correspondingly, insert into the list view a separator, the new track chunk, and the End of Track event. */
-                this.ListView.Items.Insert(--i, separator);
-                this.ListView.Items.Insert(++i, chunkInfo);
-                this.ListView.Items.Insert(++i, metaEvent);
-
-                /* Refresh the view, and mark the file as edited. */
-                this.FinalizeChanges();
-                return;
-            }
-
-            /* If there is no next chunk in the list view, add the new
-             * track chunk and End of Track event to the end of the file.
-             */
-            chunkInfo = this.MidiFile.AddTrack();
-            metaEvent = this.MidiFile.AddMetaEvent(0, MidiMetaEvent.EndOfTrackType, null);
-
-            /* Correspondingly, add to the list view a separator, new track chunk, and End of Track event. */
-            this.ListView.Items.Add(separator);
-            this.ListView.Items.Add(chunkInfo);
-            this.ListView.Items.Add(metaEvent);
-
-            /* Refresh the view, and mark the file as edited. */
-            this.FinalizeChanges();
+            int i = this.CreateTrack(true);
+            if (i < 0) return;
+            this.FinalizeChanges(i);
         }
 
         /* Create a new MIDI channel message/event. */
@@ -420,28 +427,9 @@ namespace JeffBourdier
             if (result == false) return;
 
             /* The user did not cancel.  Create the event based on user input. */
-            MidiChannelEvent channelEvent;
-            int i = this.GetInsertionIndex();
-
-            /* If the selected item is last in the list view, add the new event to the end. */
-            if (i < 0)
-            {
-                channelEvent = dialog.RunningStatus ?
-                    this.MidiFile.AddChannelEvent(dialog.DeltaTime, dialog.Data1, dialog.Data2) :
-                    this.MidiFile.AddChannelEvent(dialog.DeltaTime, dialog.MessageType,
-                        dialog.Channel, dialog.Data1, dialog.Data2);
-                this.ListView.Items.Add(channelEvent);
-            }
-            /* Otherwise, insert the new event right after the selected item. */
-            else
-            {
-                channelEvent = dialog.RunningStatus ?
-                    this.MidiFile.InsertChannelEvent(i, dialog.DeltaTime, dialog.Data1, dialog.Data2) :
-                    this.MidiFile.InsertChannelEvent(i, dialog.DeltaTime, dialog.MessageType,
-                        dialog.Channel, dialog.Data1, dialog.Data2);
-                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, channelEvent);
-            }
-            this.FinalizeChanges();
+            int b = dialog.RunningStatus ? -1 : Midi.MakeByte((int)dialog.MessageType, dialog.Channel),
+                i = this.CreateChannelEvent(dialog.DeltaTime, b, dialog.Data1, dialog.Data2);
+            this.FinalizeChanges(i);
         }
 
         /* Create a new MIDI system exclusive (SysEx) message/event. */
@@ -453,22 +441,8 @@ namespace JeffBourdier
             if (result == false) return;
 
             /* The user did not cancel.  Create the event based on user input. */
-            MidiSysExEvent sysExEvent;
-            int i = this.GetInsertionIndex();
-
-            /* If the selected item is last in the list view, add the new event to the end. */
-            if (i < 0)
-            {
-                sysExEvent = this.MidiFile.AddSysExEvent(dialog.DeltaTime, dialog.Escape, dialog.Data);
-                this.ListView.Items.Add(sysExEvent);
-            }
-            /* Otherwise, insert the new event right after the selected item. */
-            else
-            {
-                sysExEvent = this.MidiFile.InsertSysExEvent(i, dialog.DeltaTime, dialog.Escape, dialog.Data);
-                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, sysExEvent);
-            }
-            this.FinalizeChanges();
+            int i = this.CreateSysExEvent(dialog.DeltaTime, dialog.Escape, dialog.Data);
+            this.FinalizeChanges(i);
         }
 
         /* Create a new MIDI meta-event. */
@@ -480,26 +454,12 @@ namespace JeffBourdier
             if (result == false) return;
 
             /* The user did not cancel.  Create the event based on user input. */
-            MidiMetaEvent metaEvent;
-            int i = this.GetInsertionIndex();
-
-            /* If the selected item is last in the list view, add the new event to the end. */
-            if (i < 0)
-            {
-                metaEvent = this.MidiFile.AddMetaEvent(dialog.DeltaTime, dialog.Type, dialog.Data);
-                this.ListView.Items.Add(metaEvent);
-            }
-            /* Otherwise, insert the new event right after the selected item. */
-            else
-            {
-                metaEvent = this.MidiFile.InsertMetaEvent(i, dialog.DeltaTime, dialog.Type, dialog.Data);
-                this.ListView.Items.Insert(this.ListView.SelectedIndex + 1, metaEvent);
-            }
-            this.FinalizeChanges();
+            int i = this.CreateMetaEvent(dialog.DeltaTime, dialog.Type, dialog.Data);
+            this.FinalizeChanges(i);
         }
 
-        /* Edit [the properties of] the selected MIDI item. */
-        private void EditItemExecuted(object sender, ExecutedRoutedEventArgs e)
+        /* Edit the properties of the selected MIDI item. */
+        private void PropertiesExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             MidiItemDialog dialog = null;
 
@@ -519,12 +479,10 @@ namespace JeffBourdier
             MidiMetaEvent metaEvent = this.ListView.SelectedItem as MidiMetaEvent;
             if (metaEvent != null) dialog = new MidiMetaEventDialog(metaEvent);
 
-            /* If the dialog has not been initialized by now, it means the selected MIDI item is not editable. */
-            if (dialog == null)
-            {
-                MessageBox.Show(this, Properties.Resources.CannotEdit, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
-                return;
-            }
+            /* If the dialog has not been initialized by now, the selected
+             * MIDI item is not editable (altough this should never happen).
+             */
+            if (dialog == null) return;
 
             /* Prompt the user to edit the item.  If the user cancels, take no further action. */
             bool? result = dialog.ShowDialog(this);
@@ -547,10 +505,7 @@ namespace JeffBourdier
                 {
                     MidiChannelEventDialog channelEventDialog = dialog as MidiChannelEventDialog;
                     if (!channelEventDialog.RunningStatus)
-                    {
-                        channelEvent.MessageType = channelEventDialog.MessageType;
-                        channelEvent.Channel = channelEventDialog.Channel;
-                    }
+                        channelEvent.Status = Midi.MakeByte((int)channelEventDialog.MessageType, channelEventDialog.Channel);
                     channelEvent.Data1 = channelEventDialog.Data1;
                     channelEvent.Data2 = channelEventDialog.Data2;
                 }
@@ -567,48 +522,36 @@ namespace JeffBourdier
                     metaEvent.Data = metaEventDialog.Data;
                 }
             }
-            this.FinalizeChanges();
+            this.FinalizeChanges(this.ListView.SelectedIndex);
+        }
+
+        /* Cut (to the clipboard) the selected MIDI item. */
+        private void CutExecuted(object sender, ExecutedRoutedEventArgs e) { this.CopyItem(); this.RemoveItem(); }
+
+        /* Copy (to the clipboard) the selected MIDI item. */
+        private void CopyExecuted(object sender, ExecutedRoutedEventArgs e) { this.CopyItem(); }
+
+        /* Copy clipboard items (as new items) into the MIDI file. */
+        private void PasteExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            int i = -1;
+
+            ChannelEvent channelEvent = this.Clipboard as ChannelEvent;
+            if (channelEvent != null) i = this.CreateChannelEvent(channelEvent.DeltaTime,
+                channelEvent.Status, channelEvent.Data1, channelEvent.Data2);
+
+            SysExEvent sysExEvent = this.Clipboard as SysExEvent;
+            if (sysExEvent != null) i = this.CreateSysExEvent(sysExEvent.DeltaTime, sysExEvent.Escape, sysExEvent.Data);
+
+            MetaEvent metaEvent = this.Clipboard as MetaEvent;
+            if (metaEvent != null) i = this.CreateMetaEvent(metaEvent.DeltaTime, metaEvent.Type, metaEvent.Data);
+
+            if (i < 0) return;
+            this.FinalizeChanges(i);
         }
 
         /* Delete the selected MIDI item. */
-        private void DeleteItemExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            /* Determine if the selected MIDI item can/should be deleted. */
-            bool? b = this.DeletionStatus;
-            if (b == false)
-            {
-                MessageBox.Show(this, Properties.Resources.CannotDelete, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
-                return;
-            }
-            if (b == null)
-            {
-                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.WillDeleteChunk,
-                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No) return;
-            }
-
-            /* We have clearance.  Delete the selected item. */
-            int i = this.ListView.SelectedIndex;
-            this.MidiFile.DeleteItem(i - this.SeparatorCount);
-            this.ListView.Items.RemoveAt(i);
-
-            /* If appropriate, remove (from the list view) all items in the chunk. */
-            if (b == null)
-            {
-                while (i < this.ListView.Items.Count && !(this.ListView.Items[i] is MidiItem.Separator))
-                    this.ListView.Items.RemoveAt(i);
-                this.ListView.Items.RemoveAt(i - 1);
-            }
-
-            /* With the selected item deleted, there is now no selection.
-             * For convenience, select the nearest non-separator item.
-             */
-            while (i < this.ListView.Items.Count && this.ListView.Items[i++] is MidiItem.Separator) ;
-            if (i > this.ListView.Items.Count) i = this.ListView.Items.Count;
-            while (this.ListView.Items[--i] is MidiItem.Separator) ;
-            this.ListView.SelectedIndex = i;
-            this.FinalizeChanges();
-        }
+        private void DeleteExecuted(object sender, ExecutedRoutedEventArgs e) { this.RemoveItem(); }
 
         /* Go to a given place in the file. */
         private void GoToExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -688,10 +631,7 @@ namespace JeffBourdier
 
             /* If the file is edited, prompt the user to save and reload. */
             if (this.FileState == FileState.Edited)
-            {
-                MessageBoxResult result = MessageBox.Show(this, Properties.Resources.ReloadForPlayback,
-                    Meta.Name, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
-                if (result == MessageBoxResult.Yes)
+                if (PromptUser(Properties.Resources.Reload, true))
                 {
                     /* The user chose to save and reload.  Set the flag to play the file as
                      * soon as it's reloaded.  Executing the Save command (if the file is saved
@@ -706,7 +646,6 @@ namespace JeffBourdier
                     /* Regardless, we're done here. */
                     return;
                 }
-            }
 
             /* Either the file is not edited, or the user chose not to save and reload.  Either way, play the file. */
             this.PlayMedia();
@@ -730,11 +669,29 @@ namespace JeffBourdier
         protected void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None); }
 
-        /* Commands that create new events can execute as long as there is a file open and
-         * the selected item is neither of the first two (presumably, the header chunk).
+        /* Commands that apply only to the "body" of the MIDI file can execute as long as there is a
+         * file open and the selected item is neither of the first two (presumably, the header chunk).
          */
-        protected void NewEventCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        protected void BodyCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedIndex > 1); }
+
+        /* The command that edits the properties of the selected MIDI item can execute
+         * as long as there is a file open and the selected item is not chunk info.
+         */
+        protected void PropertiesCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None && !(this.ListView.SelectedItem is MidiChunkInfo)); }
+
+        /* Commands that apply only to MIDI (MTrk) events can execute as long as
+         * there is a file open and the selected item is in fact a MIDI event.
+         */
+        protected void EventCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedItem is MidiEvent); }
+
+        /* The Paste command can execute as long as there is a file open, the clipboard is not
+         * empty, and the selected item is neither of the first two (presumably, the header chunk).
+         */
+        protected void PasteCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        { e.CanExecute = (this.FileState != FileState.None && this.Clipboard != null && this.ListView.SelectedIndex > 1); }
 
         /* Once a MIDI file has been opened for media playback, set its initial position and determine its duration. */
         private void Player_MediaOpened(object sender, EventArgs e)
@@ -969,26 +926,197 @@ namespace JeffBourdier
             this.StartingPositionControl.Position = TimeSpan.Zero;
         }
 
-        /* Return the index in the MIDI file's list at which a new event should be inserted (based
-         * on the selected item), or -1 if the event should be added to the end of the file.
-         */
-        private int GetInsertionIndex()
+        /* Create a new track (MTrk) chunk. */
+        private int CreateTrack(bool end)
         {
-            /* If the selected item is last in the list view, the new event should be added to the end of the file. */
-            if (this.ListView.SelectedIndex == this.ListView.Items.Count - 1) return -1;
+            /* Tracks cannot be added to a format 0 file. */
+            if (this.MidiFile.Header.Format == 0)
+            {
+                MessageBox.Show(this, Properties.Resources.OneTrack, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                return -1;
+            }
 
-            /* Otherwise, the new event should be inserted into the file (right after the
-             * selected item).  The index in the MIDI file's list should be the same as
-             * the index in the list view, minus the number of separators that precede it.
+            MidiItem.Separator separator = new MidiItem.Separator();
+            MidiChunkInfo chunkInfo;
+            MidiMetaEvent metaEvent;
+
+            /* Starting from the selected item, find the next chunk in the list view, and insert the new track there. */
+            for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
+            {
+                chunkInfo = this.ListView.Items[i] as MidiChunkInfo;
+                if (chunkInfo == null) continue;
+
+                /* We have found the next chunk.  Insert into the file a new track chunk, followed by an End of Track event. */
+                int j = i - this.SeparatorCount;
+                chunkInfo = this.MidiFile.InsertTrack(--j);
+                metaEvent = end ? this.MidiFile.InsertMetaEvent(++j, 0, MidiMetaEvent.EndOfTrackType, null) : null;
+
+                /* Correspondingly, insert into the list view a separator, the new track chunk, and the End of Track event. */
+                this.ListView.Items.Insert(--i, separator);
+                this.ListView.Items.Insert(++i, chunkInfo);
+                if (end) this.ListView.Items.Insert(++i, metaEvent);
+                return --i;
+            }
+
+            /* If there is no next chunk in the list view, add the new
+             * track chunk and End of Track event to the end of the file.
              */
-            return this.ListView.SelectedIndex - this.SeparatorCount + 1;
+            chunkInfo = this.MidiFile.AddTrack();
+            metaEvent = end ? this.MidiFile.AddMetaEvent(0, MidiMetaEvent.EndOfTrackType, null) : null;
+
+            /* Correspondingly, add to the list view a separator, new track chunk, and End of Track event. */
+            this.ListView.Items.Add(separator);
+            this.ListView.Items.Add(chunkInfo);
+            if (end) this.ListView.Items.Add(metaEvent);
+            return this.ListView.Items.Count - 2;
+        }
+
+        /* Create a new MIDI channel message/event. */
+        private int CreateChannelEvent(int deltaTime, int status, int data1, int data2)
+        {
+            int i = this.InsertionIndex, j = this.ListView.SelectedIndex + 1;
+            MidiChannelEvent channelEvent;
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                channelEvent = this.MidiFile.AddChannelEvent(deltaTime, status, data1, data2);
+                this.ListView.Items.Add(channelEvent);
+                return j;
+            }
+
+            /* Otherwise, insert the new event right after the selected item. */
+            channelEvent = this.MidiFile.InsertChannelEvent(i, deltaTime, status, data1, data2);
+            this.ListView.Items.Insert(j, channelEvent);
+            return j;
+        }
+
+        /* Create a new MIDI system exclusive (SysEx) message/event. */
+        private int CreateSysExEvent(int deltaTime, bool escape, byte[] bytes)
+        {
+            int i = this.InsertionIndex, j = this.ListView.SelectedIndex + 1;
+            MidiSysExEvent sysExEvent;
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                sysExEvent = this.MidiFile.AddSysExEvent(deltaTime, escape, bytes);
+                this.ListView.Items.Add(sysExEvent);
+                return j;
+            }
+
+            /* Otherwise, insert the new event right after the selected item. */
+            sysExEvent = this.MidiFile.InsertSysExEvent(i, deltaTime, escape, bytes);
+            this.ListView.Items.Insert(j, sysExEvent);
+            return j;
+        }
+
+        /* Create a new MIDI meta-event. */
+        private int CreateMetaEvent(int deltaTime, int type, byte[] bytes)
+        {
+            int i = this.InsertionIndex, j = this.ListView.SelectedIndex + 1;
+            MidiMetaEvent metaEvent;
+
+            /* If the selected item is last in the list view, add the new event to the end. */
+            if (i < 0)
+            {
+                metaEvent = this.MidiFile.AddMetaEvent(deltaTime, type, bytes);
+                this.ListView.Items.Add(metaEvent);
+                return j;
+            }
+
+            /* Otherwise, insert the new event right after the selected item. */
+            metaEvent = this.MidiFile.InsertMetaEvent(i, deltaTime, type, bytes);
+            this.ListView.Items.Insert(j, metaEvent);
+            return j;
+        }
+
+        /* Copy the selected MIDI item to the clipboard. */
+        private void CopyItem()
+        {
+            MidiChannelEvent channelEvent = this.ListView.SelectedItem as MidiChannelEvent;
+            if (channelEvent != null) this.Clipboard = new ChannelEvent(channelEvent.DeltaTime,
+                (channelEvent.RunningStatus ? -1 : channelEvent.Status), channelEvent.Data1, channelEvent.Data2);
+            MidiSysExEvent sysExEvent = this.ListView.SelectedItem as MidiSysExEvent;
+            if (sysExEvent != null) this.Clipboard = new SysExEvent(sysExEvent.DeltaTime, sysExEvent.Escape, sysExEvent.Data);
+            MidiMetaEvent metaEvent = this.ListView.SelectedItem as MidiMetaEvent;
+            if (metaEvent != null) this.Clipboard = new MetaEvent(metaEvent.DeltaTime, metaEvent.Type, metaEvent.Data);
+        }
+
+        /* Remove the selected MIDI item. */
+        private void RemoveItem()
+        {
+            /* Determine if the selected MIDI item can/should be removed (and whether or not it is chunk info). */
+            bool? b = this.CheckRemoval();
+            if (b == false) return;
+
+            /* We have clearance.  Remove the selected item from the MIDI file. */
+            int i = this.ListView.SelectedIndex;
+            this.MidiFile.RemoveItem(i - this.SeparatorCount);
+
+            /* Now for the list view.  Remove at least the selected item.  If appropriate, do the
+             * same for all items in the chunk, as well as the separator right before the chunk.
+             */
+            do this.ListView.Items.RemoveAt(i);
+            while (b == null && i < this.ListView.Items.Count && !(this.ListView.Items[i] is MidiItem.Separator));
+            if (b == null) this.ListView.Items.RemoveAt(i - 1);
+
+            /* With the selected item removed, there is now no selection.
+             * For convenience, select the nearest non-separator item.
+             */
+            while (i < this.ListView.Items.Count && this.ListView.Items[i++] is MidiItem.Separator) ;
+            if (i > this.ListView.Items.Count) i = this.ListView.Items.Count;
+            while (this.ListView.Items[--i] is MidiItem.Separator) ;
+            this.FinalizeChanges(i);
+        }
+
+        /* Determine whether or not the selected MIDI item can (or should) be removed. */
+        private bool? CheckRemoval()
+        {
+            /* If the selected MIDI item is a channel message/event that does not use
+             * running status, check for dependent events (which do use running status).
+             */
+            MidiChannelEvent channelEvent = this.ListView.SelectedItem as MidiChannelEvent;
+            if (channelEvent != null && !channelEvent.RunningStatus)
+            {
+                /* Find the next channel event in the chunk.  If it uses running status, warn the user. */
+                for (int i = this.ListView.SelectedIndex + 1; i < this.ListView.Items.Count; ++i)
+                {
+                    if (this.ListView.Items[i] is MidiItem.Separator) return true;
+                    channelEvent = this.ListView.Items[i] as MidiChannelEvent;
+                    if (channelEvent == null) continue;
+                    if (!channelEvent.RunningStatus) return true;
+                    return this.PromptUser(Properties.Resources.ImpactRunningStatus, false);
+                }
+                return true;
+            }
+
+            /* Otherwise, as long as the selected MIDI item is not chunk info, it can be removed. */
+            MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
+            if (chunkInfo == null) return true;
+
+            /* If the selected MIDI item represents the only track, warn the user. */
+            if (chunkInfo.Type == MidiChunkInfo.TrackType && this.MidiFile.Header.NumberOfTracks == 1)
+                return (this.PromptUser(Properties.Resources.OnlyTrack, false)) ? null : (bool?)false;
+
+            /* Otherwise, simply warn the user that the entire chunk will be removed. */
+            return (this.PromptUser(Properties.Resources.EntireChunk, true)) ? null : (bool?)false;
+        }
+
+        /* Ask the user a Yes/No question. */
+        private bool PromptUser(string text, bool defaultYes)
+        {
+            MessageBoxResult result = MessageBox.Show(this, text, Meta.Name, MessageBoxButton.YesNo,
+                MessageBoxImage.Exclamation, defaultYes ? MessageBoxResult.Yes : MessageBoxResult.No);
+            return result == MessageBoxResult.Yes;
         }
 
         /* This method should be called after any changes to the MIDI file. */
-        private void FinalizeChanges()
+        private void FinalizeChanges(int index)
         {
             /* Refresh the view so that the changes show up. */
             this.ListView.Items.Refresh();
+            this.ListView.SelectedIndex = index;
 
             /* Mark the file as edited. */
             this.FileState = FileState.Edited;

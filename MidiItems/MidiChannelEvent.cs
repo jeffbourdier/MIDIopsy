@@ -454,16 +454,47 @@ namespace JeffBourdier
             }
         }
 
-        /// <summary>Indicates whether or not this event uses running status.</summary>
-        public bool RunningStatus
+        /// <summary>
+        /// The status byte of the event.  The high nibble identifies the type of channel message, and the
+        /// low nibble indicates one of the sixteen logical MIDI channels on which the event is transmitted.
+        /// </summary>
+        /// <remarks>
+        /// If the Most Significant Bit (MSB) of this value is clear, the event uses running
+        /// status.  The RunningStatus property should be called to determine whether or not
+        /// this is the case.  If RunningStatus returns true, this value should not be used.
+        /// </remarks>
+        public int Status
         {
-            get
+            get { return this.File.ReadNumber(this.StatusOffset, 1); }
+
+            /* This should not be called for running status. */
+            set
             {
-                MidiMessageType messageType;
-                int channel;
-                return !this.ParseStatus(out messageType, out channel);
+                int n = this.Status;
+                if (value == n) return;
+
+                /* If message type is changing and it causes a change in event size, the file must be resized accordingly. */
+                MidiMessageType oldMessageType = (MidiMessageType)Midi.GetHighNibble(n),
+                    newMessageType = (MidiMessageType)Midi.GetHighNibble(value);
+                if (oldMessageType != MidiMessageType.NA && oldMessageType != newMessageType)
+                {
+                    bool had = MidiChannelEvent.HasData2(oldMessageType), has = MidiChannelEvent.HasData2(newMessageType);
+                    n = (had && !has) ? -1 : (!had && has) ? 1 : 0;
+                    if (n != 0) this.File.Resize(n, this.Data2Offset + ((n < 0) ? 1 : 0), 0);
+                }
+
+                /* The file should be sized appropriately now; proceed. */
+                this.File.WriteNumber(this.StatusOffset, value, 1);
+                this.File.SetRunningStatus(this.Offset, value);
             }
         }
+
+        /// <summary>Indicates whether or not this event uses running status.</summary>
+        /// <remarks>
+        /// If the Most Significant Bit (MSB) of the presumed status byte is set, it is a
+        /// legitimate status byte.  Otherwise (MSB is clear), the event uses running status.
+        /// </remarks>
+        public bool RunningStatus { get { return this.Status < 0x80; } }
 
         /// <summary>Identifies the type of channel message.</summary>
         /// <remarks>This corresponds to the high nibble of the event's status byte.</remarks>
@@ -471,59 +502,15 @@ namespace JeffBourdier
         {
             get
             {
-                MidiMessageType messageType;
-                int channel;
-                if (this.ParseStatus(out messageType, out channel)) return messageType;
-                this.File.GetRunningStatus(this.Offset, out messageType, out channel);
-                return messageType;
-            }
-
-            /* This should not be called for running status. */
-            set
-            {
-                MidiMessageType messageType = this.MessageType;
-                if (value == messageType) return;
-
-                int i, n;
-
-                /* If this change in message type causes a change in event size, the file must be resized accordingly. */
-                if (messageType != MidiMessageType.NA)
-                {
-                    bool had = MidiChannelEvent.HasData2(messageType), has = MidiChannelEvent.HasData2(value);
-                    n = (had && !has) ? -1 : (!had && has) ? 1 : 0;
-                    if (n != 0) this.File.Resize(n, this.Data2Offset + ((n < 0) ? 1 : 0), 0);
-                }
-
-                /* The file should be sized appropriately now; proceed. */
-                i = this.Channel;
-                n = Midi.MakeByte((int)value, i);
-                this.File.WriteNumber(this.StatusOffset, n, 1);
-                this.File.SetRunningStatus(this.Offset, value, i);
+                int b = this.RunningStatus ? this.File.GetRunningStatus(this.Offset) : this.Status;
+                return (MidiMessageType)Midi.GetHighNibble(b);
             }
         }
 
         /// <summary>One of the sixteen logical MIDI channels on which this event is transmitted.</summary>
         /// <remarks>This corresponds to the low nibble of the event's status byte.</remarks>
         public int Channel
-        {
-            get
-            {
-                MidiMessageType messageType;
-                int channel;
-                if (this.ParseStatus(out messageType, out channel)) return channel;
-                this.File.GetRunningStatus(this.Offset, out messageType, out channel);
-                return channel;
-            }
-
-            /* This should not be called for running status. */
-            set
-            {
-                MidiMessageType messageType = this.MessageType;
-                int n = Midi.MakeByte((int)messageType, value);
-                this.File.WriteNumber(this.StatusOffset, n, 1);
-                this.File.SetRunningStatus(this.Offset, messageType, value);
-            }
-        }
+        { get { return Midi.GetLowNibble(this.RunningStatus ? this.File.GetRunningStatus(this.Offset) : this.Status); } }
 
         /// <summary>The first data byte of the event.</summary>
         public int Data1
@@ -604,20 +591,6 @@ namespace JeffBourdier
         #endregion
 
         #region Private Methods
-
-        private bool ParseStatus(out MidiMessageType messageType, out int channel)
-        {
-            /* Retrieve the presumed status byte.  If the Most Significant Bit (MSB) is set, it is
-             * a legitimate status byte.  Otherwise (MSB is clear), the event uses running status.
-             */
-            int i, status = this.File.ReadNumber(this.StatusOffset, 1);
-            if (status < 0x80) { messageType = MidiMessageType.NA; channel = -1; return false; }
-
-            /* The MSB is set, so split the status byte into message type and channel. */
-            Midi.SplitByte(status, out i, out channel);
-            messageType = (MidiMessageType)i;
-            return true;
-        }
 
         /// <summary>Converts a numeric value to a string representation of its assigned note(s).</summary>
         /// <param name="n">Numeric value assigned to note (middle C has a reference value of 60).</param>

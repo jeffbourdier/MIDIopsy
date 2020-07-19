@@ -34,7 +34,7 @@ namespace JeffBourdier
         {
             get
             {
-                return this.WindowState == WindowState.Normal ?
+                return (this.WindowState == WindowState.Normal) ?
                     new Rect(this.Left, this.Top, this.Width, this.Height) : this.RestoreBounds;
             }
         }

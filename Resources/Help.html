@@ -60,8 +60,13 @@
     <h3>Edit a MIDI file</h3>
     <blockquote><strong>Warning:</strong>  MIDI file editing is for expert users only.  If not done correctly, it could result in data corruption, making the file unusable.  Proceed at your own risk!</blockquote>
     <ul>
-      <li>To create a new track (MTrk chunk), position the cursor in the track <em>before</em> which you want the new track to appear, and click <b>Trac<u>k</u></b> (or press Alt+K).  A new MTrk chunk (with an End of Track meta-event) should appear <em>after</em> the track containing the selected row.</li>
-      <li>To create a new MTrk event, position the cursor on the row <em>before</em> which you want the new event to appear, click the appropriate button and provide the required input (see table below).  (Note that <b><u>D</u>elta-time</b> is required for all events.)  The new event should appear <em>after</em> the selected row.</li>
+      <li>To create a new track (MTrk chunk), position the cursor in the chunk <em>before</em> which you want the new track to appear, and click <b>Trac<u>k</u></b> (or press Alt+K).  A new MTrk chunk (with an End of Track meta-event) should appear <em>after</em> the chunk containing the selected row.</li>
+      <li>To create a new MTrk event, position the cursor on the row <em>before</em> which you want the new event to appear, click the appropriate button and provide the required input (see table below).  The new event should appear <em>after</em> the selected row.  Note:
+        <ul>
+          <li>Events cannot be created within the header (MThd) chunk.</li>
+          <li><b><u>D</u>elta-time</b> is required for all events.</li>
+        </ul>
+      </li>
     </ul>
     <table>
       <thead><tr><th>Event</th><th>Button</th><th>Required Input</th></tr></thead>
@@ -127,9 +132,18 @@
       </tbody>
     </table>
     <ul>
-      <li>To edit the properties of an event or the file header (the data of the MThd chunk), position the cursor on the item you want to edit, click <b>Properties</b> (or press F4) and edit the properties as desired.  (Note that some properties cannot be edited once the item is created.)</li>
+      <li>To edit the properties of an event or the file header (the data of the MThd chunk), position the cursor on the item you want to edit, click <b>Properties</b> (or press F4) and edit the properties as desired.  Note:
+        <ul>
+          <li>Once an item is created, some properties cannot be edited.</li>
+          <li>The properties (i.e., the first row) of a chunk cannot be edited.</li>
+        </ul>
+      </li>
+      <li>To cut an event (so it can be pasted elsewhere), position the cursor on the event you want to cut, and click <b>Cut</b> (or press Ctrl+X).</li>
+      <li>To copy an event (so it can be pasted elsewhere), position the cursor on the event you want to copy, and click <b>Copy</b> (or press Ctrl+C).</li>
+      <li>To paste the event you have cut or copied, position the cursor on the row <em>before</em> which you want the event to appear, and click <b>Paste</b> (or press Ctrl+V).  The event should appear <em>after</em> the selected row.</li>
       <li>To delete an event, position the cursor on the event you want to delete, and click <b>Delete</b> (or press Del).</li>
-      <li>To delete an entire chunk (e.g., a track), position the cursor on the first row of the chunk, and click <b>Delete</b> (or press Del).  (You should receive a warning that the entire chunk will be deleted.)</li>
+      <li>To delete an entire chunk (e.g., a track), position the cursor on the first row of the chunk, and click <b>Delete</b> (or press Del).  You should receive a warning that the entire chunk will be deleted.</li>
+      <li>Note that some items (such as the header chunk) are considered essential and may not be deleted.</li>
     </ul>
     <h3>MIDI file navigation</h3>
     <ul>
@@ -166,11 +180,14 @@
         <tr><td>Settings</td><td>Alt+S</td></tr>
         <tr><td>Help</td><td>F1</td></tr>
         <tr><td>About</td><td>Alt+A</td></tr>
-        <tr><td rowspan="4">New Items</td><td>Track</td><td>Alt+K</td></tr>
+        <tr><td rowspan="4">New Item</td><td>Track</td><td>Alt+K</td></tr>
         <tr><td>Channel Event</td><td>Alt+C</td></tr>
         <tr><td>SysEx Event</td><td>Alt+X</td></tr>
         <tr><td>Meta-event</td><td>Alt+M</td></tr>
-        <tr><td rowspan="2">Edit Items</td><td>Properties</td><td>F4</td></tr>
+        <tr><td rowspan="5">Edit Item</td><td>Properties</td><td>F4</td></tr>
+        <tr><td>Cut</td><td>Ctrl+X</td></tr>
+        <tr><td>Copy</td><td>Ctrl+C</td></tr>
+        <tr><td>Paste</td><td>Ctrl+V</td></tr>
         <tr><td>Delete</td><td>Del</td></tr>
         <tr><td>Navigation</td><td>Go To</td><td>Ctrl+G</td></tr>
         <tr><td rowspan="7">Playback</td><td>Play</td><td rowspan="2">F5</td></tr>
@@ -182,6 +199,198 @@
         <tr><td>Duration</td><td>Alt+D</td></tr>
       </tbody>
     </table>
+    <h2>MIDI Reference</h2>
+    <table>
+      <caption>Note Numbers</caption>
+      <thead><tr><th>Number</th><th>Note</th><td style="border: none; width: 16px;"></td><th>Number</th><th>Note</th><td style="border: none; width: 16px;"></td><th>Number</th><th>Note</th><td style="border: none; width: 16px;"></td><th>Number</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td class="number">0</td><td>C - / B# -</td><td style="border: none; width: 16px;"></td><td class="number">32</td><td>Ab 1 / G# 1</td><td style="border: none; width: 16px;"></td><td class="number">64</td><td>Fb 4 / E 4</td><td style="border: none; width: 16px;"></td><td class="number">96</td><td>C 7 / B# 7</td></tr>
+        <tr><td class="number">1</td><td>Db - / C# -</td><td style="border: none; width: 16px;"></td><td class="number">33</td><td>A 1</td><td style="border: none; width: 16px;"></td><td class="number">65</td><td>F 4 / E# 4</td><td style="border: none; width: 16px;"></td><td class="number">97</td><td>Db 7 / C# 7</td></tr>
+        <tr><td class="number">2</td><td>D -</td><td style="border: none; width: 16px;"></td><td class="number">34</td><td>Bb 1 / A# 1</td><td style="border: none; width: 16px;"></td><td class="number">66</td><td>Gb 4 / F# 4</td><td style="border: none; width: 16px;"></td><td class="number">98</td><td>D 7</td></tr>
+        <tr><td class="number">3</td><td>Eb - / D# -</td><td style="border: none; width: 16px;"></td><td class="number">35</td><td>Cb 1 / B 1</td><td style="border: none; width: 16px;"></td><td class="number">67</td><td>G 4</td><td style="border: none; width: 16px;"></td><td class="number">99</td><td>Eb 7 / D# 7</td></tr>
+        <tr><td class="number">4</td><td>Fb - / E -</td><td style="border: none; width: 16px;"></td><td class="number">36</td><td>C 2 / B# 2</td><td style="border: none; width: 16px;"></td><td class="number">68</td><td>Ab 4 / G# 4</td><td style="border: none; width: 16px;"></td><td class="number">100</td><td>Fb 7 / E 7</td></tr>
+        <tr><td class="number">5</td><td>F - / E# -</td><td style="border: none; width: 16px;"></td><td class="number">37</td><td>Db 2 / C# 2</td><td style="border: none; width: 16px;"></td><td class="number">69</td><td>A 4</td><td style="border: none; width: 16px;"></td><td class="number">101</td><td>F 7 / E# 7</td></tr>
+        <tr><td class="number">6</td><td>Gb - / F# -</td><td style="border: none; width: 16px;"></td><td class="number">38</td><td>D 2</td><td style="border: none; width: 16px;"></td><td class="number">70</td><td>Bb 4 / A# 4</td><td style="border: none; width: 16px;"></td><td class="number">102</td><td>Gb 7 / F# 7</td></tr>
+        <tr><td class="number">7</td><td>G -</td><td style="border: none; width: 16px;"></td><td class="number">39</td><td>Eb 2 / D# 2</td><td style="border: none; width: 16px;"></td><td class="number">71</td><td>Cb 4 / B 4</td><td style="border: none; width: 16px;"></td><td class="number">103</td><td>G 7</td></tr>
+        <tr><td class="number">8</td><td>Ab - / G# -</td><td style="border: none; width: 16px;"></td><td class="number">40</td><td>Fb 2 / E 2</td><td style="border: none; width: 16px;"></td><td class="number">72</td><td>C 5 / B# 5</td><td style="border: none; width: 16px;"></td><td class="number">104</td><td>Ab 7 / G# 7</td></tr>
+        <tr><td class="number">9</td><td>A -</td><td style="border: none; width: 16px;"></td><td class="number">41</td><td>F 2 / E# 2</td><td style="border: none; width: 16px;"></td><td class="number">73</td><td>Db 5 / C# 5</td><td style="border: none; width: 16px;"></td><td class="number">105</td><td>A 7</td></tr>
+        <tr><td class="number">10</td><td>Bb - / A# -</td><td style="border: none; width: 16px;"></td><td class="number">42</td><td>Gb 2 / F# 2</td><td style="border: none; width: 16px;"></td><td class="number">74</td><td>D 5</td><td style="border: none; width: 16px;"></td><td class="number">106</td><td>Bb 7 / A# 7</td></tr>
+        <tr><td class="number">11</td><td>Cb - / B -</td><td style="border: none; width: 16px;"></td><td class="number">43</td><td>G 2</td><td style="border: none; width: 16px;"></td><td class="number">75</td><td>Eb 5 / D# 5</td><td style="border: none; width: 16px;"></td><td class="number">107</td><td>Cb 7 / B 7</td></tr>
+        <tr><td class="number">12</td><td>C 0 / B# 0</td><td style="border: none; width: 16px;"></td><td class="number">44</td><td>Ab 2 / G# 2</td><td style="border: none; width: 16px;"></td><td class="number">76</td><td>Fb 5 / E 5</td><td style="border: none; width: 16px;"></td><td class="number">108</td><td>C 8 / B# 8</td></tr>
+        <tr><td class="number">13</td><td>Db 0 / C# 0</td><td style="border: none; width: 16px;"></td><td class="number">45</td><td>A 2</td><td style="border: none; width: 16px;"></td><td class="number">77</td><td>F 5 / E# 5</td><td style="border: none; width: 16px;"></td><td class="number">109</td><td>Db 8 / C# 8</td></tr>
+        <tr><td class="number">14</td><td>D 0</td><td style="border: none; width: 16px;"></td><td class="number">46</td><td>Bb 2 / A# 2</td><td style="border: none; width: 16px;"></td><td class="number">78</td><td>Gb 5 / F# 5</td><td style="border: none; width: 16px;"></td><td class="number">110</td><td>D 8</td></tr>
+        <tr><td class="number">15</td><td>Eb 0 / D# 0</td><td style="border: none; width: 16px;"></td><td class="number">47</td><td>Cb 2 / B 2</td><td style="border: none; width: 16px;"></td><td class="number">79</td><td>G 5</td><td style="border: none; width: 16px;"></td><td class="number">111</td><td>Eb 8 / D# 8</td></tr>
+        <tr><td class="number">16</td><td>Fb 0 / E 0</td><td style="border: none; width: 16px;"></td><td class="number">48</td><td>C 3 / B# 3</td><td style="border: none; width: 16px;"></td><td class="number">80</td><td>Ab 5 / G# 5</td><td style="border: none; width: 16px;"></td><td class="number">112</td><td>Fb 8 / E 8</td></tr>
+        <tr><td class="number">17</td><td>F 0 / E# 0</td><td style="border: none; width: 16px;"></td><td class="number">49</td><td>Db 3 / C# 3</td><td style="border: none; width: 16px;"></td><td class="number">81</td><td>A 5</td><td style="border: none; width: 16px;"></td><td class="number">113</td><td>F 8 / E# 8</td></tr>
+        <tr><td class="number">18</td><td>Gb 0 / F# 0</td><td style="border: none; width: 16px;"></td><td class="number">50</td><td>D 3</td><td style="border: none; width: 16px;"></td><td class="number">82</td><td>Bb 5 / A# 5</td><td style="border: none; width: 16px;"></td><td class="number">114</td><td>Gb 8 / F# 8</td></tr>
+        <tr><td class="number">19</td><td>G 0</td><td style="border: none; width: 16px;"></td><td class="number">51</td><td>Eb 3 / D# 3</td><td style="border: none; width: 16px;"></td><td class="number">83</td><td>Cb 5 / B 5</td><td style="border: none; width: 16px;"></td><td class="number">115</td><td>G 8</td></tr>
+        <tr><td class="number">20</td><td>Ab 0 / G# 0</td><td style="border: none; width: 16px;"></td><td class="number">52</td><td>Fb 3 / E 3</td><td style="border: none; width: 16px;"></td><td class="number">84</td><td>C 6 / B# 6</td><td style="border: none; width: 16px;"></td><td class="number">116</td><td>Ab 8 / G# 8</td></tr>
+        <tr><td class="number">21</td><td>A 0</td><td style="border: none; width: 16px;"></td><td class="number">53</td><td>F 3 / E# 3</td><td style="border: none; width: 16px;"></td><td class="number">85</td><td>Db 6 / C# 6</td><td style="border: none; width: 16px;"></td><td class="number">117</td><td>A 8</td></tr>
+        <tr><td class="number">22</td><td>Bb 0 / A# 0</td><td style="border: none; width: 16px;"></td><td class="number">54</td><td>Gb 3 / F# 3</td><td style="border: none; width: 16px;"></td><td class="number">86</td><td>D 6</td><td style="border: none; width: 16px;"></td><td class="number">118</td><td>Bb 8 / A# 8</td></tr>
+        <tr><td class="number">23</td><td>Cb 0 / B 0</td><td style="border: none; width: 16px;"></td><td class="number">55</td><td>G 3</td><td style="border: none; width: 16px;"></td><td class="number">87</td><td>Eb 6 / D# 6</td><td style="border: none; width: 16px;"></td><td class="number">119</td><td>Cb 8 / B 8</td></tr>
+        <tr><td class="number">24</td><td>C 1 / B# 1</td><td style="border: none; width: 16px;"></td><td class="number">56</td><td>Ab 3 / G# 3</td><td style="border: none; width: 16px;"></td><td class="number">88</td><td>Fb 6 / E 6</td><td style="border: none; width: 16px;"></td><td class="number">120</td><td>C 9 / B# 9</td></tr>
+        <tr><td class="number">25</td><td>Db 1 / C# 1</td><td style="border: none; width: 16px;"></td><td class="number">57</td><td>A 3</td><td style="border: none; width: 16px;"></td><td class="number">89</td><td>F 6 / E# 6</td><td style="border: none; width: 16px;"></td><td class="number">121</td><td>Db 9 / C# 9</td></tr>
+        <tr><td class="number">26</td><td>D 1</td><td style="border: none; width: 16px;"></td><td class="number">58</td><td>Bb 3 / A# 3</td><td style="border: none; width: 16px;"></td><td class="number">90</td><td>Gb 6 / F# 6</td><td style="border: none; width: 16px;"></td><td class="number">122</td><td>D 9</td></tr>
+        <tr><td class="number">27</td><td>Eb 1 / D# 1</td><td style="border: none; width: 16px;"></td><td class="number">59</td><td>Cb 3 / B 3</td><td style="border: none; width: 16px;"></td><td class="number">91</td><td>G 6</td><td style="border: none; width: 16px;"></td><td class="number">123</td><td>Eb 9 / D# 9</td></tr>
+        <tr><td class="number">28</td><td>Fb 1 / E 1</td><td style="border: none; width: 16px;"></td><td class="number">60</td><td>C 4 / B# 4</td><td style="border: none; width: 16px;"></td><td class="number">92</td><td>Ab 6 / G# 6</td><td style="border: none; width: 16px;"></td><td class="number">124</td><td>Fb 9 / E 9</td></tr>
+        <tr><td class="number">29</td><td>F 1 / E# 1</td><td style="border: none; width: 16px;"></td><td class="number">61</td><td>Db 4 / C# 4</td><td style="border: none; width: 16px;"></td><td class="number">93</td><td>A 6</td><td style="border: none; width: 16px;"></td><td class="number">125</td><td>F 9 / E# 9</td></tr>
+        <tr><td class="number">30</td><td>Gb 1 / F# 1</td><td style="border: none; width: 16px;"></td><td class="number">62</td><td>D 4</td><td style="border: none; width: 16px;"></td><td class="number">94</td><td>Bb 6 / A# 6</td><td style="border: none; width: 16px;"></td><td class="number">126</td><td>Gb 9 / F# 9</td></tr>
+        <tr><td class="number">31</td><td>G 1</td><td style="border: none; width: 16px;"></td><td class="number">63</td><td>Eb 4 / D# 4</td><td style="border: none; width: 16px;"></td><td class="number">95</td><td>Cb 6 / B 6</td><td style="border: none; width: 16px;"></td><td class="number">127</td><td>G 9</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Percussion Map</caption>
+      <thead><tr><th>MIDI Key</th><th>Drum Sound</th><td style="border: none; width: 16px;"></td><th>MIDI Key</th><th>Drum Sound</th><td style="border: none; width: 16px;"></td><th>MIDI Key</th><th>Drum Sound</th></tr></thead>
+      <tbody>
+        <tr><td class="number">35</td><td>Acoustic Bass Drum</td><td style="border: none; width: 16px;"></td><td class="number">51</td><td>Ride Cymbal 1</td><td style="border: none; width: 16px;"></td><td class="number">67</td><td>High Agogo</td></tr>
+        <tr><td class="number">36</td><td>Bass Drum 1</td><td style="border: none; width: 16px;"></td><td class="number">52</td><td>Chinese Cymbal</td><td style="border: none; width: 16px;"></td><td class="number">68</td><td>Low Agogo</td></tr>
+        <tr><td class="number">37</td><td>Side Stick</td><td style="border: none; width: 16px;"></td><td class="number">53</td><td>Ride Bell</td><td style="border: none; width: 16px;"></td><td class="number">69</td><td>Cabasa</td></tr>
+        <tr><td class="number">38</td><td>Acoustic Snare</td><td style="border: none; width: 16px;"></td><td class="number">54</td><td>Tambourine</td><td style="border: none; width: 16px;"></td><td class="number">70</td><td>Maracas</td></tr>
+        <tr><td class="number">39</td><td>Hand Clap</td><td style="border: none; width: 16px;"></td><td class="number">55</td><td>Splash Cymbal</td><td style="border: none; width: 16px;"></td><td class="number">71</td><td>Short Whistle</td></tr>
+        <tr><td class="number">40</td><td>Electric Snare</td><td style="border: none; width: 16px;"></td><td class="number">56</td><td>Cowbell</td><td style="border: none; width: 16px;"></td><td class="number">72</td><td>Long Whistle</td></tr>
+        <tr><td class="number">41</td><td>Low Floor Tom</td><td style="border: none; width: 16px;"></td><td class="number">57</td><td>Crash Cymbal 2</td><td style="border: none; width: 16px;"></td><td class="number">73</td><td>Short Guiro</td></tr>
+        <tr><td class="number">42</td><td>Closed Hi Hat</td><td style="border: none; width: 16px;"></td><td class="number">58</td><td>Vibraslap</td><td style="border: none; width: 16px;"></td><td class="number">74</td><td>Long Guiro</td></tr>
+        <tr><td class="number">43</td><td>High Floor Tom</td><td style="border: none; width: 16px;"></td><td class="number">59</td><td>Ride Cymbal 2</td><td style="border: none; width: 16px;"></td><td class="number">75</td><td>Claves</td></tr>
+        <tr><td class="number">44</td><td>Pedal Hi-Hat</td><td style="border: none; width: 16px;"></td><td class="number">60</td><td>Hi Bongo</td><td style="border: none; width: 16px;"></td><td class="number">76</td><td>Hi Wood Block</td></tr>
+        <tr><td class="number">45</td><td>Low Tom</td><td style="border: none; width: 16px;"></td><td class="number">61</td><td>Low Bongo</td><td style="border: none; width: 16px;"></td><td class="number">77</td><td>Low Wood Block</td></tr>
+        <tr><td class="number">46</td><td>Open Hi-Hat</td><td style="border: none; width: 16px;"></td><td class="number">62</td><td>Mute Hi Conga</td><td style="border: none; width: 16px;"></td><td class="number">78</td><td>Mute Cuica</td></tr>
+        <tr><td class="number">47</td><td>Low-Mid Tom</td><td style="border: none; width: 16px;"></td><td class="number">63</td><td>Open Hi Conga</td><td style="border: none; width: 16px;"></td><td class="number">79</td><td>Open Cuica</td></tr>
+        <tr><td class="number">48</td><td>Hi Mid Tom</td><td style="border: none; width: 16px;"></td><td class="number">64</td><td>Low Conga</td><td style="border: none; width: 16px;"></td><td class="number">80</td><td>Mute Triangle</td></tr>
+        <tr><td class="number">49</td><td>Crash Cymbal 1</td><td style="border: none; width: 16px;"></td><td class="number">65</td><td>High Timbale</td><td style="border: none; width: 16px;"></td><td class="number">81</td><td>Open Triangle</td></tr>
+        <tr><td class="number">50</td><td>High Tom</td><td style="border: none; width: 16px;"></td><td class="number">66</td><td>Low Timbale</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Control Change Messages</caption>
+      <thead><tr><th>Control #</th><th>Control Function</th><td style="border: none; width: 16px;"></td><th>Control #</th><th>Control Function</th></tr></thead>
+      <tbody>
+        <tr><td class="number">0</td><td>Bank Select</td><td style="border: none; width: 16px;"></td><td class="number">56</td><td>LSB for value 24</td></tr>
+        <tr><td class="number">1</td><td>Modulation wheel or lever</td><td style="border: none; width: 16px;"></td><td class="number">57</td><td>LSB for value 25</td></tr>
+        <tr><td class="number">2</td><td>Breath Controller</td><td style="border: none; width: 16px;"></td><td class="number">58</td><td>LSB for value 26</td></tr>
+        <tr><td class="number">4</td><td>Foot controller</td><td style="border: none; width: 16px;"></td><td class="number">59</td><td>LSB for value 27</td></tr>
+        <tr><td class="number">5</td><td>Portamento time</td><td style="border: none; width: 16px;"></td><td class="number">60</td><td>LSB for value 28</td></tr>
+        <tr><td class="number">6</td><td>Data entry MSB</td><td style="border: none; width: 16px;"></td><td class="number">61</td><td>LSB for value 29</td></tr>
+        <tr><td class="number">7</td><td>Channel Volume</td><td style="border: none; width: 16px;"></td><td class="number">62</td><td>LSB for value 30</td></tr>
+        <tr><td class="number">8</td><td>Balance</td><td style="border: none; width: 16px;"></td><td class="number">63</td><td>LSB for value 31</td></tr>
+        <tr><td class="number">10</td><td>Pan</td><td style="border: none; width: 16px;"></td><td class="number">64</td><td>Sustain/Damper pedal</td></tr>
+        <tr><td class="number">11</td><td>Expression Controller</td><td style="border: none; width: 16px;"></td><td class="number">65</td><td>Portamento On/Off</td></tr>
+        <tr><td class="number">12</td><td>Effect Control 1</td><td style="border: none; width: 16px;"></td><td class="number">66</td><td>Sostenuto</td></tr>
+        <tr><td class="number">13</td><td>Effect Control 2</td><td style="border: none; width: 16px;"></td><td class="number">67</td><td>Soft pedal</td></tr>
+        <tr><td class="number">16</td><td>General Purpose Controller # 1</td><td style="border: none; width: 16px;"></td><td class="number">68</td><td>Legato Footswitch</td></tr>
+        <tr><td class="number">17</td><td>General Purpose Controller # 2</td><td style="border: none; width: 16px;"></td><td class="number">69</td><td>Hold 2</td></tr>
+        <tr><td class="number">18</td><td>General Purpose Controller # 3</td><td style="border: none; width: 16px;"></td><td class="number">70</td><td>Sound Controller 1</td></tr>
+        <tr><td class="number">19</td><td>General Purpose Controller # 4</td><td style="border: none; width: 16px;"></td><td class="number">71</td><td>Sound Controller 2</td></tr>
+        <tr><td class="number">32</td><td>LSB for value 0</td><td style="border: none; width: 16px;"></td><td class="number">72</td><td>Sound Controller 3</td></tr>
+        <tr><td class="number">33</td><td>LSB for value 1</td><td style="border: none; width: 16px;"></td><td class="number">73</td><td>Sound Controller 4</td></tr>
+        <tr><td class="number">34</td><td>LSB for value 2</td><td style="border: none; width: 16px;"></td><td class="number">74</td><td>Sound Controller 5</td></tr>
+        <tr><td class="number">35</td><td>LSB for value 3</td><td style="border: none; width: 16px;"></td><td class="number">75</td><td>Sound Controller 6</td></tr>
+        <tr><td class="number">36</td><td>LSB for value 4</td><td style="border: none; width: 16px;"></td><td class="number">76</td><td>Sound Controller 7</td></tr>
+        <tr><td class="number">37</td><td>LSB for value 5</td><td style="border: none; width: 16px;"></td><td class="number">77</td><td>Sound Controller 8</td></tr>
+        <tr><td class="number">38</td><td>LSB for value 6</td><td style="border: none; width: 16px;"></td><td class="number">78</td><td>Sound Controller 9</td></tr>
+        <tr><td class="number">39</td><td>LSB for value 7</td><td style="border: none; width: 16px;"></td><td class="number">79</td><td>Sound Controller 10</td></tr>
+        <tr><td class="number">40</td><td>LSB for value 8</td><td style="border: none; width: 16px;"></td><td class="number">80</td><td>General Purpose Controller # 5</td></tr>
+        <tr><td class="number">41</td><td>LSB for value 9</td><td style="border: none; width: 16px;"></td><td class="number">81</td><td>General Purpose Controller # 6</td></tr>
+        <tr><td class="number">42</td><td>LSB for value 10</td><td style="border: none; width: 16px;"></td><td class="number">82</td><td>General Purpose Controller # 7</td></tr>
+        <tr><td class="number">43</td><td>LSB for value 11</td><td style="border: none; width: 16px;"></td><td class="number">83</td><td>General Purpose Controller # 8</td></tr>
+        <tr><td class="number">44</td><td>LSB for value 12</td><td style="border: none; width: 16px;"></td><td class="number">84</td><td>Portamento Control</td></tr>
+        <tr><td class="number">45</td><td>LSB for value 13</td><td style="border: none; width: 16px;"></td><td class="number">91</td><td>Effects 1 Depth</td></tr>
+        <tr><td class="number">46</td><td>LSB for value 14</td><td style="border: none; width: 16px;"></td><td class="number">92</td><td>Effects 2 Depth</td></tr>
+        <tr><td class="number">47</td><td>LSB for value 15</td><td style="border: none; width: 16px;"></td><td class="number">93</td><td>Effects 3 Depth</td></tr>
+        <tr><td class="number">48</td><td>LSB for value 16</td><td style="border: none; width: 16px;"></td><td class="number">94</td><td>Effects 4 Depth</td></tr>
+        <tr><td class="number">49</td><td>LSB for value 17</td><td style="border: none; width: 16px;"></td><td class="number">95</td><td>Effects 5 Depth</td></tr>
+        <tr><td class="number">50</td><td>LSB for value 18</td><td style="border: none; width: 16px;"></td><td class="number">96</td><td>Data increment</td></tr>
+        <tr><td class="number">51</td><td>LSB for value 19</td><td style="border: none; width: 16px;"></td><td class="number">97</td><td>Data decrement</td></tr>
+        <tr><td class="number">52</td><td>LSB for value 20</td><td style="border: none; width: 16px;"></td><td class="number">98</td><td>Non-Registered Parameter Number LSB</td></tr>
+        <tr><td class="number">53</td><td>LSB for value 21</td><td style="border: none; width: 16px;"></td><td class="number">99</td><td>Non-Registered Parameter Number MSB</td></tr>
+        <tr><td class="number">54</td><td>LSB for value 22</td><td style="border: none; width: 16px;"></td><td class="number">100</td><td>Registered Parameter Number LSB</td></tr>
+        <tr><td class="number">55</td><td>LSB for value 23</td><td style="border: none; width: 16px;"></td><td class="number">101</td><td>Registered Parameter Number MSB</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Channel Mode Messages</caption>
+      <thead><tr><th>Control #</th><th>Control Function</th></tr></thead>
+      <tbody>
+        <tr><td class="number">120</td><td>All Sound Off</td></tr>
+        <tr><td class="number">121</td><td>Reset All Controllers</td></tr>
+        <tr><td class="number">122</td><td>Local Control</td></tr>
+        <tr><td class="number">123</td><td>All Notes Off</td></tr>
+        <tr><td class="number">124</td><td>Omni Mode Off</td></tr>
+        <tr><td class="number">125</td><td>Omni Mode On</td></tr>
+        <tr><td class="number">126</td><td>Mono Mode On</td></tr>
+        <tr><td class="number">127</td><td>Poly Mode On</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Sound Set (Program Change Messages)</caption>
+      <thead><tr><th>Prog #</th><th>Instrument</th><td style="border: none; width: 16px;"></td><th>Prog #</th><th>Instrument</th><td style="border: none; width: 16px;"></td><th>Prog #</th><th>Instrument</th><td style="border: none; width: 16px;"></td><th>Prog #</th><th>Instrument</th></tr></thead>
+      <tbody>
+        <tr><td class="number">0</td><td>Acoustic Grand Piano</td><td style="border: none; width: 16px;"></td><td class="number">32</td><td>Acoustic Bass</td><td style="border: none; width: 16px;"></td><td class="number">64</td><td>Soprano Sax</td><td style="border: none; width: 16px;"></td><td class="number">96</td><td>FX 1 (rain)</td></tr>
+        <tr><td class="number">1</td><td>Bright Acoustic Piano</td><td style="border: none; width: 16px;"></td><td class="number">33</td><td>Electric Bass (finger)</td><td style="border: none; width: 16px;"></td><td class="number">65</td><td>Alto Sax</td><td style="border: none; width: 16px;"></td><td class="number">97</td><td>FX 2 (soundtrack)</td></tr>
+        <tr><td class="number">2</td><td>Electric Grand Piano</td><td style="border: none; width: 16px;"></td><td class="number">34</td><td>Electric Bass (pick)</td><td style="border: none; width: 16px;"></td><td class="number">66</td><td>Tenor Sax</td><td style="border: none; width: 16px;"></td><td class="number">98</td><td>FX 3 (crystal)</td></tr>
+        <tr><td class="number">3</td><td>Honky-tonk Piano</td><td style="border: none; width: 16px;"></td><td class="number">35</td><td>Fretless Bass</td><td style="border: none; width: 16px;"></td><td class="number">67</td><td>Baritone Sax</td><td style="border: none; width: 16px;"></td><td class="number">99</td><td>FX 4 (atmosphere)</td></tr>
+        <tr><td class="number">4</td><td>Electric Piano 1</td><td style="border: none; width: 16px;"></td><td class="number">36</td><td>Slap Bass 1</td><td style="border: none; width: 16px;"></td><td class="number">68</td><td>Oboe</td><td style="border: none; width: 16px;"></td><td class="number">100</td><td>FX 5 (brightness)</td></tr>
+        <tr><td class="number">5</td><td>Electric Piano 2</td><td style="border: none; width: 16px;"></td><td class="number">37</td><td>Slap Bass 2</td><td style="border: none; width: 16px;"></td><td class="number">69</td><td>English Horn</td><td style="border: none; width: 16px;"></td><td class="number">101</td><td>FX 6 (goblins)</td></tr>
+        <tr><td class="number">6</td><td>Harpsichord</td><td style="border: none; width: 16px;"></td><td class="number">38</td><td>Synth Bass 1</td><td style="border: none; width: 16px;"></td><td class="number">70</td><td>Bassoon</td><td style="border: none; width: 16px;"></td><td class="number">102</td><td>FX 7 (echoes)</td></tr>
+        <tr><td class="number">7</td><td>Clavi</td><td style="border: none; width: 16px;"></td><td class="number">39</td><td>Synth Bass 2</td><td style="border: none; width: 16px;"></td><td class="number">71</td><td>Clarinet</td><td style="border: none; width: 16px;"></td><td class="number">103</td><td>FX 8 (sci-fi)</td></tr>
+        <tr><td class="number">8</td><td>Celesta</td><td style="border: none; width: 16px;"></td><td class="number">40</td><td>Violin</td><td style="border: none; width: 16px;"></td><td class="number">72</td><td>Piccolo</td><td style="border: none; width: 16px;"></td><td class="number">104</td><td>Sitar</td></tr>
+        <tr><td class="number">9</td><td>Glockenspiel</td><td style="border: none; width: 16px;"></td><td class="number">41</td><td>Viola</td><td style="border: none; width: 16px;"></td><td class="number">73</td><td>Flute</td><td style="border: none; width: 16px;"></td><td class="number">105</td><td>Banjo</td></tr>
+        <tr><td class="number">10</td><td>Music Box</td><td style="border: none; width: 16px;"></td><td class="number">42</td><td>Cello</td><td style="border: none; width: 16px;"></td><td class="number">74</td><td>Recorder</td><td style="border: none; width: 16px;"></td><td class="number">106</td><td>Shamisen</td></tr>
+        <tr><td class="number">11</td><td>Vibraphone</td><td style="border: none; width: 16px;"></td><td class="number">43</td><td>Contrabass</td><td style="border: none; width: 16px;"></td><td class="number">75</td><td>Pan Flute</td><td style="border: none; width: 16px;"></td><td class="number">107</td><td>Koto</td></tr>
+        <tr><td class="number">12</td><td>Marimba</td><td style="border: none; width: 16px;"></td><td class="number">44</td><td>Tremolo Strings</td><td style="border: none; width: 16px;"></td><td class="number">76</td><td>Blown Bottle</td><td style="border: none; width: 16px;"></td><td class="number">108</td><td>Kalimba</td></tr>
+        <tr><td class="number">13</td><td>Xylophone</td><td style="border: none; width: 16px;"></td><td class="number">45</td><td>Pizzicato Strings</td><td style="border: none; width: 16px;"></td><td class="number">77</td><td>Shakuhachi</td><td style="border: none; width: 16px;"></td><td class="number">109</td><td>Bag pipe</td></tr>
+        <tr><td class="number">14</td><td>Tubular Bells</td><td style="border: none; width: 16px;"></td><td class="number">46</td><td>Orchestral Harp</td><td style="border: none; width: 16px;"></td><td class="number">78</td><td>Whistle</td><td style="border: none; width: 16px;"></td><td class="number">110</td><td>Fiddle</td></tr>
+        <tr><td class="number">15</td><td>Dulcimer</td><td style="border: none; width: 16px;"></td><td class="number">47</td><td>Timpani</td><td style="border: none; width: 16px;"></td><td class="number">79</td><td>Ocarina</td><td style="border: none; width: 16px;"></td><td class="number">111</td><td>Shanai</td></tr>
+        <tr><td class="number">16</td><td>Drawbar Organ</td><td style="border: none; width: 16px;"></td><td class="number">48</td><td>String Ensemble 1</td><td style="border: none; width: 16px;"></td><td class="number">80</td><td>Lead 1 (square)</td><td style="border: none; width: 16px;"></td><td class="number">112</td><td>Tinkle Bell</td></tr>
+        <tr><td class="number">17</td><td>Percussive Organ</td><td style="border: none; width: 16px;"></td><td class="number">49</td><td>String Ensemble 2</td><td style="border: none; width: 16px;"></td><td class="number">81</td><td>Lead 2 (sawtooth)</td><td style="border: none; width: 16px;"></td><td class="number">113</td><td>Agogo</td></tr>
+        <tr><td class="number">18</td><td>Rock Organ</td><td style="border: none; width: 16px;"></td><td class="number">50</td><td>SynthStrings 1</td><td style="border: none; width: 16px;"></td><td class="number">82</td><td>Lead 3 (calliope)</td><td style="border: none; width: 16px;"></td><td class="number">114</td><td>Steel Drums</td></tr>
+        <tr><td class="number">19</td><td>Church Organ</td><td style="border: none; width: 16px;"></td><td class="number">51</td><td>SynthStrings 2</td><td style="border: none; width: 16px;"></td><td class="number">83</td><td>Lead 4 (chiff)</td><td style="border: none; width: 16px;"></td><td class="number">115</td><td>Woodblock</td></tr>
+        <tr><td class="number">20</td><td>Reed Organ</td><td style="border: none; width: 16px;"></td><td class="number">52</td><td>Choir Aahs</td><td style="border: none; width: 16px;"></td><td class="number">84</td><td>Lead 5 (charang)</td><td style="border: none; width: 16px;"></td><td class="number">116</td><td>Taiko Drum</td></tr>
+        <tr><td class="number">21</td><td>Accordion</td><td style="border: none; width: 16px;"></td><td class="number">53</td><td>Voice Oohs</td><td style="border: none; width: 16px;"></td><td class="number">85</td><td>Lead 6 (voice)</td><td style="border: none; width: 16px;"></td><td class="number">117</td><td>Melodic Tom</td></tr>
+        <tr><td class="number">22</td><td>Harmonica</td><td style="border: none; width: 16px;"></td><td class="number">54</td><td>Synth Voice</td><td style="border: none; width: 16px;"></td><td class="number">86</td><td>Lead 7 (fifths)</td><td style="border: none; width: 16px;"></td><td class="number">118</td><td>Synth Drum</td></tr>
+        <tr><td class="number">23</td><td>Tango Accordion</td><td style="border: none; width: 16px;"></td><td class="number">55</td><td>Orchestra Hit</td><td style="border: none; width: 16px;"></td><td class="number">87</td><td>Lead 8 (bass + lead)</td><td style="border: none; width: 16px;"></td><td class="number">119</td><td>Reverse Cymbal</td></tr>
+        <tr><td class="number">24</td><td>Acoustic Guitar (nylon</td><td style="border: none; width: 16px;"></td><td class="number">56</td><td>Trumpet</td><td style="border: none; width: 16px;"></td><td class="number">88</td><td>Pad 1 (new age)</td><td style="border: none; width: 16px;"></td><td class="number">120</td><td>Guitar Fret Noise</td></tr>
+        <tr><td class="number">25</td><td>Acoustic Guitar (steel)</td><td style="border: none; width: 16px;"></td><td class="number">57</td><td>Trombone</td><td style="border: none; width: 16px;"></td><td class="number">89</td><td>Pad 2 (warm)</td><td style="border: none; width: 16px;"></td><td class="number">121</td><td>Breath Noise</td></tr>
+        <tr><td class="number">26</td><td>Electric Guitar (jazz)</td><td style="border: none; width: 16px;"></td><td class="number">58</td><td>Tuba</td><td style="border: none; width: 16px;"></td><td class="number">90</td><td>Pad 3 (polysynth)</td><td style="border: none; width: 16px;"></td><td class="number">122</td><td>Seashore</td></tr>
+        <tr><td class="number">27</td><td>Electric Guitar (clean)</td><td style="border: none; width: 16px;"></td><td class="number">59</td><td>Muted Trumpet</td><td style="border: none; width: 16px;"></td><td class="number">91</td><td>Pad 4 (choir)</td><td style="border: none; width: 16px;"></td><td class="number">123</td><td>Bird Tweet</td></tr>
+        <tr><td class="number">28</td><td>Electric Guitar (muted</td><td style="border: none; width: 16px;"></td><td class="number">60</td><td>French Horn</td><td style="border: none; width: 16px;"></td><td class="number">92</td><td>Pad 5 (bowed)</td><td style="border: none; width: 16px;"></td><td class="number">124</td><td>Telephone Ring</td></tr>
+        <tr><td class="number">29</td><td>Overdriven Guitar</td><td style="border: none; width: 16px;"></td><td class="number">61</td><td>Brass Section</td><td style="border: none; width: 16px;"></td><td class="number">93</td><td>Pad 6 (metallic)</td><td style="border: none; width: 16px;"></td><td class="number">125</td><td>Helicopter</td></tr>
+        <tr><td class="number">30</td><td>Distortion Guitar</td><td style="border: none; width: 16px;"></td><td class="number">62</td><td>SynthBrass 1</td><td style="border: none; width: 16px;"></td><td class="number">94</td><td>Pad 7 (halo)</td><td style="border: none; width: 16px;"></td><td class="number">126</td><td>Applause</td></tr>
+        <tr><td class="number">31</td><td>Guitar harmonics</td><td style="border: none; width: 16px;"></td><td class="number">63</td><td>SynthBrass 2</td><td style="border: none; width: 16px;"></td><td class="number">95</td><td>Pad 8 (sweep)</td><td style="border: none; width: 16px;"></td><td class="number">127</td><td>Gunshot</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Meta-Events</caption>
+      <thead><tr><th>Type</th><th>Meta-Event</th><td style="border: none; width: 16px;"></td><th>Type</th><th>Meta-Event</th><td style="border: none; width: 16px;"></td><th>Type</th><th>Meta-Event</th></tr></thead>
+      <tbody>
+        <tr><td class="number">0</td><td>Sequence Number</td><td style="border: none; width: 16px;"></td><td class="number">5</td><td>Lyric</td><td style="border: none; width: 16px;"></td><td class="number">81</td><td>Set Tempo</td></tr>
+        <tr><td class="number">1</td><td>Text Event</td><td style="border: none; width: 16px;"></td><td class="number">6</td><td>Marker</td><td style="border: none; width: 16px;"></td><td class="number">84</td><td>SMPTE Offset</td></tr>
+        <tr><td class="number">2</td><td>Copyright Notice</td><td style="border: none; width: 16px;"></td><td class="number">7</td><td>Cue Point</td><td style="border: none; width: 16px;"></td><td class="number">88</td><td>Time Signature</td></tr>
+        <tr><td class="number">3</td><td>Sequence/Track Name</td><td style="border: none; width: 16px;"></td><td class="number">32</td><td>MIDI Channel Prefix</td><td style="border: none; width: 16px;"></td><td class="number">89</td><td>Key Signature</td></tr>
+        <tr><td class="number">4</td><td>Instrument Name</td><td style="border: none; width: 16px;"></td><td class="number">47</td><td>End of Track</td><td style="border: none; width: 16px;"></td><td class="number">127</td><td>Sequencer-Specific Meta-Event</td></tr>
+      </tbody>
+    </table><br />
+    <table>
+      <caption>Key Signatures</caption>
+      <thead><tr><th>Data (hex)</th><th>Key Signature</th><td style="border: none; width: 16px;"></td><th>Data (hex)</th><th>Key Signature</th></tr></thead>
+      <tbody>
+        <tr><td class="number">F9 00</td><td>Cb major</td><td style="border: none; width: 16px;"></td><td class="number">F9 01</td><td>Ab minor</td></tr>
+        <tr><td class="number">FA 00</td><td>Gb major</td><td style="border: none; width: 16px;"></td><td class="number">FA 01</td><td>Eb minor</td></tr>
+        <tr><td class="number">FB 00</td><td>Db major</td><td style="border: none; width: 16px;"></td><td class="number">FB 01</td><td>Bb minor</td></tr>
+        <tr><td class="number">FC 00</td><td>Ab major</td><td style="border: none; width: 16px;"></td><td class="number">FC 01</td><td>F minor</td></tr>
+        <tr><td class="number">FD 00</td><td>Eb major</td><td style="border: none; width: 16px;"></td><td class="number">FD 01</td><td>C minor</td></tr>
+        <tr><td class="number">FE 00</td><td>Bb major</td><td style="border: none; width: 16px;"></td><td class="number">FE 01</td><td>G minor</td></tr>
+        <tr><td class="number">FF 00</td><td>F major</td><td style="border: none; width: 16px;"></td><td class="number">FF 01</td><td>D minor</td></tr>
+        <tr><td class="number">00 00</td><td>C major</td><td style="border: none; width: 16px;"></td><td class="number">00 01</td><td>A minor</td></tr>
+        <tr><td class="number">01 00</td><td>G major</td><td style="border: none; width: 16px;"></td><td class="number">01 01</td><td>E minor</td></tr>
+        <tr><td class="number">02 00</td><td>D major</td><td style="border: none; width: 16px;"></td><td class="number">02 01</td><td>B minor</td></tr>
+        <tr><td class="number">03 00</td><td>A major</td><td style="border: none; width: 16px;"></td><td class="number">03 01</td><td>F# minor</td></tr>
+        <tr><td class="number">04 00</td><td>E major</td><td style="border: none; width: 16px;"></td><td class="number">04 01</td><td>C# minor</td></tr>
+        <tr><td class="number">05 00</td><td>B major</td><td style="border: none; width: 16px;"></td><td class="number">05 01</td><td>G# minor</td></tr>
+        <tr><td class="number">06 00</td><td>F# major</td><td style="border: none; width: 16px;"></td><td class="number">06 01</td><td>D# minor</td></tr>
+        <tr><td class="number">07 00</td><td>C# major</td><td style="border: none; width: 16px;"></td><td class="number">07 01</td><td>A# minor</td></tr>
+      </tbody>
+    </table>
+    <p>For more details on MIDI and MIDI specifications, please visit <a target="_blank" href="https://www.midi.org/">https://www.midi.org/</a>.</p>
     <h2>Online Resources</h2>
     <ul>
       <li><a target="_blank" href="https://jeffbourdier.github.io/midiopsy">MIDIopsy Home Page</a></li>

@@ -117,15 +117,15 @@ namespace JeffBourdier
         /// <returns>The byte value resulting from the concatenation of the two nibbles.</returns>
         public static int MakeByte(int high, int low) { return ((high << 4) | low) & 0xFF; }
 
-        /// <summary>Splits a byte value into its high and low nibbles.</summary>
+        /// <summary>Returns the high-order nibble of a byte value.</summary>
         /// <param name="b">Byte value.  Only the least significant eight bits are considered.</param>
-        /// <param name="high">High-order nibble (i.e., the more significant four bits) of the byte value.</param>
-        /// <param name="low">Low-order nibble (i.e., the less significant four bits) of the byte value.</param>
-        public static void SplitByte(int b, out int high, out int low)
-        {
-            high = (b >> 4) & 0xF;
-            low = b & 0xF;
-        }
+        /// <returns>High-order nibble (i.e., the more significant four bits) of the byte value.</returns>
+        public static int GetHighNibble(int b) { return (b >> 4) & 0xF; }
+
+        /// <summary>Returns the low-order nibble of a byte value.</summary>
+        /// <param name="b">Byte value.  Only the least significant eight bits are considered.</param>
+        /// <returns>Low-order nibble (i.e., the less significant four bits) of the byte value.</returns>
+        public static int GetLowNibble(int b) { return b & 0xF; }
 
         #endregion
     }

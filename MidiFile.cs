@@ -28,30 +28,6 @@ namespace JeffBourdier
     /// </summary>
     public class MidiFile
     {
-        /*********
-         * Types *
-         *********/
-
-        #region Private Types
-
-        /// <summary>Represents the status byte of the last (preceding) MIDI channel message.</summary>
-        private struct RunningStatus
-        {
-            public RunningStatus(MidiMessageType messageType, int channel)
-            {
-                this._MessageType = messageType;
-                this._Channel = channel;
-            }
-
-            private MidiMessageType _MessageType;
-            private int _Channel;
-
-            public MidiMessageType MessageType { get { return this._MessageType; } }
-            public int Channel { get { return this._Channel; } }
-        }
-
-        #endregion
-
         /**********
          * Fields *
          **********/
@@ -60,7 +36,7 @@ namespace JeffBourdier
 
         private byte[] Bytes = null;
         private List<MidiItem> Items = new List<MidiItem>();
-        private SortedDictionary<int, RunningStatus> RunningStatusMap = new SortedDictionary<int, RunningStatus>();
+        private SortedDictionary<int, int> RunningStatusMap = new SortedDictionary<int, int>();
         private SortedDictionary<int, MidiKeySignature> KeySignatureMap = new SortedDictionary<int, MidiKeySignature>();
         private string _ErrorText = string.Empty;
 
@@ -295,36 +271,19 @@ namespace JeffBourdier
             return chunkInfo;
         }
 
-        /// <summary>Adds a new MIDI channel message/event (not using running status) to the end of this file.</summary>
+        /// <summary>Adds a new MIDI channel message/event to the end of this file.</summary>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
-        /// <param name="messageType">Identifies the type of channel message.</param>
-        /// <param name="channel">One of the sixteen logical MIDI channels on which the event is transmitted.</param>
+        /// <param name="status">The status byte of the event, or -1 for running status.</param>
         /// <param name="data1">The first data byte of the event.</param>
         /// <param name="data2">The second data byte of the event (if applicable).</param>
         /// <returns>The new MidiChannelEvent object that is added.</returns>
-        public MidiChannelEvent AddChannelEvent(int deltaTime, MidiMessageType messageType, int channel, int data1, int data2)
+        public MidiChannelEvent AddChannelEvent(int deltaTime, int status, int data1, int data2)
         {
-            int n = MidiChannelEvent.SizeItem(0, false, messageType), offset = this.Bytes.Length;
+            int offset = this.Bytes.Length, n = (status < 0) ? this.GetRunningStatus(offset) : status;
+            MidiMessageType messageType = (MidiMessageType)Midi.GetHighNibble(n);
+            n = MidiChannelEvent.SizeItem(0, (status < 0), messageType);
             this.Resize(n, offset, this.ItemCount);
-            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, messageType, channel, data1, data2);
-            this.Items.Add(channelEvent);
-            this.SetTotalTime(this.ItemCount - 1);
-            return channelEvent;
-        }
-
-        /// <summary>Adds a new MIDI channel message/event using running status to the end of this file.</summary>
-        /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
-        /// <param name="data1">The first data byte of the event.</param>
-        /// <param name="data2">The second data byte of the event (if applicable).</param>
-        /// <returns>The new MidiChannelEvent object that is added.</returns>
-        public MidiChannelEvent AddChannelEvent(int deltaTime, int data1, int data2)
-        {
-            MidiMessageType messageType;
-            int channel, n, offset = this.Bytes.Length;
-            this.GetRunningStatus(offset, out messageType, out channel);
-            n = MidiChannelEvent.SizeItem(0, true, messageType);
-            this.Resize(n, offset, this.ItemCount);
-            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, MidiMessageType.NA, -1, data1, data2);
+            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, status, data1, data2);
             this.Items.Add(channelEvent);
             this.SetTotalTime(this.ItemCount - 1);
             return channelEvent;
@@ -377,43 +336,20 @@ namespace JeffBourdier
             return chunkInfo;
         }
 
-        /// <summary>
-        /// Inserts a new MIDI channel message/event (not using running status) into this file at the specified index.
-        /// </summary>
+        /// <summary>Inserts a new MIDI channel message/event into this file at the specified index.</summary>
         /// <param name="index">The index in this file's list at which the event should be inserted.</param>
         /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
-        /// <param name="messageType">Identifies the type of channel message.</param>
-        /// <param name="channel">One of the sixteen logical MIDI channels on which the event is transmitted.</param>
+        /// <param name="status">The status byte of the event, or -1 for running status.</param>
         /// <param name="data1">The first data byte of the event.</param>
         /// <param name="data2">The second data byte of the event (if applicable).</param>
         /// <returns>The new MidiChannelEvent object that is inserted.</returns>
-        public MidiChannelEvent InsertChannelEvent(int index, int deltaTime,
-            MidiMessageType messageType, int channel, int data1, int data2)
+        public MidiChannelEvent InsertChannelEvent(int index, int deltaTime, int status, int data1, int data2)
         {
-            int n = MidiChannelEvent.SizeItem(0, false, messageType), offset = this.Items[index].Offset;
+            int offset = this.Items[index].Offset, n = (status < 0) ? this.GetRunningStatus(offset) : status;
+            MidiMessageType messageType = (MidiMessageType)Midi.GetHighNibble(n);
+            n = MidiChannelEvent.SizeItem(0, (status < 0), messageType);
             this.Resize(n, offset, index);
-            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, messageType, channel, data1, data2);
-            this.Items.Insert(index, channelEvent);
-            this.SetTotalTime(index);
-            return channelEvent;
-        }
-
-        /// <summary>
-        /// Inserts a new MIDI channel message/event using running status into this file at the specified index.
-        /// </summary>
-        /// <param name="index">The index in this file's list at which the event should be inserted.</param>
-        /// <param name="deltaTime">The amount of time (in ticks) between the previous event in the track and this one.</param>
-        /// <param name="data1">The first data byte of the event.</param>
-        /// <param name="data2">The second data byte of the event (if applicable).</param>
-        /// <returns>The new MidiChannelEvent object that is inserted.</returns>
-        public MidiChannelEvent InsertChannelEvent(int index, int deltaTime, int data1, int data2)
-        {
-            MidiMessageType messageType;
-            int channel, n, offset = this.Items[index].Offset;
-            this.GetRunningStatus(offset, out messageType, out channel);
-            n = MidiChannelEvent.SizeItem(0, true, messageType);
-            this.Resize(n, offset, index);
-            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, MidiMessageType.NA, -1, data1, data2);
+            MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, status, data1, data2);
             this.Items.Insert(index, channelEvent);
             this.SetTotalTime(index);
             return channelEvent;
@@ -456,12 +392,12 @@ namespace JeffBourdier
             return metaEvent;
         }
 
-        /// <summary>Deletes from this file the MidiItem object at the specified index.</summary>
-        /// <param name="index">The index in this file's list of the MidiItem object to delete.</param>
-        public void DeleteItem(int index)
+        /// <summary>Removes from this file the MidiItem object at the specified index.</summary>
+        /// <param name="index">The index in this file's list of the MidiItem object to remove.</param>
+        public void RemoveItem(int index)
         {
             /* Determine how many bytes to remove from the array.  If the item is chunk info, the entire
-             * chunk will be deleted.  If it is a track (MTrk) chunk, decrement the number of tracks.
+             * chunk will be removed.  If it is a track (MTrk) chunk, decrement the number of tracks.
              */
             MidiItem item = this.Items[index];
             int i, n = item.Size;
@@ -480,7 +416,7 @@ namespace JeffBourdier
             MidiEvent mtrkEvent = item as MidiEvent;
             int deltaTime = (mtrkEvent == null) ? 0 : mtrkEvent.DeltaTime;
 
-            /* Remove from the list all items whose offsets are within the range of data being deleted. */
+            /* Remove from the list all items whose offsets are within the range of data being removed. */
             for (i = item.Offset + n; index < this.ItemCount && this.Items[index].Offset < i; this.Items.RemoveAt(index))
             {
                 item = this.Items[index];
@@ -507,25 +443,21 @@ namespace JeffBourdier
 
         /// <summary>Adds an entry to the map of running statuses, or updates the entry if it already exists.</summary>
         /// <param name="offset">Offset into the byte array at which to set the running status.</param>
-        /// <param name="messageType">Identifies the type of channel message.</param>
-        /// <param name="channel">One of the sixteen logical MIDI channels on which the event is transmitted.</param>
-        public void SetRunningStatus(int offset, MidiMessageType messageType, int channel)
-        { this.RunningStatusMap[offset] = new RunningStatus(messageType, channel); }
+        /// <param name="status">Running status byte.</param>
+        public void SetRunningStatus(int offset, int status) { this.RunningStatusMap[offset] = status; }
 
         /// <summary>Gets the running status in effect at a given offset.</summary>
         /// <param name="offset">Offset into the byte array at which to get the effective running status.</param>
-        /// <param name="messageType">Identifies the type of channel message.</param>
-        /// <param name="channel">One of the sixteen logical MIDI channels on which the event is transmitted.</param>
-        public void GetRunningStatus(int offset, out MidiMessageType messageType, out int channel)
+        /// <returns>The running status in effect at the given offset, or -1 if there is none.</returns>
+        public int GetRunningStatus(int offset)
         {
-            RunningStatus status = new RunningStatus(MidiMessageType.NA, -1);
-            foreach (KeyValuePair<int, RunningStatus> pair in this.RunningStatusMap)
+            int status = -1;
+            foreach (KeyValuePair<int, int> pair in this.RunningStatusMap)
             {
                 if (pair.Key > offset) break;
                 status = pair.Value;
             }
-            messageType = status.MessageType;
-            channel = status.Channel;
+            return status;
         }
 
         /// <summary>Adds an entry to the key signature map, or updates the entry if it already exists.</summary>
@@ -631,7 +563,6 @@ namespace JeffBourdier
 
                 /* Since our map of running statuses is keyed by offset, it must also be adjusted correspondingly. */
                 List<int> keys = new List<int>();
-                RunningStatus status;
 
                 /* Collect a list of keys (offsets) affected by this change. */
                 foreach (int key in this.RunningStatusMap.Keys) if (key >= offset) keys.Add(key);
@@ -640,7 +571,7 @@ namespace JeffBourdier
                 /* Replace each affected entry in the map with a new one having the updated key (offset). */
                 foreach (int key in keys)
                 {
-                    status = this.RunningStatusMap[key];
+                    int status = this.RunningStatusMap[key];
                     this.RunningStatusMap.Remove(key);
                     if (delta < 0 && key < j) continue;
                     this.RunningStatusMap[key + delta] = status;
@@ -755,8 +686,7 @@ namespace JeffBourdier
                  */
                 if (++j >= this.Bytes.Length) break;
                 MidiChannelEvent channelEvent = mtrkEvent as MidiChannelEvent;
-                if (channelEvent != null && !channelEvent.RunningStatus)
-                    this.SetRunningStatus(i, channelEvent.MessageType, channelEvent.Channel);
+                if (channelEvent != null && !channelEvent.RunningStatus) this.SetRunningStatus(i, channelEvent.Status);
 
                 /* If the event is a meta-event representing a key signature,
                  * use it to set the key signature at the appropriate time.
@@ -806,16 +736,14 @@ namespace JeffBourdier
             return chunkInfo;
         }
 
-        private MidiChannelEvent CreateChannelEvent(int offset, int deltaTime,
-            MidiMessageType messageType, int channel, int data1, int data2)
+        private MidiChannelEvent CreateChannelEvent(int offset, int deltaTime, int status, int data1, int data2)
         {
             MidiChannelEvent channelEvent = new MidiChannelEvent(this, offset);
             channelEvent.DeltaTime = deltaTime;
-            if (messageType != MidiMessageType.NA && channel >= 0)
+            if (status >= 0)
             {
                 this.Bytes[channelEvent.StatusOffset] = 0xF0;
-                channelEvent.MessageType = messageType;
-                channelEvent.Channel = channel;
+                channelEvent.Status = status;
             }
             channelEvent.Data1 = data1;
             channelEvent.Data2 = data2;
