@@ -11,10 +11,10 @@
  */
 
 
-/* DependencyObject, MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, UIElement, Window */
+/* DependencyObject, MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, Thickness, UIElement, Window */
 using System.Windows;
 
-/* Control, FrameworkElement, Panel, TextBox */
+/* CheckBox, Control, FrameworkElement, Label, Panel, TextBox */
 using System.Windows.Controls;
 
 /* FontFamily */
@@ -23,6 +23,9 @@ using System.Windows.Media;
 
 namespace JeffBourdier
 {
+    /// <summary>Specifies enumerated constants to define margin types.</summary>
+    public enum MarginType { None, Standard, Top, Indent }
+
     /// <summary>Provides constants and methods that make certain UI-related tasks easier.</summary>
     public static class UI
     {
@@ -96,6 +99,43 @@ namespace JeffBourdier
 
         #endregion
 
+        /// <summary>Creates a standardized label.</summary>
+        /// <param name="marginType">Specifies what type of margin to give the label.</param>
+        /// <param name="content">The content of the label (a colon is appended).</param>
+        /// <param name="fit">True if the label is to be fit to its content; otherwise, false.</param>
+        /// <returns>A new instance of the Label class.</returns>
+        public static Label CreateLabel(MarginType marginType, object content, bool fit)
+        {
+            Label label = new Label();
+            label.Content = content + ":";
+            if (marginType != MarginType.None) label.Margin = UI.CreateMargin(marginType, UI.HalfSpace);
+            if (fit)
+            {
+                label.Padding = new Thickness();
+                label.Height = label.FontSize * 3 / 2;
+            }
+            return label;
+        }
+
+        /// <summary>Creates a standardized check box.</summary>
+        /// <param name="tabIndex">
+        /// Determines the order in which the check box receives focus
+        /// when the user navigates through controls by using the TAB key.
+        /// </param>
+        /// <param name="marginType">Specifies what type of margin to give the check box.</param>
+        /// <param name="content">The content of the check box.</param>
+        /// <param name="check">If non-null, determines whether or not the box is checked.</param>
+        /// <returns>A new instance of the CheckBox class.</returns>
+        public static CheckBox CreateCheckBox(int tabIndex, MarginType marginType, object content, bool? check)
+        {
+            CheckBox checkBox = new CheckBox();
+            checkBox.TabIndex = tabIndex;
+            if (marginType != MarginType.None) checkBox.Margin = UI.CreateMargin(marginType, UI.UnitSpace);
+            checkBox.Content = content;
+            if (check != null) checkBox.IsChecked = check;
+            return checkBox;
+        }
+
         /// <summary>
         /// Offsets the tab index of each child of a panel, starting at the specified index position, by the specified amount.
         /// </summary>
@@ -114,24 +154,6 @@ namespace JeffBourdier
                 if (control == null) continue;
                 control.TabIndex += offset;
             }
-        }
-
-        /// <summary>
-        /// Counts the number of childless elements ("leaf" nodes) contained within
-        /// an element.  If the element contains no other elements, the count is one.
-        /// </summary>
-        /// <param name="element">The element whose contained elements are counted.</param>
-        /// <returns>The number of elements contained within the element.</returns>
-        public static int CountElements(UIElement element)
-        {
-            /* If the element cannot contain other elements, return one for the element itself. */
-            Panel panel = element as Panel;
-            if (panel == null) return 1;
-
-            /* The element can contain other elements, so return the number of elements it contains. */
-            int n = 0;
-            foreach (UIElement child in panel.Children) n += UI.CountElements(child);
-            return n;
         }
 
         /// <summary>Determine whether or not a text box contains a valid number (integer) within a range.</summary>
@@ -171,6 +193,18 @@ namespace JeffBourdier
             /* Revert text to previous value. */
             textBox.Text = value.ToString();
             return false;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static Thickness CreateMargin(MarginType marginType, double bottom)
+        {
+            return new Thickness(
+                (marginType == MarginType.Indent) ? UI.IndentSpace : UI.TripleSpace,
+                (marginType == MarginType.Top) ? UI.TripleSpace : UI.UnitSpace,
+                UI.TripleSpace, bottom);
         }
 
         #endregion

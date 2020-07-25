@@ -16,7 +16,7 @@ using System;
 /* FontWeights, GridLength, HorizontalAlignment, RoutedEventArgs, TextAlignment, UIElement */
 using System.Windows;
 
-/* ColumnDefinition, Grid, RowDefinition, TextBox, TextChangedEventArgs, UserControl */
+/* ColumnDefinition, Grid, Label, RowDefinition, TextBox, TextChangedEventArgs, UserControl */
 using System.Windows.Controls;
 
 /* Brush, SystemColors */
@@ -60,7 +60,7 @@ namespace JeffBourdier
                 else
                 {
                     n = UI.DoubleSpace;
-                    StandardLabel label = new StandardLabel(string.Empty, true);
+                    Label label = UI.CreateLabel(MarginType.None, string.Empty, true);
                     label.HorizontalContentAlignment = HorizontalAlignment.Center;
                     Grid.SetColumn(label, i);
                     grid.Children.Add(label);

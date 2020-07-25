@@ -13,7 +13,7 @@
 /* TextAlignment, TextWrapping, Thickness */
 using System.Windows;
 
-/* Dock, DockPanel, ScrollBarVisibility, TextBlock, TextBox, TextChangedEventArgs */
+/* Dock, DockPanel, Label, ScrollBarVisibility, TextBlock, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -38,9 +38,7 @@ namespace JeffBourdier
             int i = 0;
 
             /* Initialize the "Delta-time" label. */
-            this.DeltaTimeLabel = new StandardLabel(Properties.Resources.DeltaTime, true);
-            this.DeltaTimeLabel.TabIndex = ++i;
-            this.DeltaTimeLabel.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.HalfSpace);
+            this.DeltaTimeLabel = UI.CreateLabel(MarginType.Top, Properties.Resources.DeltaTime, true);
 
             /* Initialize the "Delta-time" text box. */
             this.DeltaTimeTextBox = new TextBox();
@@ -65,7 +63,7 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private StandardLabel DeltaTimeLabel;
+        private Label DeltaTimeLabel;
         private TextBox DeltaTimeTextBox;
         private int _DeltaTime = -1;
 

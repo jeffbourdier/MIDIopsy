@@ -13,7 +13,7 @@
 /* Thickness */
 using System.Windows;
 
-/* DockPanel, TextBlock, TextBox, TextChangedEventArgs */
+/* DockPanel, Label, TextBlock, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -39,17 +39,13 @@ namespace JeffBourdier
             DockPanel typePanel, dataPanel;
 
             /* Initialize the "Type" controls. */
-            this.TypeLabel = new StandardLabel(Properties.Resources.Type, true);
-            this.TypeLabel.TabIndex = ++i;
-            this.TypeLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.TypeLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.Type, true);
             typePanel = MidiEventDialog.CreateDataBytePanel(ref this.TypeTextBox, ref this.TypeTextBlock, ++i);
             this.TypeTextBox.TextChanged += this.TypeTextBox_TextChanged;
             this.TypeLabel.Target = this.TypeTextBox;
 
             /* Initialize the "Data" controls. */
-            StandardLabel label = new StandardLabel(Properties.Resources.Data, true);
-            label.TabIndex = ++i;
-            label.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            Label label = UI.CreateLabel(MarginType.Standard, Properties.Resources.Data, true);
             dataPanel = MidiEventDialog.CreateDataPanel(ref this.DataHexTextBox, ref this.DataCommentTextBox, ++i);
             this.DataHexTextBox.TextChanged += this.DataHexTextBox_TextChanged;
             this.DataCommentTextBox.TextChanged += this.DataCommentTextBox_TextChanged;
@@ -82,7 +78,7 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private StandardLabel TypeLabel;
+        private Label TypeLabel;
         private TextBox TypeTextBox;
         private TextBlock TypeTextBlock;
         private TextBox DataHexTextBox;

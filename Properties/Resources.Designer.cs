@@ -908,7 +908,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to D_ata.
+        ///   Looks up a localized string similar to _Data.
         /// </summary>
         internal static string Data {
             get {
@@ -935,7 +935,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Delta-time.
+        ///   Looks up a localized string similar to Delta-_time.
         /// </summary>
         internal static string DeltaTime {
             get {
@@ -1146,7 +1146,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hex.
+        ///   Looks up a localized string similar to _Hex.
         /// </summary>
         internal static string Hex {
             get {
@@ -3254,6 +3254,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Text wrapping.
+        /// </summary>
+        internal static string TextWrapping {
+            get {
+                return ResourceManager.GetString("TextWrapping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ticks.
         /// </summary>
         internal static string Ticks {
@@ -3326,7 +3335,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Type.
+        ///   Looks up a localized string similar to T_ype.
         /// </summary>
         internal static string Type {
             get {

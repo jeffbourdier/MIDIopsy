@@ -32,7 +32,7 @@ using System.IO;
 /* HorizontalAlignment, MessageBox, MessageBoxResult, RoutedEventArgs, Thickness */
 using System.Windows;
 
-/* Button, ColumnDefinition, Grid, Panel, StackPanel */
+/* Button, ColumnDefinition, Grid, Label, Panel, StackPanel */
 using System.Windows.Controls;
 
 /* ApplicationCommands, CanExecuteRoutedEventArgs, ExecutedRoutedEventArgs, Key, ModifierKeys, RoutedUICommand */
@@ -410,7 +410,7 @@ namespace JeffBourdier
             /* If necessary, add "Open Recent" label to the MRU panel. */
             if (this.MruPanel.Children.Count < 1)
             {
-                StandardLabel label = new StandardLabel(Common.Resources.OpenRecent, false);
+                Label label = UI.CreateLabel(MarginType.None, Common.Resources.OpenRecent, false);
                 this.MruPanel.Children.Add(label);
             }
 

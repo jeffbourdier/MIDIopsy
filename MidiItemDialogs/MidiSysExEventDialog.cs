@@ -14,7 +14,7 @@
 /* Thickness */
 using System.Windows;
 
-/* CheckBox, DockPanel, TextBox, TextChangedEventArgs */
+/* CheckBox, DockPanel, Label, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -40,15 +40,10 @@ namespace JeffBourdier
             int i = this.ControlCount;
 
             /* Initialize the "Escape" check box. */
-            this.EscapeCheckBox = new CheckBox();
-            this.EscapeCheckBox.TabIndex = ++i;
-            this.EscapeCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.EscapeCheckBox.Content = Properties.Resources.Escape;
+            this.EscapeCheckBox = UI.CreateCheckBox(++i, MarginType.Standard, Properties.Resources.Escape, null);
 
             /* Initialize the "Data" controls. */
-            this.DataLabel = new StandardLabel(Properties.Resources.Data, true);
-            this.DataLabel.TabIndex = ++i;
-            this.DataLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.DataLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.Data, true);
             DockPanel panel = MidiEventDialog.CreateDataPanel(ref this.DataHexTextBox, ref this.DataCommentTextBox, ++i);
             this.DataHexTextBox.TextChanged += this.DataHexTextBox_TextChanged;
             this.DataCommentTextBox.IsReadOnly = true;
@@ -80,7 +75,7 @@ namespace JeffBourdier
         #region Private Fields
 
         private CheckBox EscapeCheckBox;
-        private StandardLabel DataLabel;
+        private Label DataLabel;
         private TextBox DataHexTextBox;
         private TextBox DataCommentTextBox;
         private string Hex;

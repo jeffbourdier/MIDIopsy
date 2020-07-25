@@ -19,7 +19,7 @@ using System.ComponentModel;
 /* MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, TextAlignment, Thickness */
 using System.Windows;
 
-/* ComboBox, RadioButton, SelectionChangedEventArgs, TextBox, TextChangedEventArgs */
+/* ComboBox, Label, RadioButton, SelectionChangedEventArgs, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -43,9 +43,7 @@ namespace JeffBourdier
             int i, j = 0;
 
             /* Initialize the "Track" label. */
-            StandardLabel label = new StandardLabel(Properties.Resources.Track, true);
-            label.TabIndex = ++j;
-            label.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.HalfSpace);
+            Label label = UI.CreateLabel(MarginType.Top, Properties.Resources.Track, true);
 
             /* Initialize the "Track" combo box. */
             this.TrackComboBox = new ComboBox();

@@ -68,7 +68,6 @@
     </Compile>
     <Compile Include="Common\SettingsDialog.cs" />
     <Compile Include="Common\StandardDialog.cs" />
-    <Compile Include="Common\StandardLabel.cs" />
     <Compile Include="Common\StandardWindow.cs" />
     <Compile Include="Common\Text.cs" />
     <Compile Include="Common\UI.cs" />
@@ -98,6 +97,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -118,6 +122,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\OpeningScreen.png" />
     <Resource Include="Resources\Banner.bmp" />
     <None Include="Resources\EditingScreen.png" />

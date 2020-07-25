@@ -20,6 +20,9 @@ using System.Collections.Generic;
 /* CancelEventArgs */
 using System.ComponentModel;
 
+/* UIElement */
+using System.Windows;
+
 /* Button, Canvas, Dock, DockPanel, Panel */
 using System.Windows.Controls;
 
@@ -80,6 +83,14 @@ namespace JeffBourdier
         /**********
          * Fields *
          **********/
+
+        #region Protected Fields
+
+        protected List<UIElement> SettingsUIElements = null;
+        protected IInputElement SettingsInitialElement = null;
+        protected int SettingsInitialTabIndex = 0;
+
+        #endregion
 
         #region Private Fields
 
@@ -201,6 +212,9 @@ namespace JeffBourdier
         /// </summary>
         protected virtual void AdjustTabIndexes() { }
 
+        /// <summary>When overridden in a derived class, saves settings specific to the application.</summary>
+        protected virtual void SaveSettings() { }
+
         #endregion
 
         #region Private Methods
@@ -210,11 +224,13 @@ namespace JeffBourdier
         private void SettingsExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             /* Show the settings dialog.  If the user cancels, take no further action. */
-            SettingsDialog dialog = new SettingsDialog();
+            SettingsDialog dialog = new SettingsDialog(this.SettingsUIElements,
+                this.SettingsInitialElement, this.SettingsInitialTabIndex);
             bool? result = dialog.ShowDialog(this);
             if (result == false) return;
 
             /* The user did not cancel.  Save settings. */
+            this.SaveSettings();
             Common.Settings.Default.Log = dialog.Log;
             Common.Settings.Default.LogPath = dialog.LogPath;
             Common.Settings.Default.LogTimestamp = dialog.LogTimestamps;

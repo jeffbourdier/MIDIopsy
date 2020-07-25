@@ -22,13 +22,14 @@ using System.ComponentModel;
 /* EventResetMode, EventWaitHandle, Thread, ThreadPool */
 using System.Threading;
 
-/* DataTemplate, FrameworkElementFactory, GridLength, HorizontalAlignment, MessageBox, MessageBoxButton, MessageBoxImage,
- * MessageBoxResult, Setter, Style, SystemColors, SystemParameters, TextAlignment, TextWrapping, Thickness
+/* DataTemplate, FrameworkElementFactory, GridLength, HorizontalAlignment, MessageBox,
+ * MessageBoxButton, MessageBoxImage, MessageBoxResult, Setter, SizeChangedEventArgs,
+ * Style, SystemColors, SystemParameters, TextAlignment, TextWrapping, Thickness, UIElement
  */
 using System.Windows;
 
-/* Border, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox, Label, ListView,
- * ListViewItem, Orientation, RowDefinition, SelectionMode, StackPanel, TextBlock, TextBox, WrapPanel
+/* Border, CheckBox, ColumnDefinition, Dock, DockPanel, Grid, GridView, GridViewColumn, GroupBox, Label,
+ * ListView, ListViewItem, Orientation, RowDefinition, SelectionMode, StackPanel, TextBlock, TextBox, WrapPanel
  */
 using System.Windows.Controls;
 
@@ -136,6 +137,7 @@ namespace JeffBourdier
         {
             List<RoutedUICommand> commands;
             WrapPanel wrapPanel = new WrapPanel();
+            StackPanel stackPanel;
 
             /* Build the "New Item" group box. */
             commands = new List<RoutedUICommand>();
@@ -174,7 +176,7 @@ namespace JeffBourdier
             MIDIopsyWindow.AddGroup(wrapPanel, Properties.Resources.Navigation, this.NavigationPanel);
 
             /* Build the "Playback" group box (whose content will be a panel with controls for MIDI file playback). */
-            StackPanel stackPanel = new StackPanel();
+            stackPanel = new StackPanel();
             stackPanel.Orientation = Orientation.Horizontal;
             this.PlayStopButton = this.InitPlaybackCommand(stackPanel, MediaCommands.Play.Text, Key.F5, this.PlayStopExecuted);
             this.InitPlaybackPosition(stackPanel);
@@ -197,7 +199,11 @@ namespace JeffBourdier
             Setter setter = new Setter(ListViewItem.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch);
             this.ListView.ItemContainerStyle.Setters.Add(setter);
             this.GridView = new GridView();
-            foreach (MidiItem.DisplayField field in MidiItem.DisplayFields) this.AddViewColumn(field);
+            foreach (MidiItem.DisplayField field in MidiItem.DisplayFields)
+            {
+                GridViewColumn column = this.BuildColumn(field);
+                this.GridView.Columns.Add(column);
+            }
             this.ListView.View = this.GridView;
             this.ListView.Margin = new Thickness(0, UI.UnitSpace, 0, 0);
             this.ListView.SelectionMode = SelectionMode.Single;
@@ -213,9 +219,22 @@ namespace JeffBourdier
             Uri uri = AppHelper.CreateResourceUri(false, "MIDIopsy.ico");
             this.Icon = BitmapFrame.Create(uri);
             this.FileDialogFilter = Properties.Resources.MidiFiles;
+            this.SizeChanged += this.MIDIopsyWindow_SizeChanged;
             this.Closing += this.MIDIopsyWindow_Closing;
             this.MinWidth = 640;
             this.MinHeight = 320;
+
+            /* Initialize UI elements for the settings dialog. */
+            stackPanel = new StackPanel();
+            foreach (CheckBox checkBox in this.WrapCheckBoxes) stackPanel.Children.Add(checkBox);
+            GroupBox groupBox = new GroupBox();
+            groupBox.Header = Properties.Resources.TextWrapping;
+            groupBox.Content = stackPanel;
+            groupBox.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.DoubleSpace);
+            this.SettingsUIElements = new List<UIElement>();
+            this.SettingsUIElements.Add(groupBox);
+            this.SettingsInitialElement = this.WrapCheckBoxes[0];
+            this.SettingsInitialTabIndex = this.WrapCheckBoxes.Count;
 
             /* Start another thread (initally blocked) to update the Position control during MIDI file playback. */
             this.EventHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -246,6 +265,7 @@ namespace JeffBourdier
         private MediaPlayer Player;
         private ListView ListView;
         private GridView GridView;
+        private List<CheckBox> WrapCheckBoxes = new List<CheckBox>();
         private EventWaitHandle EventHandle;
         private MidiFile MidiFile = new MidiFile();
         private object Clipboard = null;
@@ -304,6 +324,25 @@ namespace JeffBourdier
             this.NewItemPanel.TabIndexOffset = this.HeaderControlCount;
             this.EditItemPanel.TabIndexOffset = this.NewItemPanel.TabIndexOffset + this.NewItemPanel.Children.Count;
             this.NavigationPanel.TabIndexOffset = this.EditItemPanel.TabIndexOffset + this.EditItemPanel.Children.Count;
+        }
+
+        /// <summary>Saves settings specific to this application.</summary>
+        protected override void SaveSettings()
+        {
+            for (int i = 0, j = 0; i < MidiItem.DisplayFields.Length; ++i)
+            {
+                if (MidiItem.DisplayFields[i].RightAlign) continue;
+                bool b = (bool)this.WrapCheckBoxes[j++].IsChecked;
+                string s = "Wrap" + this.GridView.Columns[i].Header;
+                if (b == (bool)Properties.Settings.Default[s]) continue;
+                Properties.Settings.Default[s] = b;
+                this.GridView.Columns.RemoveAt(i);
+                GridViewColumn column = this.BuildColumn(MidiItem.DisplayFields[i]);
+                if (i < MidiItem.DisplayFields.Length - 1) this.GridView.Columns.Insert(i, column);
+                else this.GridView.Columns.Add(column);
+            }
+            Properties.Settings.Default.Save();
+            this.SetColumnWidths();
         }
 
         /// <summary>Prompts the user for information needed to create a new MIDI file.</summary>
@@ -480,7 +519,7 @@ namespace JeffBourdier
             if (metaEvent != null) dialog = new MidiMetaEventDialog(metaEvent);
 
             /* If the dialog has not been initialized by now, the selected
-             * MIDI item is not editable (altough this should never happen).
+             * MIDI item is not editable (although this should never happen).
              */
             if (dialog == null) return;
 
@@ -666,31 +705,31 @@ namespace JeffBourdier
         }
 
         /* Most commands can execute as long as there is a file open. */
-        protected void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None); }
 
         /* Commands that apply only to the "body" of the MIDI file can execute as long as there is a
          * file open and the selected item is neither of the first two (presumably, the header chunk).
          */
-        protected void BodyCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void BodyCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedIndex > 1); }
 
         /* The command that edits the properties of the selected MIDI item can execute
          * as long as there is a file open and the selected item is not chunk info.
          */
-        protected void PropertiesCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void PropertiesCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && !(this.ListView.SelectedItem is MidiChunkInfo)); }
 
         /* Commands that apply only to MIDI (MTrk) events can execute as long as
          * there is a file open and the selected item is in fact a MIDI event.
          */
-        protected void EventCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void EventCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && this.ListView.SelectedItem is MidiEvent); }
 
         /* The Paste command can execute as long as there is a file open, the clipboard is not
          * empty, and the selected item is neither of the first two (presumably, the header chunk).
          */
-        protected void PasteCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void PasteCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.FileState != FileState.None && this.Clipboard != null && this.ListView.SelectedIndex > 1); }
 
         /* Once a MIDI file has been opened for media playback, set its initial position and determine its duration. */
@@ -733,6 +772,8 @@ namespace JeffBourdier
             item.Focus();
         }
 
+        private void MIDIopsyWindow_SizeChanged(object sender, SizeChangedEventArgs e) { this.SetColumnWidths(); }
+
         /* If we're really closing, signal the other thread so that it will exit. */
         private void MIDIopsyWindow_Closing(object sender, CancelEventArgs e)
         {
@@ -765,7 +806,7 @@ namespace JeffBourdier
             panel.Children.Add(grid);
 
             /* Add a label for the position to the top row. */
-            StandardLabel label = new StandardLabel(Properties.Resources.StartingPosition, true);
+            Label label = UI.CreateLabel(MarginType.None, Properties.Resources.StartingPosition, true);
             label.Margin = new Thickness(0, 0, 0, UI.UnitSpace);
             label.HorizontalContentAlignment = HorizontalAlignment.Center;
             grid.Children.Add(label);
@@ -812,7 +853,7 @@ namespace JeffBourdier
             Grid.SetColumn(textBox, 1);
 
             /* Create the label. */
-            StandardLabel label = new StandardLabel(labelContent, false);
+            Label label = UI.CreateLabel(MarginType.None, labelContent, false);
             label.Target = textBox;
             Grid.SetRow(label, rowValue);
 
@@ -831,7 +872,7 @@ namespace JeffBourdier
             panel.Children.Add(groupBox);
         }
 
-        private void AddViewColumn(MidiItem.DisplayField field)
+        private GridViewColumn BuildColumn(MidiItem.DisplayField field)
         {
             /* Create the column and set its header content. */
             GridViewColumn column = new GridViewColumn();
@@ -855,11 +896,24 @@ namespace JeffBourdier
             factory.SetValue(TextBlock.PaddingProperty, MIDIopsyWindow.CellPadding);
             if (field.Monospace) factory.SetValue(TextBlock.FontFamilyProperty, UI.MonospaceFont);
             if (field.RightAlign) factory.SetValue(TextBlock.TextAlignmentProperty, TextAlignment.Right);
-            else factory.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap);
-            column.CellTemplate.VisualTree.AppendChild(factory);
+            else
+            {
+                /* Determine whether or not the text in this column should wrap (based on settings in the config file). */
+                bool b = (bool)Properties.Settings.Default["Wrap" + column.Header];
+                factory.SetValue(TextBlock.TextWrappingProperty, b ? TextWrapping.Wrap : TextWrapping.NoWrap);
 
-            /* Add the column to the grid/list view. */
-            this.GridView.Columns.Add(column);
+                /* Initialize a check box (for the settings dialog) indicating
+                 * whether or not the text in this column should wrap.
+                 */
+                if (!this.IsLoaded)
+                {
+                    CheckBox checkBox = UI.CreateCheckBox(this.WrapCheckBoxes.Count,
+                        (this.WrapCheckBoxes.Count > 0) ? MarginType.Standard : MarginType.Top, field.LabelText, b);
+                    this.WrapCheckBoxes.Add(checkBox);
+                }
+            }
+            column.CellTemplate.VisualTree.AppendChild(factory);
+            return column;
         }
 
         /* This method runs in its own thread to update the Position control during MIDI file playback. */
@@ -902,8 +956,12 @@ namespace JeffBourdier
             }
             this.ListView.SelectedIndex = 0;
             this.ListView.ScrollIntoView(this.ListView.SelectedItem);
+            this.SetColumnWidths();
+        }
 
-            /* Reset the width of each column of the grid/list view. */
+        /* Reset the width of each column of the grid/list view. */
+        private void SetColumnWidths()
+        {
             double d = this.ActualWidth - 50;
             for (int i = 0; i < MidiItem.DisplayFields.Length; ++i)
                 this.GridView.Columns[i].Width = MidiItem.DisplayFields[i].WidthFactor * d;

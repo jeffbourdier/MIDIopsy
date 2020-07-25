@@ -13,7 +13,7 @@
 /* RoutedEventArgs, TextAlignment, Thickness */
 using System.Windows;
 
-/* CheckBox, ComboBox, DockPanel, SelectionChangedEventArgs, TextBlock, TextBox, TextChangedEventArgs */
+/* CheckBox, ComboBox, DockPanel, Label, SelectionChangedEventArgs, TextBlock, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -40,17 +40,12 @@ namespace JeffBourdier
             DockPanel panel1, panel2;
 
             /* Initialize the "Running status" check box. */
-            this.RunningStatusCheckBox = new CheckBox();
-            this.RunningStatusCheckBox.TabIndex = ++i;
-            this.RunningStatusCheckBox.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            this.RunningStatusCheckBox.Content = Properties.Resources.RunningStatus;
+            this.RunningStatusCheckBox = UI.CreateCheckBox(++i, MarginType.Standard, Properties.Resources.RunningStatus, null);
             this.RunningStatusCheckBox.Checked += this.RunningStatusCheckBox_Checked;
             this.RunningStatusCheckBox.Unchecked += this.RunningStatusCheckBox_Checked;
 
             /* Initialize the "Message type" label. */
-            this.MessageTypeLabel = new StandardLabel(Properties.Resources.MessageType, true);
-            this.MessageTypeLabel.TabIndex = ++i;
-            this.MessageTypeLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.MessageTypeLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.MessageType, true);
 
             /* Initialize the "Message type" combo box. */
             this.MessageTypeComboBox = new ComboBox();
@@ -65,9 +60,7 @@ namespace JeffBourdier
             this.MessageTypeLabel.Target = this.MessageTypeComboBox;
 
             /* Initialize the "Channel" label. */
-            this.ChannelLabel = new StandardLabel(Properties.Resources.Channel, true);
-            this.ChannelLabel.TabIndex = ++i;
-            this.ChannelLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.ChannelLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.Channel, true);
 
             /* Initialize the "Channel" text box. */
             this.ChannelTextBox = new TextBox();
@@ -79,17 +72,13 @@ namespace JeffBourdier
             this.ChannelLabel.Target = this.ChannelTextBox;
 
             /* Initialize the "Data 1" controls. */
-            this.Data1Label = new StandardLabel(Properties.Resources.Data1, true);
-            this.Data1Label.TabIndex = ++i;
-            this.Data1Label.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.Data1Label = UI.CreateLabel(MarginType.Standard, Properties.Resources.Data1, true);
             panel1 = MidiEventDialog.CreateDataBytePanel(ref this.Data1TextBox, ref this.Data1TextBlock, ++i);
             this.Data1TextBox.TextChanged += this.Data1TextBox_TextChanged;
             this.Data1Label.Target = this.Data1TextBox;
 
             /* Initialize the "Data 2" controls. */
-            this.Data2Label = new StandardLabel(Properties.Resources.Data2, true);
-            this.Data2Label.TabIndex = ++i;
-            this.Data2Label.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.Data2Label = UI.CreateLabel(MarginType.Standard, Properties.Resources.Data2, true);
             panel2 = MidiEventDialog.CreateDataBytePanel(ref this.Data2TextBox, ref this.Data2TextBlock, ++i);
             this.Data2TextBox.TextChanged += this.Data2TextBox_TextChanged;
             this.Data2Label.Target = this.Data2TextBox;
@@ -142,14 +131,14 @@ namespace JeffBourdier
         };
 
         private CheckBox RunningStatusCheckBox;
-        private StandardLabel MessageTypeLabel;
+        private Label MessageTypeLabel;
         private ComboBox MessageTypeComboBox;
-        private StandardLabel ChannelLabel;
+        private Label ChannelLabel;
         private TextBox ChannelTextBox;
-        private StandardLabel Data1Label;
+        private Label Data1Label;
         private TextBox Data1TextBox;
         private TextBlock Data1TextBlock;
-        private StandardLabel Data2Label;
+        private Label Data2Label;
         private TextBox Data2TextBox;
         private TextBlock Data2TextBlock;
         private int _Channel = -1;

@@ -122,7 +122,7 @@
     <value>..\Resources\Banner.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DeltaTime" xml:space="preserve">
-    <value>_Delta-time</value>
+    <value>Delta-_time</value>
   </data>
   <data name="Escape" xml:space="preserve">
     <value>_Escape</value>
@@ -1154,10 +1154,10 @@
     <value>Data _2</value>
   </data>
   <data name="Hex" xml:space="preserve">
-    <value>Hex</value>
+    <value>_Hex</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>_Type</value>
+    <value>T_ype</value>
   </data>
   <data name="SysEx" xml:space="preserve">
     <value>System Exclusive (SysEx)</value>
@@ -1169,7 +1169,7 @@
     <value>A format 0 file should have only one track.</value>
   </data>
   <data name="Data" xml:space="preserve">
-    <value>D_ata</value>
+    <value>_Data</value>
   </data>
   <data name="RunningStatus" xml:space="preserve">
     <value>_Running status</value>
@@ -1209,5 +1209,8 @@
   </data>
   <data name="OnlyTrack" xml:space="preserve">
     <value>This will remove the only track in the file.  Proceed?</value>
+  </data>
+  <data name="TextWrapping" xml:space="preserve">
+    <value>Text wrapping</value>
   </data>
 </root>

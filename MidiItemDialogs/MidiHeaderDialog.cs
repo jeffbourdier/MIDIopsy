@@ -13,7 +13,7 @@
 /* MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, TextAlignment, Thickness */
 using System.Windows;
 
-/* ComboBox, GroupBox, RadioButton, SelectionChangedEventArgs, TextBox, TextChangedEventArgs */
+/* ComboBox, GroupBox, Label, RadioButton, SelectionChangedEventArgs, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -58,9 +58,7 @@ namespace JeffBourdier
             int i, j = 0;
 
             /* Initialize the "Format" label. */
-            StandardLabel label = new StandardLabel(Properties.Resources.Format, true);
-            label.TabIndex = ++j;
-            label.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.HalfSpace);
+            Label label = UI.CreateLabel(MarginType.Top, Properties.Resources.Format, true);
 
             /* Initialize the "Format" combo box. */
             this.FormatComboBox = new ComboBox();
@@ -74,9 +72,7 @@ namespace JeffBourdier
             this.InitialElement = this.FormatComboBox;
 
             /* Initialize the "Number of tracks" label. */
-            this.NumberOfTracksLabel = new StandardLabel(Properties.Resources.NumberOfTracks, true);
-            this.NumberOfTracksLabel.TabIndex = ++j;
-            this.NumberOfTracksLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.NumberOfTracksLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.NumberOfTracks, true);
 
             /* Initialize the "Number of tracks" text box. */
             this.NumberOfTracksTextBox = new TextBox();
@@ -95,9 +91,7 @@ namespace JeffBourdier
             this.MetricalTimeRadioButton.Checked += this.MetricalTimeRadioButton_Checked;
 
             /* Initialize the "Ticks per quarter note" label. */
-            this.TicksPerQuarterNoteLabel = new StandardLabel(Properties.Resources.TicksPerQuarterNote, true);
-            this.TicksPerQuarterNoteLabel.TabIndex = ++j;
-            this.TicksPerQuarterNoteLabel.Margin = new Thickness(UI.IndentSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.TicksPerQuarterNoteLabel = UI.CreateLabel(MarginType.Indent, Properties.Resources.TicksPerQuarterNote, true);
             this.TicksPerQuarterNoteLabel.IsEnabled = false;
 
             /* Initialize the "Ticks per quarter note" text box. */
@@ -119,9 +113,7 @@ namespace JeffBourdier
             this.TimeCodeBasedTimeRadioButton.Checked += this.TimeCodeBasedTimeRadioButton_Checked;
 
             /* Initialize the "Frames per second" label. */
-            this.FramesPerSecondLabel = new StandardLabel(Properties.Resources.FramesPerSecond, true);
-            this.FramesPerSecondLabel.TabIndex = ++j;
-            this.FramesPerSecondLabel.Margin = new Thickness(UI.IndentSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.FramesPerSecondLabel = UI.CreateLabel(MarginType.Indent, Properties.Resources.FramesPerSecond, true);
             this.FramesPerSecondLabel.IsEnabled = false;
 
             /* Initialize the "Frames per second" combo box. */
@@ -135,9 +127,7 @@ namespace JeffBourdier
             this.FramesPerSecondLabel.Target = this.FramesPerSecondComboBox;
 
             /* Initialize the "Ticks per frame" label. */
-            this.TicksPerFrameLabel = new StandardLabel(Properties.Resources.TicksPerFrame, true);
-            this.TicksPerFrameLabel.TabIndex = ++j;
-            this.TicksPerFrameLabel.Margin = new Thickness(UI.IndentSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.TicksPerFrameLabel = UI.CreateLabel(MarginType.Indent, Properties.Resources.TicksPerFrame, true);
             this.TicksPerFrameLabel.IsEnabled = false;
 
             /* Initialize the "Ticks per frame" text box. */
@@ -219,15 +209,15 @@ namespace JeffBourdier
         private static readonly int[] FramesPerSecondValues;
 
         private ComboBox FormatComboBox;
-        private StandardLabel NumberOfTracksLabel;
+        private Label NumberOfTracksLabel;
         private TextBox NumberOfTracksTextBox;
         private RadioButton MetricalTimeRadioButton;
-        private StandardLabel TicksPerQuarterNoteLabel;
+        private Label TicksPerQuarterNoteLabel;
         private TextBox TicksPerQuarterNoteTextBox;
         private RadioButton TimeCodeBasedTimeRadioButton;
-        private StandardLabel FramesPerSecondLabel;
+        private Label FramesPerSecondLabel;
         private ComboBox FramesPerSecondComboBox;
-        private StandardLabel TicksPerFrameLabel;
+        private Label TicksPerFrameLabel;
         private TextBox TicksPerFrameTextBox;
         private int _NumberOfTracks = -1;
         private int _TicksPerQuarterNote = -1;

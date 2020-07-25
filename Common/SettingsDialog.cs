@@ -17,13 +17,19 @@ using Microsoft.Win32;
 /* Exception */
 using System;
 
+/* List */
+using System.Collections.Generic;
+
+/* CancelEventArgs */
+using System.ComponentModel;
+
 /* StreamWriter */
 using System.IO;
 
-/* ResizeMode, RoutedEventArgs, SizeToContent, Thickness, Window, WindowStyle */
+/* ResizeMode, RoutedEventArgs, SizeToContent, Thickness, UIElement, Window, WindowStyle */
 using System.Windows;
 
-/* Button, CheckBox, Dock, DockPanel, GroupBox, StackPanel, TextBox, TextChangedEventArgs */
+/* Button, CheckBox, Dock, DockPanel, GroupBox, Label, StackPanel, TextBox, TextChangedEventArgs */
 using System.Windows.Controls;
 
 
@@ -39,19 +45,34 @@ namespace JeffBourdier
         #region Public Constructors
 
         /// <summary>Initializes a new instance of the SettingsDialog class.</summary>
-        public SettingsDialog()
+        /// <param name="uiElements">If non-null, a list of UI elements to add.</param>
+        /// <param name="initialElement">
+        /// If non-null, the element to which logical focus is given when the dialog is shown.
+        /// </param>
+        /// <param name="initialTabIndex">Initial value for the tab index following the UI elements to add.</param>
+        public SettingsDialog(List<UIElement> uiElements, IInputElement initialElement, int initialTabIndex)
         {
-            int i = 0;
+            /* Process the list of UI elements (if applicable). */
+            MarginType marginType;
+            if (uiElements == null)
+            {
+                marginType = MarginType.Top;
+                this.ElementCount = 0;
+            }
+            else
+            {
+                marginType = MarginType.Standard;
+                this.ElementCount = uiElements.Count;
+                foreach (UIElement element in uiElements) this.AddUIElement(element);
+            }
 
             /* Initialize the "Write messages to log file" check box. */
-            this.LogCheckBox = SettingsDialog.CreateCheckBox(++i, true,
-                Common.Resources.WriteToLog, Common.Settings.Default.Log);
-            this.InitialElement = this.LogCheckBox;
+            int i = initialTabIndex;
+            this.LogCheckBox = UI.CreateCheckBox(++i, marginType, Common.Resources.WriteToLog, Common.Settings.Default.Log);
+            this.InitialElement = (initialElement == null) ? this.LogCheckBox : initialElement;
 
             /* Initialize the "Log file path" label. */
-            this.LogPathLabel = new StandardLabel(Common.Resources.LogFilePath, true);
-            this.LogPathLabel.TabIndex = ++i;
-            this.LogPathLabel.Margin = new Thickness(UI.TripleSpace, UI.UnitSpace, UI.TripleSpace, UI.HalfSpace);
+            this.LogPathLabel = UI.CreateLabel(MarginType.Standard, Common.Resources.LogFilePath, true);
 
             /* Initialize the log path text box. */
             this.LogPathTextBox = new TextBox();
@@ -81,14 +102,14 @@ namespace JeffBourdier
             this.BrowsePanel.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
 
             /* Initialize the option check boxes. */
-            this.AllCheckBox = SettingsDialog.CreateCheckBox(++i, true, Common.Resources.All, null);
-            this.TimestampsCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+            this.AllCheckBox = UI.CreateCheckBox(++i, MarginType.Top, Common.Resources.All, null);
+            this.TimestampsCheckBox = UI.CreateCheckBox(++i, MarginType.Standard,
                 Common.Resources.Timestamps, Common.Settings.Default.LogTimestamp);
-            this.ProcedureNamesCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+            this.ProcedureNamesCheckBox = UI.CreateCheckBox(++i, MarginType.Standard,
                 Common.Resources.ProcedureNames, Common.Settings.Default.LogProcedureName);
-            this.IndentsCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+            this.IndentsCheckBox = UI.CreateCheckBox(++i, MarginType.Standard,
                 Common.Resources.Indents, Common.Settings.Default.LogIndent);
-            this.ExceptionDetailCheckBox = SettingsDialog.CreateCheckBox(++i, false,
+            this.ExceptionDetailCheckBox = UI.CreateCheckBox(++i, MarginType.Standard,
                 Common.Resources.ExceptionDetail, Common.Settings.Default.LogExceptionDetail);
 
             /* Build out the options stack panel, which contains the
@@ -113,6 +134,7 @@ namespace JeffBourdier
             this.AddUIElement(this.BrowsePanel);
             this.AddUIElement(this.OptionsGroupBox);
             this.BuildOut(UI.ClientWidth, Common.Resources.Settings);
+            this.Closing += this.SettingsDialog_Closing;
 
             /* Since the Checked handlers refer to the other controls, they are not assigned (and should not be
              * called) until all controls have been instantiated (in order to avoid null reference exceptions).
@@ -146,7 +168,7 @@ namespace JeffBourdier
         #region Private Fields
 
         private CheckBox LogCheckBox;
-        private StandardLabel LogPathLabel;
+        private Label LogPathLabel;
         private TextBox LogPathTextBox;
         private DockPanel BrowsePanel;
         private CheckBox AllCheckBox;
@@ -156,6 +178,7 @@ namespace JeffBourdier
         private CheckBox ExceptionDetailCheckBox;
         private GroupBox OptionsGroupBox;
         private bool ItemCheckInProgress;
+        private int ElementCount;
 
         #endregion
 
@@ -256,17 +279,11 @@ namespace JeffBourdier
             this.ItemCheckInProgress = false;
         }
 
-        #endregion
+        /* Remove any extra UI elements that were added. */
+        private void SettingsDialog_Closing(object sender, CancelEventArgs e)
+        { for (int i = 0; i < this.ElementCount; ++i) this.RemoveUIElement(0); }
 
-        private static CheckBox CreateCheckBox(int tabIndex, bool top, object content, bool? check)
-        {
-            CheckBox checkBox = new CheckBox();
-            checkBox.TabIndex = tabIndex;
-            checkBox.Margin = new Thickness(UI.TripleSpace, top ? UI.TripleSpace : UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
-            checkBox.Content = content;
-            if (check != null) checkBox.IsChecked = check;
-            return checkBox;
-        }
+        #endregion
 
         /// <summary>Determines whether or not all logging options are checked.</summary>
         /// <returns>True if all logging options are checked; otherwise, false.</returns>
