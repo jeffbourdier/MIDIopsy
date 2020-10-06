@@ -87,7 +87,7 @@ namespace JeffBourdier
         static MidiMetaEvent()
         {
             MidiMetaEvent.TypeMap = new Dictionary<int, TypeInfo>(16);
-            MidiMetaEvent.TypeMap.Add(0x00, new TypeInfo(Properties.Resources.SequenceNumber, 2, MidiMetaEvent.DescribeNumber));
+            MidiMetaEvent.TypeMap.Add(0x00, new TypeInfo(Properties.Resources.SequenceNumber, 2, MidiMetaEvent.DescribeSequenceNumber));
             MidiMetaEvent.TypeMap.Add(0x01, new TypeInfo(Properties.Resources.TextEvent, -1, null));
             MidiMetaEvent.TypeMap.Add(0x02, new TypeInfo(Properties.Resources.CopyrightNotice, -1, null));
             MidiMetaEvent.TypeMap.Add(0x03, new TypeInfo(Properties.Resources.SequenceTrackName, -1, null));
@@ -95,7 +95,7 @@ namespace JeffBourdier
             MidiMetaEvent.TypeMap.Add(0x05, new TypeInfo(Properties.Resources.Lyric, -1, null));
             MidiMetaEvent.TypeMap.Add(0x06, new TypeInfo(Properties.Resources.Marker, -1, null));
             MidiMetaEvent.TypeMap.Add(0x07, new TypeInfo(Properties.Resources.CuePoint, -1, null));
-            MidiMetaEvent.TypeMap.Add(0x20, new TypeInfo(Properties.Resources.MidiChannelPrefix, 1, MidiMetaEvent.DescribeNumber));
+            MidiMetaEvent.TypeMap.Add(0x20, new TypeInfo(Properties.Resources.MidiChannelPrefix, 1, MidiMetaEvent.DescribeChannelPrefix));
             MidiMetaEvent.TypeMap.Add(0x2F, new TypeInfo(Properties.Resources.EndOfTrack, 0, null));
             MidiMetaEvent.TypeMap.Add(0x51, new TypeInfo(Properties.Resources.SetTempo, 3, MidiMetaEvent.DescribeTempo));
             MidiMetaEvent.TypeMap.Add(0x54, new TypeInfo(Properties.Resources.SmpteOffset, 5, MidiMetaEvent.DescribeSmpteOffset));
@@ -121,8 +121,13 @@ namespace JeffBourdier
 
         #region Public Fields
 
+        public const int SequenceNumberType = 0x00;
         public const int SequenceTrackNameType = 0x03;
+        public const int MidiChannelPrefixType = 0x20;
         public const int EndOfTrackType = 0x2F;
+        public const int SetTempoType = 0x51;
+        public const int SmpteOffsetType = 0x54;
+        public const int TimeSignatureType = 0x58;
         public const int KeySignatureType = 0x59;
 
         #endregion
@@ -251,17 +256,25 @@ namespace JeffBourdier
 
         #region Private Methods
 
-        private static string DescribeNumber(byte[] bytes) { return Midi.ReadNumber(bytes, 0, bytes.Length).ToString(); }
+        private static string DescribeSequenceNumber(byte[] bytes)
+        { return MidiMetaEvent.DescribeNumber(MidiMetaEvent.SequenceNumberType, bytes); }
+
+        private static string DescribeChannelPrefix(byte[] bytes)
+        { return MidiMetaEvent.DescribeNumber(MidiMetaEvent.MidiChannelPrefixType, bytes); }
 
         private static string DescribeTempo(byte[] bytes)
         {
-            int n = Midi.ReadNumber(bytes, 0, bytes.Length);
+            int n = MidiMetaEvent.GetDataLength(MidiMetaEvent.SetTempoType);
+            if (bytes.Length < n) return null;
+            n = Midi.ReadNumber(bytes, 0, n);
             return string.Format("{0} {1} ({2} {3})", n, Properties.Resources.MicrosecondsPerQuarterNote,
                 (n == 0) ? double.PositiveInfinity : (60000000 / n), Properties.Resources.BeatsPerMinute);
         }
 
         private static string DescribeSmpteOffset(byte[] bytes)
         {
+            int n = MidiMetaEvent.GetDataLength(MidiMetaEvent.SmpteOffsetType);
+            if (bytes.Length < n) return null;
             string s = string.Empty;
             foreach (byte b in bytes)
             {
@@ -273,15 +286,26 @@ namespace JeffBourdier
 
         private static string DescribeTimeSignature(byte[] bytes)
         {
+            int n = MidiMetaEvent.GetDataLength(MidiMetaEvent.TimeSignatureType);
+            if (bytes.Length < n) return null;
             return string.Format("{0}/{1} {2}, {3} {4}, {5} {6}", bytes[0], Math.Pow(2, bytes[1]), Properties.Resources.Time,
                 bytes[2], Properties.Resources.ClocksPerClick, bytes[3], Properties.Resources.NotesPerQuarterNote);
         }
 
         private static string DescribeKeySignature(byte[] bytes)
         {
+            int n = MidiMetaEvent.GetDataLength(MidiMetaEvent.KeySignatureType);
+            if (bytes.Length < n) return null;
             MidiKeySignature k = MidiMetaEvent.DataToKeySignature(bytes);
             return (k == MidiKeySignature.NA) ? null :
                 k.ToString().Replace("Flat", "b").Replace("Sharp", "#").Replace("Major", " major").Replace("Minor", " minor");
+        }
+
+        private static string DescribeNumber(int type, byte[] bytes)
+        {
+            int n = MidiMetaEvent.GetDataLength(type);
+            if (bytes.Length < n) return null;
+            return Midi.ReadNumber(bytes, 0, n).ToString();
         }
 
         #endregion

@@ -119,7 +119,14 @@ namespace JeffBourdier
                 /* What comes next depends on the chunk type. */
                 switch (chunkInfo.Type)
                 {
-                    case MidiChunkInfo.HeaderType: header = new MidiHeader(this, i); this.Items.Add(header); break;
+                    case MidiChunkInfo.HeaderType:
+                        if (header == null)
+                        {
+                            header = new MidiHeader(this, i);
+                            this.Items.Add(header);
+                        }
+                        else this.AddErrorText(Properties.Resources.MultipleHeaders, 0);
+                        break;
                     case MidiChunkInfo.TrackType: this.ParseEvents(i, chunkInfo.Length, ++j); break;
                 }
             }

@@ -177,9 +177,9 @@ namespace JeffBourdier
         private void UpdateDataComment()
         {
             this.IsDataLengthValid = (this.DataLength < 0) ? true :
-                (((this.Data == null) ? 0 : this.Data.Length) == this.DataLength);
+                (((this.Data == null) ? 0 : this.Data.Length) >= this.DataLength);
             this.NoValidation = true;
-            this.DataCommentTextBox.Text = (this.Type < 0 || this.Data == null || !this.IsDataLengthValid)
+            this.DataCommentTextBox.Text = (this.Type < 0 || this.Data == null)
                 ? null : MidiMetaEvent.GetDataComment(this.Type, this.Data);
             this.NoValidation = false;
             this.EnableOkButton();

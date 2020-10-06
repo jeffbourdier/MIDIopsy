@@ -1390,6 +1390,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File contains multiple header (MThd) chunks.
+        /// </summary>
+        internal static string MultipleHeaders {
+            get {
+                return ResourceManager.GetString("MultipleHeaders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Navigation.
         /// </summary>
         internal static string Navigation {

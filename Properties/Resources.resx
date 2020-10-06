@@ -1213,4 +1213,7 @@
   <data name="TextWrapping" xml:space="preserve">
     <value>Text wrapping</value>
   </data>
+  <data name="MultipleHeaders" xml:space="preserve">
+    <value>File contains multiple header (MThd) chunks</value>
+  </data>
 </root>
