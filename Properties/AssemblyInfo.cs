@@ -1,11 +1,17 @@
-﻿using System.Reflection;
+﻿/* AssemblyCompany, AssemblyCopyright, AssemblyDescription,
+ * AssemblyFileVersion, AssemblyProduct, AssemblyTitle, AssemblyVersion
+ */
+using System.Reflection;
+
+/* MIDIopsyApp */
 using JeffBourdier;
 
-[assembly: AssemblyTitle(Meta.Name)]
-[assembly: AssemblyFileVersion(Meta.Version)]
-[assembly: AssemblyProduct(Meta.FullName)]
-[assembly: AssemblyVersion(Meta.Version)]
-[assembly: AssemblyCopyright("© 2018-20 " + AppHelper.AuthorFullName)]
 
-[assembly: AssemblyCompany(AppHelper.AuthorName)]
-[assembly: AssemblyDescription(Meta.FullName + ", version " + Meta.Version)]
+[assembly: AssemblyTitle(MIDIopsyApp.Name)]
+[assembly: AssemblyFileVersion(MIDIopsyApp.Version)]
+[assembly: AssemblyProduct(MIDIopsyApp.FullName)]
+[assembly: AssemblyVersion(MIDIopsyApp.Version)]
+[assembly: AssemblyCopyright("© 2018-20 Jeffrey Paul Bourdier")]
+
+[assembly: AssemblyCompany(MIDIopsyApp.AuthorName)]
+[assembly: AssemblyDescription(MIDIopsyApp.FullName + ", version " + MIDIopsyApp.Version)]

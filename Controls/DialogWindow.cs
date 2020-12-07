@@ -1,5 +1,4 @@
-﻿/* StandardDialog.cs - Implementation of StandardDialog class, which standardizes the way dialogs are created.
- * Note that this file is shared across applications.
+﻿/* DialogWindow.cs - Implementation of DialogWindow class, which standardizes the way dialogs are created.
  *
  * Copyright (c) 2018-20 Jeffrey Paul Bourdier
  *
@@ -24,7 +23,7 @@ using System.Windows.Input;
 namespace JeffBourdier
 {
     /// <summary>Extends the Window class by standardizing the way dialogs are created.</summary>
-    public class StandardDialog : Window
+    public class DialogWindow : Window
     {
         /****************
          * Constructors *
@@ -32,8 +31,8 @@ namespace JeffBourdier
 
         #region Public Constructors
 
-        /// <summary>Initializes a new instance of the StandardDialog class.</summary>
-        public StandardDialog()
+        /// <summary>Initializes a new instance of the DialogWindow class.</summary>
+        public DialogWindow()
         {
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
@@ -63,17 +62,13 @@ namespace JeffBourdier
          * Properties *
          **************/
 
-        #region Public Properties
-
-        /// <summary>Gets the OK button (e.g., to disable/enable).</summary>
-        public Button OkButton { get { return this._OkButton; } }
-
-        #endregion
-
         #region Protected Properties
 
         /// <summary>Gets the number of controls on the main panel of the dialog.</summary>
         protected int ControlCount { get { return this.MainPanel.Children.Count; } }
+
+        /// <summary>Gets the OK button (e.g., to disable/enable).</summary>
+        protected Button OkButton { get { return this._OkButton; } }
 
         #endregion
 
@@ -101,15 +96,6 @@ namespace JeffBourdier
         /// <param name="element">The UI element to add.</param>
         protected void AddUIElement(UIElement element) { this.MainPanel.Children.Add(element); }
 
-        /// <summary>Inserts a UI element into the main stack panel at a specified index.</summary>
-        /// <param name="index">The index at which to insert the UI element.</param>
-        /// <param name="element">The UI element to insert.</param>
-        protected void InsertUIElement(int index, UIElement element) { this.MainPanel.Children.Insert(index, element); }
-
-        /// <summary>Removes from the main stack panel the UI element at a specified index.</summary>
-        /// <param name="index">The index of the UI element to remove.</param>
-        protected void RemoveUIElement(int index) { this.MainPanel.Children.RemoveAt(index); }
-
         /// <summary>
         /// Builds out the window by adding an area containing an OK button and a Cancel button
         /// to the main stack panel, setting the width of the main stack panel, setting the
@@ -121,8 +107,8 @@ namespace JeffBourdier
         {
             DockPanel panel = new DockPanel();
             panel.LastChildFill = false;
-            StandardDialog.InitializeButton(panel, false);
-            StandardDialog.InitializeButton(panel, true);
+            DialogWindow.InitializeButton(panel, false);
+            DialogWindow.InitializeButton(panel, true);
             this._OkButton = panel.Children[1] as Button;
             this.MainPanel.Children.Add(panel);
             this.MainPanel.Width = width;
@@ -159,14 +145,14 @@ namespace JeffBourdier
             /* These attributes differ depending on the button. */
             if (ok)
             {
-                button.Content = Common.Resources.OK;
+                button.Content = Properties.Resources.OK;
                 button.Click += UI.OkButton_Click;
                 button.IsDefault = true;
                 button.TabIndex = int.MaxValue - 1;
             }
             else
             {
-                button.Content = Common.Resources.Cancel;
+                button.Content = Properties.Resources.Cancel;
                 button.IsCancel = true;
                 button.TabIndex = int.MaxValue;
             }

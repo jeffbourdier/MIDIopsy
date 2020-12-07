@@ -76,7 +76,7 @@ namespace JeffBourdier
                 }
                 if (s.Length > 0)
                 {
-                    s = Text.ParseLabel(s).ToLower();
+                    s = UI.ParseLabel(s).ToLower();
                     s = string.Format(" ({0})", s);
                 }
                 return this.Type + s + " " + Properties.Resources.Chunk;
@@ -84,7 +84,7 @@ namespace JeffBourdier
         }
 
         /// <summary>Gets the text to display in the "Count" field (i.e., chunk length).</summary>
-        public override string CountField { get { return Text.FormatCount(this.Length, Properties.Resources.Byte); } }
+        public override string CountField { get { return MidiItem.FormatCount(this.Length, Properties.Resources.Byte); } }
 
         /// <summary>Gets the text to display in the "Data" field.</summary>
         public override string DataField

@@ -26,7 +26,7 @@ using System.Windows.Controls;
 namespace JeffBourdier
 {
     /// <summary>Represents a dialog that is used to jump to a specific place in a MIDI file.</summary>
-    public class GoToDialog : StandardDialog
+    public class GoToDialog : DialogWindow
     {
         /****************
          * Constructors *
@@ -40,20 +40,20 @@ namespace JeffBourdier
         /// <param name="duration">Duration of the MIDI file, or TimeSpan.MinValue if no duration.</param>
         public GoToDialog(string[] trackNames, int totalTime, TimeSpan duration)
         {
-            int i, j = 0;
+            int i = 0, j;
 
             /* Initialize the "Track" label. */
             Label label = UI.CreateLabel(MarginType.Top, Properties.Resources.Track, true);
 
             /* Initialize the "Track" combo box. */
             this.TrackComboBox = new ComboBox();
-            this.TrackComboBox.TabIndex = ++j;
+            this.TrackComboBox.TabIndex = ++i;
             this.TrackComboBox.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
-            for (i = 0; i < trackNames.Length; ++i)
+            for (j = 0; j < trackNames.Length; ++j)
             {
-                if (trackNames[i] == null) continue;
-                string s = (i + 1).ToString();
-                if (trackNames[i] != string.Empty) s += string.Format(" ({0})", trackNames[i]);
+                if (trackNames[j] == null) continue;
+                string s = (j + 1).ToString();
+                if (trackNames[j] != string.Empty) s += string.Format(" ({0})", trackNames[j]);
                 this.TrackComboBox.Items.Add(s);
             }
             this.TrackComboBox.SelectionChanged += this.TrackComboBox_SelectionChanged;
@@ -62,15 +62,14 @@ namespace JeffBourdier
 
             /* Initialize the "Total time" radio button. */
             this.TotalTimeRadioButton = new RadioButton();
-            this.TotalTimeRadioButton.TabIndex = ++j;
+            this.TotalTimeRadioButton.TabIndex = ++i;
             this.TotalTimeRadioButton.Margin = new Thickness(UI.TripleSpace, UI.DoubleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.TotalTimeRadioButton.Content = string.Format("_{0} ({1}):",
-                GoToDialog.TotalTimeString, Properties.Resources.Ticks);
+            this.TotalTimeRadioButton.Content = GoToDialog.TotalTimeRadioButtonContent;
             this.TotalTimeRadioButton.Checked += this.TotalTimeRadioButton_Checked;
 
             /* Initialize the "Total time" text box. */
             this.TotalTimeTextBox = new TextBox();
-            this.TotalTimeTextBox.TabIndex = ++j;
+            this.TotalTimeTextBox.TabIndex = ++i;
             this.TotalTimeTextBox.Margin = new Thickness(UI.IndentSpace, UI.UnitSpace, UI.TripleSpace, UI.UnitSpace);
             this.TotalTimeTextBox.TextAlignment = TextAlignment.Right;
             this.TotalTimeTextBox.Text = "0";
@@ -80,15 +79,15 @@ namespace JeffBourdier
 
             /* Initialize the "Position" radio button. */
             this.PositionRadioButton = new RadioButton();
-            this.PositionRadioButton.TabIndex = ++j;
+            this.PositionRadioButton.TabIndex = ++i;
             this.PositionRadioButton.Margin = new Thickness(UI.TripleSpace, UI.DoubleSpace, UI.TripleSpace, UI.UnitSpace);
-            this.PositionRadioButton.Content = Properties.Resources.Position + ":";
+            this.PositionRadioButton.Content = GoToDialog.PositionRadioButtonContent;
             if (duration == TimeSpan.MinValue) this.PositionRadioButton.IsEnabled = false;
             else this.PositionRadioButton.Checked += this.PositionRadioButton_Checked;
 
             /* Initialize the position control. */
             this.PositionControl = new PositionControl();
-            this.PositionControl.TabIndex = ++j;
+            this.PositionControl.TabIndex = ++i;
             this.PositionControl.Margin = new Thickness(UI.IndentSpace, UI.UnitSpace, UI.TripleSpace, UI.TripleSpace);
             this.PositionControl.IsEnabled = false;
 
@@ -99,7 +98,7 @@ namespace JeffBourdier
             this.AddUIElement(this.TotalTimeTextBox);
             this.AddUIElement(this.PositionRadioButton);
             this.AddUIElement(this.PositionControl);
-            this.BuildOut(320, Properties.Resources.GoTo);
+            this.BuildOut(GoToDialog.ClientWidth, Properties.Resources.GoTo);
 
             /* The OK button should start out disabled and stay that way until all required input is entered. */
             this.OkButton.IsEnabled = false;
@@ -120,7 +119,15 @@ namespace JeffBourdier
 
         #region Private Fields
 
-        private static readonly string TotalTimeString = Text.ChangeCase(Properties.Resources.TotalTime, TextCase.Sentence);
+        private const int ClientWidth = UI.ClientWidth / 2;
+
+        private static readonly string TotalTimeString =
+            Properties.Resources.TotalTime.Substring(0, 1) + Properties.Resources.TotalTime.Substring(1).ToLower();
+
+        private static readonly string TotalTimeRadioButtonContent =
+            string.Format("_{0} ({1}):", GoToDialog.TotalTimeString, Properties.Resources.Ticks);
+
+        private static readonly string PositionRadioButtonContent = Properties.Resources.Position + ":";
 
         private ComboBox TrackComboBox;
         private RadioButton TotalTimeRadioButton;
@@ -191,9 +198,9 @@ namespace JeffBourdier
         {
             if (this.DialogResult != true || this.PositionRadioButton.IsChecked == false ||
                 this.PositionControl.Position <= this.Duration) return;
-            string s = Text.ParseLabel(Properties.Resources.Position);
-            s = string.Format(Common.Resources.ValueRangeFormat, s, TimeSpan.Zero, this.Duration);
-            MessageBox.Show(this, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            string s = UI.ParseLabel(Properties.Resources.Position);
+            s = string.Format(Properties.Resources.ValueRangeFormat, s, TimeSpan.Zero, this.Duration);
+            MessageBox.Show(this, s, MIDIopsyApp.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             e.Cancel = true;
         }
 

@@ -61,6 +61,24 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application.
+        /// </summary>
+        internal static string Application {
+            get {
+                return ResourceManager.GetString("Application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Banner {
@@ -85,6 +103,15 @@ namespace JeffBourdier.Properties {
         internal static string Byte {
             get {
                 return ResourceManager.GetString("Byte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
         
@@ -962,16 +989,6 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap EditingScreen {
-            get {
-                object obj = ResourceManager.GetObject("EditingScreen", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Edit Item.
         /// </summary>
         internal static string EditItem {
@@ -999,6 +1016,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} for the following reason:{1}{1}{2}.
+        /// </summary>
+        internal static string ErrorMessageFormat {
+            get {
+                return ResourceManager.GetString("ErrorMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Escape.
         /// </summary>
         internal static string Escape {
@@ -1017,11 +1043,47 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        internal static string File {
+            get {
+                return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File has the following errors (prohibiting playback):.
         /// </summary>
         internal static string FileHasErrors {
             get {
                 return ResourceManager.GetString("FileHasErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File _name.
+        /// </summary>
+        internal static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file cannot be opened.
+        /// </summary>
+        internal static string FileNotOpened {
+            get {
+                return ResourceManager.GetString("FileNotOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file cannot be saved.
+        /// </summary>
+        internal static string FileNotSaved {
+            get {
+                return ResourceManager.GetString("FileNotSaved", resourceCulture);
             }
         }
         
@@ -1121,6 +1183,16 @@ namespace JeffBourdier.Properties {
         internal static string Header {
             get {
                 return ResourceManager.GetString("Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Help {
+            get {
+                object obj = ResourceManager.GetObject("Help", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -1462,11 +1534,20 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Number of tracks.
+        ///   Looks up a localized string similar to Number of trac_ks.
         /// </summary>
         internal static string NumberOfTracks {
             get {
                 return ResourceManager.GetString("NumberOfTracks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
             }
         }
         
@@ -1489,12 +1570,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to Open Recent.
         /// </summary>
-        internal static System.Drawing.Bitmap OpeningScreen {
+        internal static string OpenRecent {
             get {
-                object obj = ResourceManager.GetObject("OpeningScreen", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("OpenRecent", resourceCulture);
             }
         }
         
@@ -2012,6 +2092,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save changes to &quot;{0}&quot;?.
+        /// </summary>
+        internal static string SaveChangesFormat {
+            get {
+                return ResourceManager.GetString("SaveChangesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Second.
         /// </summary>
         internal static string Second {
@@ -2053,6 +2142,15 @@ namespace JeffBourdier.Properties {
         internal static string SetTempo {
             get {
                 return ResourceManager.GetString("SetTempo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
         
@@ -3362,11 +3460,29 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} must be between {1} and {2}..
+        /// </summary>
+        internal static string ValueRangeFormat {
+            get {
+                return ResourceManager.GetString("ValueRangeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Velocity.
         /// </summary>
         internal static string Velocity {
             get {
                 return ResourceManager.GetString("Velocity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

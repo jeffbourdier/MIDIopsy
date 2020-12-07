@@ -42,55 +42,34 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Common\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Logger.cs" />
-    <Compile Include="Common\AboutBox.cs" />
-    <Compile Include="Common\AppHelper.cs" />
-    <Compile Include="Common\AppWindow.cs" />
-    <Compile Include="Common\CommandButton.cs" />
-    <Compile Include="Common\CommandPanel.cs" />
-    <Compile Include="Common\FileAppWindow.cs" />
-    <Compile Include="Common\HelpViewer.cs" />
-    <Compile Include="Common\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Common\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Common\SettingsDialog.cs" />
-    <Compile Include="Common\StandardDialog.cs" />
-    <Compile Include="Common\StandardWindow.cs" />
-    <Compile Include="Common\Text.cs" />
-    <Compile Include="Common\UI.cs" />
-    <Compile Include="GoToDialog.cs" />
-    <Compile Include="MidiItemDialogs\MidiMetaEventDialog.cs" />
-    <Compile Include="MidiItemDialogs\MidiSysExEventDialog.cs" />
+    <Compile Include="AboutBox.cs" />
+    <Compile Include="Controls\CommandButton.cs" />
+    <Compile Include="Controls\HelpWindow.cs" />
+    <Compile Include="Controls\SettingsDialog.cs" />
+    <Compile Include="Controls\DialogWindow.cs" />
+    <Compile Include="Controls\CommonWindow.cs" />
+    <Compile Include="UI.cs" />
+    <Compile Include="Controls\GoToDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiMetaEventDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiSysExEventDialog.cs" />
     <Compile Include="MidiItems\MidiChannelEvent.cs" />
-    <Compile Include="MidiItemDialogs\MidiChannelEventDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiChannelEventDialog.cs" />
     <Compile Include="MidiItems\MidiMetaEvent.cs" />
     <Compile Include="MidiItems\MidiSysExEvent.cs" />
     <Compile Include="MidiItems\MidiItem.cs" />
-    <Compile Include="Meta.cs" />
     <Compile Include="MidiItems\MidiChunkInfo.cs" />
     <Compile Include="Midi.cs" />
     <Compile Include="MidiItems\MidiEvent.cs" />
     <Compile Include="MidiItems\MidiHeader.cs" />
     <Compile Include="MidiFile.cs" />
-    <Compile Include="MidiItemDialogs\MidiEventDialog.cs" />
-    <Compile Include="MidiItemDialogs\MidiHeaderDialog.cs" />
-    <Compile Include="MidiItemDialogs\MidiItemDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiEventDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiHeaderDialog.cs" />
+    <Compile Include="Controls\MidiItemDialogs\MidiItemDialog.cs" />
     <Compile Include="MIDIopsyApp.cs" />
-    <Compile Include="MIDIopsyWindow.cs" />
-    <Compile Include="PositionControl.cs" />
+    <Compile Include="Controls\MIDIopsyWindow.cs" />
+    <Compile Include="Controls\PositionControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -111,10 +90,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Common\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -126,9 +101,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\OpeningScreen.png" />
     <Resource Include="Resources\Banner.bmp" />
-    <None Include="Resources\EditingScreen.png" />
     <Content Include="Resources\Help.html">
       <SubType>Designer</SubType>
     </Content>
@@ -137,7 +110,7 @@
     <Resource Include="Resources\MIDIopsy.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Common\Help.ico" />
+    <Resource Include="Resources\Help.ico" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -19,45 +19,38 @@
     <h1>MIDIopsy Help</h1>
     <h2>What is MIDIopsy?</h2>
     <p>MIDIopsy is used to view, edit, and play MIDI files.  The user is assumed to be familiar with the standard MIDI file format.  (For more information, see <b>Online Resources</b> at the bottom of this page.)</p>
-    <p>The user interface has an "opening screen" and an "editing screen."  When the application is launched, the opening screen is shown.</p>
-    <p style="text-align: center;">
-      <img alt="Opening Screen" src="OpeningScreen.png" /><br />
-      <i>Opening Screen</i>
-    </p>
-    <p>When a file is open, it is shown in the editing screen.  The file contents are divided up into rows within a grid/list view.  Chunks are separated by empty rows (which cannot be selected).  Each row within a track chunk represents an MTrk event.</p>
-    <p style="text-align: center;">
-      <img alt="Editing Screen" src="EditingScreen.png" /><br />
-      <i>Editing Screen</i>
-    </p>
-    <p>The leftmost column contains the binary contents of the file (in hexadecimal format), while the other columns contain user-friendly comments.  (Note that <b>Total Time</b> is not stored in the file; it is calculated from <b>Delta-time</b>.)  Column widths can be adjusted as desired.  To exit the editing screen and return to the opening screen (effectively closing the file), click <b>Done</b> (or press Esc).</p>
-    <h2>Opening Screen Commands</h2>
-    <p>These commands can be executed from the opening screen.</p>
-    <h3>Open an existing MIDI file</h3>
+    <p>When a file is open, its contents are shown as rows in a grid/list view.  Chunks are separated by empty rows (which cannot be selected).  Each row within a track chunk represents an MTrk event.</p>
+    <p>The leftmost column contains the binary contents of the file (in hexadecimal format), while the other columns contain user-friendly comments.  (Note that <b>Total Time</b> is not stored in the file; it is calculated from <b>Delta-time</b>.)  Column widths can be adjusted as desired.</p>
+    <h2>Open an existing MIDI file</h2>
     <ul>
       <li>Click <b>Open</b> (or press Ctrl+O).</li>
-      <li>A file that has been opened recently can be reopened directly from the opening screen.  Under <b>Open Recent</b>, simply click the file path (or press the corresponding number key).</li>
+      <li>If no file is open, a file that has been opened recently can be reopened directly.  Under <b>Open Recent</b>, simply click the file path (or press the corresponding number key).</li>
     </ul>
-    <h3>Create a new MIDI file</h3>
+    <h2>Create a new MIDI file</h2>
     <ol>
       <li>Click <b>New</b> (or press Ctrl+N).</li>
+      <li>Specify a <b>File <u>n</u>ame</b>.</li>
       <li>Specify the <b><u>F</u>ormat</b>.</li>
-      <li>If the format is 1 (one or more simultaneous tracks) or 2 (one or more independent tracks), specify the <b><u>N</u>umber of tracks</b>.</li>
+      <li>If the format is 1 (one or more simultaneous tracks) or 2 (one or more independent tracks), specify the <b>Number of trac<u>k</u>s</b>.</li>
       <li>Under <b>Delta-time division</b>, check either <b><u>M</u>etrical time</b> or <b><u>T</u>ime-code-based time</b>.
         <ul>
           <li>For metrical time, specify the <b>Ticks per <u>q</u>uarter note</b>.</li>
           <li>For time-code-based time, specify the <b><u>S</u>MPTE format (frames per second)</b> and <b><u>R</u>esolution (ticks per frame)</b>.</li>
         </ul>
       </li>
-      <li>Click <b>OK</b> (or press Enter).  The editing screen is shown with a new MThd (header) chunk created as specified, along with the specified number of MTrk (track) chunks, each with an End of Track meta-event.</li>
+      <li>Click <b>OK</b> (or press Enter).  The new file is shown with a new MThd (header) chunk created as specified, along with the specified number of MTrk (track) chunks, each with an End of Track meta-event.</li>
     </ol>
-    <h2>Editing Screen Commands</h2>
-    <p>These commands can be executed from the editing screen (when a file is open).</p>
-    <h3>Save a MIDI file</h3>
+    <h2>Save a MIDI file</h2>
     <ul>
       <li>To use the file's current name, click <b>Save</b> (or press Ctrl+S).  (For a new file being saved for the first time, this is equivalent to <b>Save As</b>.)</li>
       <li>To use a different name, click <b>Save As</b> (or press Ctrl+Shift+S).</li>
     </ul>
-    <h3>Edit a MIDI file</h3>
+    <h2>Close an open MIDI file</h2>
+    <ul>
+      <li>Click <b>Close</b> (or press Ctrl+F4).</li>
+      <li>After the file is closed, a list of recently opened files is shown under <b>Open Recent</b>.  Any of these files can be reopened directly (see <b>Open an existing MIDI file</b> above).  Simply click the file path (or press the corresponding number key).</li>
+    </ul>
+    <h2>Edit a MIDI file</h2>
     <blockquote><strong>Warning:</strong>  MIDI file editing is for expert users only.  If not done correctly, it could result in data corruption, making the file unusable.  Proceed at your own risk!</blockquote>
     <ul>
       <li>To create a new track (MTrk chunk), position the cursor in the chunk <em>before</em> which you want the new track to appear, and click <b>Trac<u>k</u></b> (or press Alt+K).  A new MTrk chunk (with an End of Track meta-event) should appear <em>after</em> the chunk containing the selected row.</li>
@@ -145,11 +138,11 @@
       <li>To delete an entire chunk (e.g., a track), position the cursor on the first row of the chunk, and click <b>Delete</b> (or press Del).  You should receive a warning that the entire chunk will be deleted.</li>
       <li>Note that some items (such as the header chunk) are considered essential and may not be deleted.</li>
     </ul>
-    <h3>MIDI file navigation</h3>
+    <h2>MIDI file navigation</h2>
     <ul>
       <li>To move the cursor to a specific place within the file, click <b>Go To</b> (or press Ctrl+G), specify a <b>Trac<u>k</u></b> and either a <b><u>T</u>otal time</b> (in ticks) or a <b><u>P</u>osition</b> (hh:mm:ss), and click <b>OK</b> (or press Enter).</li>
     </ul>
-    <h3>MIDI file playback</h3>
+    <h2>MIDI file playback</h2>
     <p>When a MIDI file is opened or saved, MIDIopsy also loads it for media playback.  (A new file must be saved before it can be played.)  If the file has not been saved since it was last edited, it must be saved in order to play the current version (with the most recent edits).</p>
     <p>Playback starts at the indicated <b>S<u>t</u>arting Position</b> (SP), which can be set to any position within the indicated <b><u>D</u>uration</b>.  When a file is loaded for playback, its <b>S<u>t</u>arting Position</b> defaults to 00:00:00, and its <b><u>D</u>uration</b> is determined.  During playback, the current <b><u>P</u>osition</b> is updated.</p>
     <ul>
@@ -159,25 +152,15 @@
     </ul>
     <h2>Keyboard Shortcuts</h2>
     <table>
-      <caption>Opening Screen</caption>
-      <thead><tr><th>Command</th><th>Shortcut</th></tr></thead>
-      <tbody>
-        <tr><td>New</td><td>Ctrl+N</td></tr>
-        <tr><td>Open</td><td>Ctrl+O</td></tr>
-        <tr><td>Settings</td><td>Alt+S</td></tr>
-        <tr><td>Help</td><td>F1</td></tr>
-        <tr><td>About</td><td>Alt+A</td></tr>
-        <tr><td>Open Recent</td><td>Alt+<i>number</i></td></tr>
-      </tbody>
-    </table><br />
-    <table>
-      <caption>Editing Screen</caption>
       <thead><tr><th>Group</th><th>Command</th><th>Shortcut</th></tr></thead>
       <tbody>
-        <tr><td rowspan="6"></td><td>Save</td><td>Ctrl+S</td></tr>
+        <tr><td></td><td>Open Recent</td><td>Alt+<i>number</i></td></tr>
+        <tr><td rowspan="5">File</td><td>New</td><td>Ctrl+N</td></tr>
+        <tr><td>Open</td><td>Ctrl+O</td></tr>
+        <tr><td>Save</td><td>Ctrl+S</td></tr>
         <tr><td>Save As</td><td>Ctrl+Shift+S</td></tr>
-        <tr><td>Done</td><td>Esc</td></tr>
-        <tr><td>Settings</td><td>Alt+S</td></tr>
+        <tr><td>Close</td><td>Ctrl+F4</td></tr>
+        <tr><td rowspan="3">Application</td><td>Settings</td><td>Alt+S</td></tr>
         <tr><td>Help</td><td>F1</td></tr>
         <tr><td>About</td><td>Alt+A</td></tr>
         <tr><td rowspan="4">New Item</td><td>Track</td><td>Alt+K</td></tr>

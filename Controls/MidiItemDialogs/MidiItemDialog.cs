@@ -17,7 +17,7 @@ using System.Windows.Controls;
 namespace JeffBourdier
 {
     /// <summary>Represents a dialog that is used to edit a MIDI item (a line of data from a MIDI file).</summary>
-    public abstract class MidiItemDialog : StandardDialog
+    public abstract class MidiItemDialog : DialogWindow
     {
         /****************
          * Constructors *

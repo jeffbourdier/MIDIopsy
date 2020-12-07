@@ -87,7 +87,7 @@ namespace JeffBourdier
             for (int i = 0; i < length; ++i)
             {
                 chars[i] = (char)bytes[offset + i];
-                if (!Text.IsPrintable(chars[i])) chars[i] = '.';
+                if (!Midi.IsPrintable(chars[i])) chars[i] = '.';
             }
             return new string(chars);
         }
@@ -126,6 +126,32 @@ namespace JeffBourdier
         /// <param name="b">Byte value.  Only the least significant eight bits are considered.</param>
         /// <returns>Low-order nibble (i.e., the less significant four bits) of the byte value.</returns>
         public static int GetLowNibble(int b) { return b & 0xF; }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>Indicates whether a character is considered printable according to Windows-1252 encoding.</summary>
+        /// <param name="c">The character to evaluate.</param>
+        /// <returns>True if c is printable; otherwise, false.</returns>
+        private static bool IsPrintable(char c)
+        {
+            if (c < 0x20) return false;
+            if (c < 0x7F) return true;
+            if (c < 0x80) return false;
+            if (c < 0x81) return true;
+            if (c < 0x82) return false;
+            if (c < 0x8D) return true;
+            if (c < 0x8E) return false;
+            if (c < 0x8F) return true;
+            if (c < 0x91) return false;
+            if (c < 0x9D) return true;
+            if (c < 0x9E) return false;
+            if (c < 0xA0) return true;
+            if (c < 0xA1) return false;
+            if (c < 0x100) return true;
+            return false;
+        }
 
         #endregion
     }

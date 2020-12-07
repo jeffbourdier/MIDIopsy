@@ -1,5 +1,4 @@
 ﻿/* AboutBox.cs - Implementation of AboutBox class, which displays information about the application.
- * Note that this file is shared across applications.
  *
  * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
@@ -11,11 +10,14 @@
  */
 
 
-/* Environment, Uri */
+/* Uri */
 using System;
 
 /* Process */
 using System.Diagnostics;
+
+/* Assembly, AssemblyCopyrightAttribute, AssemblyFileVersionAttribute, AssemblyProductAttribute */
+using System.Reflection;
 
 /* GridLength, ResizeMode, SizeToContent, Thickness, Window */
 using System.Windows;
@@ -29,9 +31,6 @@ using System.Windows.Documents;
 /* FocusManager */
 using System.Windows.Input;
 
-/* BitmapImage */
-using System.Windows.Media.Imaging;
-
 /* RequestNavigateEventArgs */
 using System.Windows.Navigation;
 
@@ -41,6 +40,35 @@ namespace JeffBourdier
     /// <summary>Displays an About box that contains information about the application.</summary>
     public static class AboutBox
     {
+        /****************
+         * Constructors *
+         ****************/
+
+        #region Static Constructors
+
+        /// <summary>Initializes static class members.</summary>
+        static AboutBox()
+        {
+            object[] objects;
+
+            /* Retrieve the process executable in the default application domain (i.e., the entry assembly). */
+            Assembly assembly = Assembly.GetEntryAssembly();
+
+            /* Retrieve the product attribute from the entry assembly. */
+            objects = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+            AboutBox.Product = ((AssemblyProductAttribute)objects[0]).Product;
+
+            /* Retrieve the version attribute from the entry assembly. */
+            objects = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+            AboutBox.Version = ((AssemblyFileVersionAttribute)objects[0]).Version;
+
+            /* Retrieve the copyright attribute from the entry assembly. */
+            objects = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            AboutBox.Copyright = ((AssemblyCopyrightAttribute)objects[0]).Copyright;
+        }
+
+        #endregion
+
         /**********
          * Fields *
          **********/
@@ -58,6 +86,9 @@ namespace JeffBourdier
         #region Private Fields
 
         private const int MarginLength = AboutBox.BannerHeight / 5;
+        private static readonly string Product;
+        private static readonly string Version;
+        private static readonly string Copyright;
 
         #endregion
 
@@ -83,8 +114,7 @@ namespace JeffBourdier
 
             /* Initialize the banner image.  (Note: "Build Action" property must be set to "Resource") */
             Image image = new Image();
-            Uri uri = AppHelper.CreateResourceUri(false, "Banner.bmp");
-            image.Source = new BitmapImage(uri);
+            image.Source = MIDIopsyApp.CreateBitmapSource("Banner.bmp");
             Grid.SetRow(image, 0);
             Grid.SetColumn(image, 0);
             Grid.SetColumnSpan(image, 2);
@@ -93,15 +123,15 @@ namespace JeffBourdier
             /* Initialize the info text block. */
             TextBlock textBlock = new TextBlock();
             textBlock.Margin = new Thickness(AboutBox.MarginLength, AboutBox.MarginLength / 2, 0, 0);
-            textBlock.Inlines.Add(AppHelper.Product);
+            textBlock.Inlines.Add(AboutBox.Product);
             textBlock.Inlines.Add(new LineBreak());
-            string s = string.Format("{0} {1}", Common.Resources.Version, AppHelper.Version);
+            string s = string.Format("{0} {1}", Properties.Resources.Version, AboutBox.Version);
             textBlock.Inlines.Add(s);
             textBlock.Inlines.Add(new LineBreak());
-            textBlock.Inlines.Add(AppHelper.Copyright);
+            textBlock.Inlines.Add(AboutBox.Copyright);
             textBlock.Inlines.Add(new LineBreak());
             Hyperlink hyperlink = new Hyperlink();
-            hyperlink.NavigateUri = new Uri("https://jeffbourdier.github.io/" + AppHelper.Title.ToLower());
+            hyperlink.NavigateUri = new Uri("https://jeffbourdier.github.io/" + MIDIopsyApp.Name.ToLower());
             hyperlink.Inlines.Add(hyperlink.NavigateUri.AbsoluteUri);
             hyperlink.RequestNavigate += AboutBox.Hyperlink_RequestNavigate;
             textBlock.Inlines.Add(hyperlink);
@@ -112,7 +142,7 @@ namespace JeffBourdier
             /* Initialize the OK button. */
             Button button = new Button();
             button.Margin = new Thickness(AboutBox.MarginLength);
-            button.Content = Common.Resources.OK;
+            button.Content = Properties.Resources.OK;
             button.Click += UI.OkButton_Click;
             button.IsCancel = true;
             button.IsDefault = true;
@@ -124,7 +154,7 @@ namespace JeffBourdier
             Window window = new Window();
             window.WindowStyle = WindowStyle.ToolWindow;
             window.ResizeMode = ResizeMode.NoResize;
-            window.Title = Common.Resources.About + " " + AppHelper.Title;
+            window.Title = Properties.Resources.About + " " + MIDIopsyApp.Name;
             window.Content = grid;
             window.SizeToContent = SizeToContent.WidthAndHeight;
             window.Owner = owner;

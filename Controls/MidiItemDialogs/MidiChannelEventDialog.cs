@@ -36,7 +36,6 @@ namespace JeffBourdier
             : base(channelEvent)
         {
             int i = this.ControlCount;
-            string s;
             DockPanel panel1, panel2;
 
             /* Initialize the "Running status" check box. */
@@ -53,7 +52,7 @@ namespace JeffBourdier
             this.MessageTypeComboBox.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             foreach (MidiMessageType messageType in MidiChannelEventDialog.MessageTypes)
             {
-                s = MidiChannelEvent.GetTypeComment(messageType);
+                string s = MidiChannelEvent.GetTypeComment(messageType);
                 this.MessageTypeComboBox.Items.Add(s);
             }
             this.MessageTypeComboBox.SelectionChanged += MessageTypeComboBox_SelectionChanged;
@@ -93,8 +92,7 @@ namespace JeffBourdier
             this.AddUIElement(panel1);
             this.AddUIElement(this.Data2Label);
             this.AddUIElement(panel2);
-            s = Text.ParseLabel(Properties.Resources.Channel);
-            this.BuildOut(UI.ClientWidth, Properties.Resources.Midi + " " + s + " " + Properties.Resources.Event);
+            this.BuildOut(MidiChannelEventDialog.ClientWidth, MidiChannelEventDialog.TitleString);
 
             /* The OK button should start out disabled and stay that way until all required input is entered. */
             this.OkButton.IsEnabled = false;
@@ -119,6 +117,8 @@ namespace JeffBourdier
 
         #region Private Fields
 
+        private const int ClientWidth = UI.ClientWidth * 3 / 4;
+
         private static readonly MidiMessageType[] MessageTypes = new MidiMessageType[]
         {
             MidiMessageType.NoteOff,
@@ -129,6 +129,9 @@ namespace JeffBourdier
             MidiMessageType.ChannelPressure,
             MidiMessageType.PitchBend
         };
+
+        private static readonly string TitleString = Properties.Resources.Midi + " " +
+            UI.ParseLabel(Properties.Resources.Channel) + " " + Properties.Resources.Event;
 
         private CheckBox RunningStatusCheckBox;
         private Label MessageTypeLabel;

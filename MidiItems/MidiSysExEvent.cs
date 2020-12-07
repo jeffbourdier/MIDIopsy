@@ -44,12 +44,12 @@ namespace JeffBourdier
             get
             {
                 return Properties.Resources.SysEx + " " +
-                    Text.ParseLabel(this.Escape ? Properties.Resources.Escape : Properties.Resources.Message).ToLower();
+                    UI.ParseLabel(this.Escape ? Properties.Resources.Escape : Properties.Resources.Message).ToLower();
             }
         }
 
         /// <summary>Gets the text to display in the "Count" field (i.e., data length).</summary>
-        public override string CountField { get { return Text.FormatCount(this.DataLength, Properties.Resources.Byte); } }
+        public override string CountField { get { return MidiItem.FormatCount(this.DataLength, Properties.Resources.Byte); } }
 
         /// <summary>Gets the text to display in the "Data" field.</summary>
         public override string DataField { get { return this.File.ReadText(this.DataOffset, this.DataLength); } }

@@ -53,8 +53,7 @@ namespace JeffBourdier
             this.AddUIElement(this.EscapeCheckBox);
             this.AddUIElement(this.DataLabel);
             this.AddUIElement(panel);
-            string s = Properties.Resources.Midi + " " + Properties.Resources.SysEx + " " + Properties.Resources.Event;
-            this.BuildOut(UI.ClientWidth, s);
+            this.BuildOut(UI.ClientWidth, MidiSysExEventDialog.TitleString);
 
             /* The OK button should start out disabled and stay that way until all required input is entered. */
             this.OkButton.IsEnabled = false;
@@ -73,6 +72,9 @@ namespace JeffBourdier
          **********/
 
         #region Private Fields
+
+        private static readonly string TitleString = Properties.Resources.Midi +
+            " " + Properties.Resources.SysEx + " " + Properties.Resources.Event;
 
         private CheckBox EscapeCheckBox;
         private Label DataLabel;

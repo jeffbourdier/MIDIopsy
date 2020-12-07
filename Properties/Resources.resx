@@ -170,7 +170,7 @@
     <value>..\Resources\MIDIopsy.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NumberOfTracks" xml:space="preserve">
-    <value>_Number of tracks</value>
+    <value>Number of trac_ks</value>
   </data>
   <data name="TicksPerFrame" xml:space="preserve">
     <value>_Resolution (ticks per frame)</value>
@@ -1189,12 +1189,6 @@
   <data name="EntireChunk" xml:space="preserve">
     <value>Entire chunk will be removed.  Proceed?</value>
   </data>
-  <data name="EditingScreen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EditingScreen.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="OpeningScreen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OpeningScreen.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GoTo" xml:space="preserve">
     <value>Go To</value>
   </data>
@@ -1215,5 +1209,50 @@
   </data>
   <data name="MultipleHeaders" xml:space="preserve">
     <value>File contains multiple header (MThd) chunks</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ErrorMessageFormat" xml:space="preserve">
+    <value>{0} for the following reason:{1}{1}{2}</value>
+  </data>
+  <data name="FileNotOpened" xml:space="preserve">
+    <value>The file cannot be opened</value>
+  </data>
+  <data name="FileNotSaved" xml:space="preserve">
+    <value>The file cannot be saved</value>
+  </data>
+  <data name="Help" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Help.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="SaveChangesFormat" xml:space="preserve">
+    <value>Save changes to "{0}"?</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File _name</value>
+  </data>
+  <data name="OpenRecent" xml:space="preserve">
+    <value>Open Recent</value>
+  </data>
+  <data name="ValueRangeFormat" xml:space="preserve">
+    <value>{0} must be between {1} and {2}.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
   </data>
 </root>

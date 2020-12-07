@@ -1,5 +1,4 @@
-﻿/* StandardWindow.cs - Implementation of StandardWindow class, which standardizes the way windows are created.
- * Note that this file is shared across applications.
+﻿/* CommonWindow.cs - Implementation of CommonWindow class, which encapsulates common (non-dialog) window procedures.
  *
  * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
@@ -17,8 +16,8 @@ using System.Windows;
 
 namespace JeffBourdier
 {
-    /// <summary>Extends the Window class by standardizing the way windows are created.</summary>
-    public class StandardWindow : Window
+    /// <summary>Extends the Window class by encapsulating common (non-dialog) window procedures.</summary>
+    public class CommonWindow : Window
     {
         /**************
          * Properties *
@@ -50,7 +49,7 @@ namespace JeffBourdier
         /// <summary>Restores the preferences of this window object from user configuration settings.</summary>
         /// <param name="maximized">Indicates whether or not the window is maximized.</param>
         /// <param name="bounds">The location and size of the window when it is not maximized.</param>
-        public void RestorePreferences(bool maximized, Rect bounds)
+        public void Restore(bool maximized, Rect bounds)
         {
             if (maximized) this.WindowState = WindowState.Maximized;
 

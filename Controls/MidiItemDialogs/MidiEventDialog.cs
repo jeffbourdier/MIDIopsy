@@ -115,7 +115,6 @@ namespace JeffBourdier
             textBlock.Margin = new Thickness(UI.UnitSpace, UI.HalfSpace, 0, 0);
 
             /* Build a dock panel for the text box and comment block. */
-            DockPanel.SetDock(textBox, Dock.Left);
             DockPanel panel = new DockPanel();
             panel.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             panel.Children.Add(textBox);
@@ -145,7 +144,6 @@ namespace JeffBourdier
             commentTextBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
             /* Build a dock panel for the text boxes. */
-            DockPanel.SetDock(hexTextBox, Dock.Left);
             DockPanel panel = new DockPanel();
             panel.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             panel.Children.Add(hexTextBox);

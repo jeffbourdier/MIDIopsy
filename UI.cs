@@ -1,5 +1,4 @@
 ﻿/* UI.cs - Implementation of UI class, which makes certain UI-related tasks easier.
- * Note that this file is shared across applications.
  *
  * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *
@@ -11,10 +10,10 @@
  */
 
 
-/* DependencyObject, MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, Thickness, UIElement, Window */
+/* DependencyObject, MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, Thickness, Window */
 using System.Windows;
 
-/* CheckBox, Control, FrameworkElement, Label, Panel, TextBox */
+/* CheckBox, FrameworkElement, Label, TextBox */
 using System.Windows.Controls;
 
 /* FontFamily */
@@ -62,9 +61,6 @@ namespace JeffBourdier
 
         /// <summary>The standard height of a button (in pixels).</summary>
         public const int ButtonHeight = 10 * UI.UnitSpace;
-
-        /// <summary>The maximum valid page width for a flow document.</summary>
-        public const double MaxFlowDocPageWidth = 1000000;
 
         /// <summary>The standard monospace font.</summary>
         public static readonly FontFamily MonospaceFont = new FontFamily("Courier New");
@@ -136,26 +132,6 @@ namespace JeffBourdier
             return checkBox;
         }
 
-        /// <summary>
-        /// Offsets the tab index of each child of a panel, starting at the specified index position, by the specified amount.
-        /// </summary>
-        /// <param name="panel">The panel whose children's tab indexes are to be offset.</param>
-        /// <param name="index">The index position at which to start offsetting.</param>
-        /// <param name="offset">The amount by which to offset the tab indexes.</param>
-        public static void OffsetTabIndexes(Panel panel, int index, int offset)
-        {
-            /* Save ourselves a little time if the offset is zero. */
-            if (offset == 0) return;
-
-            /* Offset the tab index of each panel child, starting at the specified index position. */
-            for (int i = index; i < panel.Children.Count; ++i)
-            {
-                Control control = panel.Children[i] as Control;
-                if (control == null) continue;
-                control.TabIndex += offset;
-            }
-        }
-
         /// <summary>Determine whether or not a text box contains a valid number (integer) within a range.</summary>
         /// <param name="textBox">A TextBox object.</param>
         /// <param name="value">
@@ -185,14 +161,28 @@ namespace JeffBourdier
             if (n >= min && n <= max) { value = n; return true; }
 
             /* Give the user a message for an invalid number. */
-            string s = Text.ParseLabel(description);
-            s = string.Format(Common.Resources.ValueRangeFormat, s, min, max);
+            string s = UI.ParseLabel(description);
+            s = string.Format(Properties.Resources.ValueRangeFormat, s, min, max);
             for (element = textBox; element.Parent != null; element = element.Parent as FrameworkElement) ;
-            MessageBox.Show(element as Window, s, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            MessageBox.Show(element as Window, s, MIDIopsyApp.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
             /* Revert text to previous value. */
             textBox.Text = value.ToString();
             return false;
+        }
+
+        /// <summary>
+        /// Parses a string meant to serve as the content of a label.  If the string contains parentheses, the text
+        /// within the parentheses is returned.  Otherwise, the string with underscores and colons removed is returned.
+        /// </summary>
+        /// <param name="s">The string to parse.</param>
+        /// <returns>A copy of the string s with underscores and colons removed.</returns>
+        public static string ParseLabel(string s)
+        {
+            int i = s.IndexOf('(') + 1;
+            int n = s.LastIndexOf(')') - i;
+            if (i > 0 && n > 0) return s.Substring(i, n);
+            return s.Replace("_", null).Replace(":", null);
         }
 
         #endregion

@@ -155,5 +155,20 @@ namespace JeffBourdier
         protected MidiFile File { get { return this._File; } }
 
         #endregion
+
+        /***********
+         * Methods *
+         ***********/
+
+        #region Protected Methods
+
+        /// <summary>Returns a string representing a quantity of some unit.</summary>
+        /// <param name="n">The quantity to represent.</param>
+        /// <param name="unit">The unit of the quantity (e.g., "byte").</param>
+        /// <returns>A string representation of the quantity and units (e.g., "32 bytes").</returns>
+        protected static string FormatCount(int n, string unit)
+        { return n + " " + UI.ParseLabel(unit).ToLower() + ((n == 1) ? string.Empty : "s"); }
+
+        #endregion
     }
 }

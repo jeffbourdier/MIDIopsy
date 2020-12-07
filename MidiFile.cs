@@ -96,7 +96,6 @@ namespace JeffBourdier
         /// <param name="path">The path of the MIDI file to load.</param>
         public void Load(string path)
         {
-            string s;
             int n, i, j = 0;
             MidiChunkInfo chunkInfo;
             MidiHeader header = null;
@@ -104,9 +103,6 @@ namespace JeffBourdier
             /* Make sure we start with a clean slate. */
             this.Clear();
             this.Bytes = File.ReadAllBytes(path);
-
-            s = string.Format("parsing {0} bytes", this.Bytes.Length);
-            Logger.WriteMessage(s);
 
             /* Process each MidiItem object from the byte array. */
             for (i = 0; i < this.Bytes.Length; i += chunkInfo.Length)
@@ -135,7 +131,7 @@ namespace JeffBourdier
             n = (header == null) ? 0 : header.NumberOfTracks;
             if (n != j)
             {
-                s = Text.ParseLabel(Properties.Resources.Track).ToLower();
+                string s = UI.ParseLabel(Properties.Resources.Track).ToLower();
                 s = string.Format(Properties.Resources.MismatchFormat, s, n, j);
                 this.AddErrorText(s, 0);
             }
@@ -658,9 +654,6 @@ namespace JeffBourdier
             MidiEvent mtrkEvent = null;
             MidiMetaEvent metaEvent;
 
-            s = string.Format("parsing MTrk events at bytes {0} through {1}", offset, n - 1);
-            Logger.WriteMessage(s);
-
             /* A track chunk is a stream of MIDI (MTrk) events.  Process each such
              * event in this part of the byte array comprising the track chunk.
              */
@@ -723,13 +716,12 @@ namespace JeffBourdier
             /* If a track number was supplied, include that in the error message. */
             if (trackNumber > 0)
             {
-                s = Text.ParseLabel(Properties.Resources.Track);
+                s = UI.ParseLabel(Properties.Resources.Track);
                 s = string.Format("{0} {1}:  {2}", s, trackNumber, text);
             }
             else s = text;
 
             /* Add the line to this file's error text. */
-            Logger.WriteMessage(s);
             if (!string.IsNullOrEmpty(this.ErrorText)) this._ErrorText += Environment.NewLine;
             this._ErrorText += s;
         }

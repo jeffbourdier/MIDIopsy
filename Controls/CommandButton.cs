@@ -1,5 +1,4 @@
 ﻿/* CommandButton.cs - Implementation of CommandButton class (a button that invokes a command).
- * Note that this file is shared across applications.
  *
  * Copyright (c) 2017-20 Jeffrey Paul Bourdier
  *

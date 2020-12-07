@@ -151,7 +151,7 @@ namespace JeffBourdier
         public override string TypeField { get { return MidiMetaEvent.GetTypeComment(this.Type); } }
 
         /// <summary>Gets the text to display in the "Count" field (i.e., data length).</summary>
-        public override string CountField { get { return Text.FormatCount(this.DataLength, Properties.Resources.Byte); } }
+        public override string CountField { get { return MidiItem.FormatCount(this.DataLength, Properties.Resources.Byte); } }
 
         /// <summary>Gets the text to display in the "Data" field.</summary>
         public override string DataField { get { return MidiMetaEvent.GetDataComment(this.Type, this.Data); } }

@@ -65,12 +65,13 @@ namespace JeffBourdier
                     case 2: s = Properties.Resources.Format2; break;
                     default: s = i.ToString(); break;
                 }
-                return Text.ParseLabel(Properties.Resources.Format) + " " + s;
+                return UI.ParseLabel(Properties.Resources.Format) + " " + s;
             }
         }
 
         /// <summary>Gets the text to display in the "Count" field (i.e., number of tracks).</summary>
-        public override string CountField { get { return Text.FormatCount(this.NumberOfTracks, Properties.Resources.Track); } }
+        public override string CountField
+        { get { return MidiItem.FormatCount(this.NumberOfTracks, Properties.Resources.Track); } }
 
         /// <summary>Gets the text to display in the "Data" field (i.e., delta-time division).</summary>
         public override string DataField
@@ -81,10 +82,10 @@ namespace JeffBourdier
                 this.ParseDivision(out ticksPerQuarterNote, out framesPerSecond, out ticksPerFrame);
                 return (ticksPerQuarterNote < 0)
                     ? string.Format("{0} {1}, {2} {3}",
-                        framesPerSecond, Text.ParseLabel(Properties.Resources.FramesPerSecond),
-                        ticksPerFrame, Text.ParseLabel(Properties.Resources.TicksPerFrame).ToLower())
+                        framesPerSecond, UI.ParseLabel(Properties.Resources.FramesPerSecond),
+                        ticksPerFrame, UI.ParseLabel(Properties.Resources.TicksPerFrame).ToLower())
                     : string.Format("{0} {1}", ticksPerQuarterNote,
-                        Text.ParseLabel(Properties.Resources.TicksPerQuarterNote).ToLower());
+                        UI.ParseLabel(Properties.Resources.TicksPerQuarterNote).ToLower());
             }
         }
 

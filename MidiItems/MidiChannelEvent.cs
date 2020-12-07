@@ -439,7 +439,7 @@ namespace JeffBourdier
 
         /// <summary>Gets the text to display in the "Count" field (i.e., MIDI channel).</summary>
         public override string CountField
-        { get { return this.RunningStatus ? null : Text.ParseLabel(Properties.Resources.Channel) + " " + this.Channel; } }
+        { get { return this.RunningStatus ? null : UI.ParseLabel(Properties.Resources.Channel) + " " + this.Channel; } }
 
         /// <summary>Gets the text to display in the "Data" field.</summary>
         public override string DataField

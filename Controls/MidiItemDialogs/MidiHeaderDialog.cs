@@ -10,10 +10,15 @@
  */
 
 
+/* SaveFileDialog */
+using Microsoft.Win32;
+
 /* MessageBox, MessageBoxButton, MessageBoxImage, RoutedEventArgs, TextAlignment, Thickness */
 using System.Windows;
 
-/* ComboBox, GroupBox, Label, RadioButton, SelectionChangedEventArgs, TextBox, TextChangedEventArgs */
+/* Button, ComboBox, Dock, DockPanel, GroupBox, Label, RadioButton,
+ * SelectionChangedEventArgs, StackPanel, TextBox, TextChangedEventArgs
+ */
 using System.Windows.Controls;
 
 
@@ -55,28 +60,65 @@ namespace JeffBourdier
         public MidiHeaderDialog(MidiHeader header)
             : base(header)
         {
-            int i, j = 0;
+            Label label;
+            int i = 0, j;
+            MarginType marginType;
+
+            /* If a new (file) header is being created, prompt for a file name. */
+            if (this.ForNewItem)
+            {
+                /* Initialize the "File name" label. */
+                label = UI.CreateLabel(MarginType.Top, Properties.Resources.FileName, true);
+                this.AddUIElement(label);
+
+                /* Initialize the "File name" text box. */
+                this.FileNameTextBox = new TextBox();
+                this.FileNameTextBox.TabIndex = ++i;
+                this.FileNameTextBox.Margin = new Thickness(0, 0, UI.HalfSpace, 0);
+                this.FileNameTextBox.GotFocus += UI.TextBox_GotFocus;
+                this.FileNameTextBox.TextChanged += this.FileNameTextBox_TextChanged;
+                label.Target = this.FileNameTextBox;
+                this.InitialElement = this.FileNameTextBox;
+
+                /* Initialize the browse button. */
+                Button button = new Button();
+                button.TabIndex = ++i;
+                button.Margin = new Thickness(UI.HalfSpace, 0, 0, 0);
+                button.Content = "  ...  ";
+                button.Click += this.BrowseButton_Click;
+
+                /* Build out a dock panel to contain the file name text box and browse button. */
+                DockPanel.SetDock(button, Dock.Right);
+                DockPanel dockPanel = new DockPanel();
+                dockPanel.Children.Add(button);
+                dockPanel.Children.Add(this.FileNameTextBox);
+                dockPanel.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
+                this.AddUIElement(dockPanel);
+
+                /* Set the margin type for the next label. */
+                marginType = MarginType.Standard;
+            }
+            else marginType = MarginType.Top;
 
             /* Initialize the "Format" label. */
-            Label label = UI.CreateLabel(MarginType.Top, Properties.Resources.Format, true);
+            label = UI.CreateLabel(marginType, Properties.Resources.Format, true);
 
             /* Initialize the "Format" combo box. */
             this.FormatComboBox = new ComboBox();
-            this.FormatComboBox.TabIndex = ++j;
+            this.FormatComboBox.TabIndex = ++i;
             this.FormatComboBox.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             this.FormatComboBox.Items.Add(Properties.Resources.Format0);
             this.FormatComboBox.Items.Add(Properties.Resources.Format1);
             this.FormatComboBox.Items.Add(Properties.Resources.Format2);
             this.FormatComboBox.SelectionChanged += this.FormatComboBox_SelectionChanged;
             label.Target = this.FormatComboBox;
-            this.InitialElement = this.FormatComboBox;
 
             /* Initialize the "Number of tracks" label. */
             this.NumberOfTracksLabel = UI.CreateLabel(MarginType.Standard, Properties.Resources.NumberOfTracks, true);
 
             /* Initialize the "Number of tracks" text box. */
             this.NumberOfTracksTextBox = new TextBox();
-            this.NumberOfTracksTextBox.TabIndex = ++j;
+            this.NumberOfTracksTextBox.TabIndex = ++i;
             this.NumberOfTracksTextBox.Margin = new Thickness(UI.TripleSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             this.NumberOfTracksTextBox.TextAlignment = TextAlignment.Right;
             this.NumberOfTracksTextBox.GotFocus += UI.TextBox_GotFocus;
@@ -85,7 +127,7 @@ namespace JeffBourdier
 
             /* Initialize the "Metrical time" radio button. */
             this.MetricalTimeRadioButton = new RadioButton();
-            this.MetricalTimeRadioButton.TabIndex = ++j;
+            this.MetricalTimeRadioButton.TabIndex = ++i;
             this.MetricalTimeRadioButton.Margin = new Thickness(UI.TripleSpace, UI.TripleSpace, UI.TripleSpace, UI.UnitSpace);
             this.MetricalTimeRadioButton.Content = Properties.Resources.MetricalTime;
             this.MetricalTimeRadioButton.Checked += this.MetricalTimeRadioButton_Checked;
@@ -96,7 +138,7 @@ namespace JeffBourdier
 
             /* Initialize the "Ticks per quarter note" text box. */
             this.TicksPerQuarterNoteTextBox = new TextBox();
-            this.TicksPerQuarterNoteTextBox.TabIndex = ++j;
+            this.TicksPerQuarterNoteTextBox.TabIndex = ++i;
             this.TicksPerQuarterNoteTextBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
             this.TicksPerQuarterNoteTextBox.TextAlignment = TextAlignment.Right;
             this.TicksPerQuarterNoteTextBox.IsEnabled = false;
@@ -106,7 +148,7 @@ namespace JeffBourdier
 
             /* Initialize the "Time-code-based time" radio button. */
             this.TimeCodeBasedTimeRadioButton = new RadioButton();
-            this.TimeCodeBasedTimeRadioButton.TabIndex = ++j;
+            this.TimeCodeBasedTimeRadioButton.TabIndex = ++i;
             this.TimeCodeBasedTimeRadioButton.Margin =
                 new Thickness(UI.TripleSpace, UI.DoubleSpace, UI.TripleSpace, UI.UnitSpace);
             this.TimeCodeBasedTimeRadioButton.Content = Properties.Resources.TimeCodeBasedTime;
@@ -118,10 +160,10 @@ namespace JeffBourdier
 
             /* Initialize the "Frames per second" combo box. */
             this.FramesPerSecondComboBox = new ComboBox();
-            this.FramesPerSecondComboBox.TabIndex = ++j;
+            this.FramesPerSecondComboBox.TabIndex = ++i;
             this.FramesPerSecondComboBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.UnitSpace);
-            for (i = 0; i < MidiHeaderDialog.FramesPerSecondCount; ++i)
-                this.FramesPerSecondComboBox.Items.Add(MidiHeaderDialog.FramesPerSecondStrings[i]);
+            for (j = 0; j < MidiHeaderDialog.FramesPerSecondCount; ++j)
+                this.FramesPerSecondComboBox.Items.Add(MidiHeaderDialog.FramesPerSecondStrings[j]);
             this.FramesPerSecondComboBox.IsEnabled = false;
             this.FramesPerSecondComboBox.SelectionChanged += this.FramesPerSecondComboBox_SelectionChanged;
             this.FramesPerSecondLabel.Target = this.FramesPerSecondComboBox;
@@ -132,7 +174,7 @@ namespace JeffBourdier
 
             /* Initialize the "Ticks per frame" text box. */
             this.TicksPerFrameTextBox = new TextBox();
-            this.TicksPerFrameTextBox.TabIndex = ++j;
+            this.TicksPerFrameTextBox.TabIndex = ++i;
             this.TicksPerFrameTextBox.Margin = new Thickness(UI.IndentSpace, UI.HalfSpace, UI.TripleSpace, UI.TripleSpace);
             this.TicksPerFrameTextBox.TextAlignment = TextAlignment.Right;
             this.TicksPerFrameTextBox.IsEnabled = false;
@@ -163,13 +205,14 @@ namespace JeffBourdier
             this.AddUIElement(this.NumberOfTracksLabel);
             this.AddUIElement(this.NumberOfTracksTextBox);
             this.AddUIElement(groupBox);
-            this.BuildOut(320, Properties.Resources.Midi + " " + Properties.Resources.Header);
+            this.BuildOut(UI.ClientWidth, MidiHeaderDialog.TitleString);
 
             /* The OK button should start out disabled and stay that way until all required input is entered. */
             this.OkButton.IsEnabled = false;
 
             /* If a MidiHeader object was supplied, use it to set initial values. */
             if (this.ForNewItem) return;
+            this.InitialElement = this.FormatComboBox;
             this.NumberOfTracksTextBox.IsEnabled = false;
             this.NumberOfTracksLabel.IsEnabled = false;
             this.NumberOfTracksTextBox.Text = header.NumberOfTracks.ToString();
@@ -177,9 +220,9 @@ namespace JeffBourdier
             if (header.TicksPerQuarterNote < 0)
             {
                 this.TimeCodeBasedTimeRadioButton.IsChecked = true;
-                for (i = 0; i < MidiHeaderDialog.FramesPerSecondCount; ++i)
-                    if (MidiHeaderDialog.FramesPerSecondValues[i] == header.FramesPerSecond)
-                    { this.FramesPerSecondComboBox.SelectedIndex = i; break; }
+                for (j = 0; j < MidiHeaderDialog.FramesPerSecondCount; ++j)
+                    if (MidiHeaderDialog.FramesPerSecondValues[j] == header.FramesPerSecond)
+                    { this.FramesPerSecondComboBox.SelectedIndex = j; break; }
                 this.TicksPerFrameTextBox.Text = header.TicksPerFrame.ToString();
             }
             else
@@ -208,6 +251,9 @@ namespace JeffBourdier
         /// <summary>Array containing valid numeric values for frames per second.</summary>
         private static readonly int[] FramesPerSecondValues;
 
+        private static readonly string TitleString = Properties.Resources.Midi + " " + Properties.Resources.Header;
+
+        private TextBox FileNameTextBox;
         private ComboBox FormatComboBox;
         private Label NumberOfTracksLabel;
         private TextBox NumberOfTracksTextBox;
@@ -230,6 +276,9 @@ namespace JeffBourdier
          **************/
 
         #region Public Properties
+
+        /// <summary>If a new (file) header is being created, returns the file name.</summary>
+        public string FileName { get { return this.FileNameTextBox.Text; } }
 
         /// <summary>Specifies the overall organization of the MIDI file.</summary>
         public int Format { get { return this.FormatComboBox.SelectedIndex; } }
@@ -277,6 +326,9 @@ namespace JeffBourdier
 
         protected override bool CheckRequiredInput()
         {
+            /* If a new (file) header is being created, a file name is required. */
+            if (this.ForNewItem && string.IsNullOrEmpty(this.FileName)) return false;
+
             /* Format and Number of tracks are required. */
             if (this.FormatComboBox.SelectedIndex < 0) return false;
             if (this.NumberOfTracks < 0) return false;
@@ -305,6 +357,18 @@ namespace JeffBourdier
 
         #region Event Handlers
 
+        private void FileNameTextBox_TextChanged(object sender, TextChangedEventArgs e) { this.EnableOkButton(); }
+
+        private void BrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            /* Prompt the user for a file whose path to copy into the file name text box. */
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = Properties.Resources.MidiFiles;
+            bool? result = dialog.ShowDialog(this);
+            if (result != true) return;
+            this.FileNameTextBox.Text = dialog.FileName;
+        }
+
         private void FormatComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (this.FormatComboBox.SelectedIndex == 0)
@@ -314,7 +378,8 @@ namespace JeffBourdier
                  */
                 if (!this.ForNewItem && this.NumberOfTracks > 1)
                 {
-                    MessageBox.Show(this, Properties.Resources.OneTrack, Meta.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
+                    MessageBox.Show(this, Properties.Resources.OneTrack,
+                        MIDIopsyApp.Name, MessageBoxButton.OK, MessageBoxImage.Hand);
                     this.FormatComboBox.SelectedIndex = (int)this.Format;
                     return;
                 }
