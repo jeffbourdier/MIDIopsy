@@ -36,6 +36,7 @@ namespace JeffBourdier
 
         public const int TypeSize = 4;
         public const int LengthSize = 4;
+        public const int TotalSize = MidiChunkInfo.TypeSize + MidiChunkInfo.LengthSize;
         public const string HeaderType = "MThd";
         public const string TrackType = "MTrk";
 
@@ -48,7 +49,7 @@ namespace JeffBourdier
         #region Public Properties
 
         /// <summary>Gets the number of bytes represented by this item.</summary>
-        public override int Size { get { return MidiChunkInfo.SizeItem(); } }
+        public override int Size { get { return MidiChunkInfo.TotalSize; } }
 
         /// <summary>
         /// Gets the text to display in the "Hex" field (i.e., the bytes represented by this item, in hexadecimal format).
@@ -117,17 +118,6 @@ namespace JeffBourdier
         #region Private Properties
 
         private int LengthOffset { get { return this.Offset + MidiChunkInfo.TypeSize; } }
-
-        #endregion
-
-        /***********
-         * Methods *
-         ***********/
-
-        #region Public Methods
-
-        /// <summary>Returns the number of bytes required to store an item of this type.</summary>
-        public static int SizeItem() { return MidiChunkInfo.TypeSize + MidiChunkInfo.LengthSize; }
 
         #endregion
     }

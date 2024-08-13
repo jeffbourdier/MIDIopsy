@@ -96,7 +96,8 @@ namespace JeffBourdier
         /// <param name="path">The path of the MIDI file to load.</param>
         public void Load(string path)
         {
-            int n, i, j = 0;
+            string s;
+            int i, j, n = 0;
             MidiChunkInfo chunkInfo;
             MidiHeader header = null;
 
@@ -105,12 +106,12 @@ namespace JeffBourdier
             this.Bytes = File.ReadAllBytes(path);
 
             /* Process each MidiItem object from the byte array. */
-            for (i = 0; i < this.Bytes.Length; i += chunkInfo.Length)
+            for (i = 0; (j = this.Bytes.Length - i) >= MidiChunkInfo.TotalSize; i += chunkInfo.Length)
             {
                 /* A chunk should begin here. */
                 chunkInfo = new MidiChunkInfo(this, i);
                 this.Items.Add(chunkInfo);
-                i += MidiChunkInfo.SizeItem();
+                i += MidiChunkInfo.TotalSize;
 
                 /* What comes next depends on the chunk type. */
                 switch (chunkInfo.Type)
@@ -123,16 +124,23 @@ namespace JeffBourdier
                         }
                         else this.AddErrorText(Properties.Resources.MultipleHeaders, 0);
                         break;
-                    case MidiChunkInfo.TrackType: this.ParseEvents(i, chunkInfo.Length, ++j); break;
+                    case MidiChunkInfo.TrackType: this.ParseEvents(i, chunkInfo.Length, ++n); break;
                 }
             }
 
             /* Check for track number mismatch. */
-            n = (header == null) ? 0 : header.NumberOfTracks;
-            if (n != j)
+            i = (header == null) ? 0 : header.NumberOfTracks;
+            if (i != n)
             {
-                string s = UI.ParseLabel(Properties.Resources.Track).ToLower();
-                s = string.Format(Properties.Resources.MismatchFormat, s, n, j);
+                s = UI.ParseLabel(Properties.Resources.Track).ToLower();
+                s = string.Format(Properties.Resources.MismatchFormat, s, i, n);
+                this.AddErrorText(s, 0);
+            }
+
+            /* Check for leftover bytes. */
+            if (j > 0)
+            {
+                s = string.Format(Properties.Resources.ExtraBytesFormat, j);
                 this.AddErrorText(s, 0);
             }
         }
@@ -267,7 +275,7 @@ namespace JeffBourdier
         /// <returns>The new MidiChunkInfo object that is added.</returns>
         public MidiChunkInfo AddTrack()
         {
-            int n = MidiChunkInfo.SizeItem(), offset = this.Bytes.Length;
+            int n = MidiChunkInfo.TotalSize, offset = this.Bytes.Length;
             this.Resize(n, offset, -1);
             MidiChunkInfo chunkInfo = this.CreateChunkInfo(offset, MidiChunkInfo.TrackType);
             this.Items.Add(chunkInfo);
@@ -284,7 +292,7 @@ namespace JeffBourdier
         {
             int offset = this.Bytes.Length, n = (status < 0) ? this.GetRunningStatus(offset) : status;
             MidiMessageType messageType = (MidiMessageType)Midi.GetHighNibble(n);
-            n = MidiChannelEvent.SizeItem(0, (status < 0), messageType);
+            n = MidiChannelEvent.TotalSize(0, (status < 0), messageType);
             this.Resize(n, offset, this.ItemCount);
             MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, status, data1, data2);
             this.Items.Add(channelEvent);
@@ -302,7 +310,7 @@ namespace JeffBourdier
         /// <returns>The new MidiSysExEvent object that is added.</returns>
         public MidiSysExEvent AddSysExEvent(int deltaTime, bool escape, byte[] bytes)
         {
-            int n = MidiSysExEvent.SizeItem(0, 0), offset = this.Bytes.Length;
+            int n = MidiSysExEvent.TotalSize(0, 0), offset = this.Bytes.Length;
             this.Resize(n, offset, this.ItemCount);
             MidiSysExEvent sysExEvent = this.CreateSysExEvent(offset, deltaTime, escape, bytes);
             this.Items.Add(sysExEvent);
@@ -319,7 +327,7 @@ namespace JeffBourdier
         /// <returns>The new MidiMetaEvent object that is added.</returns>
         public MidiMetaEvent AddMetaEvent(int deltaTime, int type, byte[] bytes)
         {
-            int n = MidiMetaEvent.SizeItem(0, 0), offset = this.Bytes.Length;
+            int n = MidiMetaEvent.TotalSize(0, 0), offset = this.Bytes.Length;
             this.Resize(n, offset, this.ItemCount);
             MidiMetaEvent metaEvent = this.CreateMetaEvent(offset, deltaTime, type, bytes);
             this.Items.Add(metaEvent);
@@ -332,7 +340,7 @@ namespace JeffBourdier
         /// <returns>The new MidiChunkInfo object that is inserted.</returns>
         public MidiChunkInfo InsertTrack(int index)
         {
-            int n = MidiChunkInfo.SizeItem(), offset = this.Items[index].Offset;
+            int n = MidiChunkInfo.TotalSize, offset = this.Items[index].Offset;
             this.Resize(n, offset, -1);
             MidiChunkInfo chunkInfo = this.CreateChunkInfo(offset, MidiChunkInfo.TrackType);
             this.Items.Insert(index, chunkInfo);
@@ -350,7 +358,7 @@ namespace JeffBourdier
         {
             int offset = this.Items[index].Offset, n = (status < 0) ? this.GetRunningStatus(offset) : status;
             MidiMessageType messageType = (MidiMessageType)Midi.GetHighNibble(n);
-            n = MidiChannelEvent.SizeItem(0, (status < 0), messageType);
+            n = MidiChannelEvent.TotalSize(0, (status < 0), messageType);
             this.Resize(n, offset, index);
             MidiChannelEvent channelEvent = this.CreateChannelEvent(offset, deltaTime, status, data1, data2);
             this.Items.Insert(index, channelEvent);
@@ -369,7 +377,7 @@ namespace JeffBourdier
         /// <returns>The new MidiSysExEvent object that is inserted.</returns>
         public MidiSysExEvent InsertSysExEvent(int index, int deltaTime, bool escape, byte[] bytes)
         {
-            int n = MidiSysExEvent.SizeItem(0, 0), offset = this.Items[index].Offset;
+            int n = MidiSysExEvent.TotalSize(0, 0), offset = this.Items[index].Offset;
             this.Resize(n, offset, index);
             MidiSysExEvent sysExEvent = this.CreateSysExEvent(offset, deltaTime, escape, bytes);
             this.Items.Insert(index, sysExEvent);
@@ -387,7 +395,7 @@ namespace JeffBourdier
         /// <returns>The new MidiMetaEvent object that is inserted.</returns>
         public MidiMetaEvent InsertMetaEvent(int index, int deltaTime, int type, byte[] bytes)
         {
-            int n = MidiMetaEvent.SizeItem(0, 0), offset = this.Items[index].Offset;
+            int n = MidiMetaEvent.TotalSize(0, 0), offset = this.Items[index].Offset;
             this.Resize(n, offset, index);
             MidiMetaEvent metaEvent = this.CreateMetaEvent(offset, deltaTime, type, bytes);
             this.Items.Insert(index, metaEvent);
@@ -624,8 +632,8 @@ namespace JeffBourdier
         {
             /* Make sure we start with a clean slate. */
             this.Clear();
-            int n = MidiChunkInfo.SizeItem();
-            this.Bytes = new byte[n + MidiHeader.SizeItem()];
+            int n = MidiChunkInfo.TotalSize;
+            this.Bytes = new byte[n + MidiHeader.TotalSize];
 
             /* Start the header chunk. */
             MidiChunkInfo chunkInfo = this.CreateChunkInfo(0, MidiChunkInfo.HeaderType);
@@ -730,7 +738,7 @@ namespace JeffBourdier
         {
             MidiChunkInfo chunkInfo = new MidiChunkInfo(this, offset);
             chunkInfo.Type = type;
-            chunkInfo.Length = (type == MidiChunkInfo.HeaderType) ? MidiHeader.SizeItem() : 0;
+            chunkInfo.Length = (type == MidiChunkInfo.HeaderType) ? MidiHeader.TotalSize : 0;
             if (type == MidiChunkInfo.TrackType) ++this.Header.NumberOfTracks;
             return chunkInfo;
         }

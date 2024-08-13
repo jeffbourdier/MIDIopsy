@@ -39,6 +39,7 @@ namespace JeffBourdier
         public const int FormatSize = 2;
         public const int NumberOfTracksSize = 2;
         public const int DivisionSize = 2;
+        public const int TotalSize = MidiHeader.FormatSize + MidiHeader.NumberOfTracksSize + MidiHeader.DivisionSize;
 
         #endregion
 
@@ -49,7 +50,7 @@ namespace JeffBourdier
         #region Public Properties
 
         /// <summary>Gets the number of bytes represented by this item.</summary>
-        public override int Size { get { return MidiHeader.SizeItem(); } }
+        public override int Size { get { return MidiHeader.TotalSize; } }
 
         /// <summary>Gets the text to display in the "Type" field (i.e., file format).</summary>
         public override string TypeField
@@ -165,10 +166,6 @@ namespace JeffBourdier
          ***********/
 
         #region Public Methods
-
-        /// <summary>Returns the number of bytes required to store an item of this type.</summary>
-        public static int SizeItem()
-        { return MidiHeader.FormatSize + MidiHeader.NumberOfTracksSize + MidiHeader.DivisionSize; }
 
         /// <summary>Sets the applicable delta-time division values for metrical time.</summary>
         /// <param name="ticksPerQuarterNote">Number of delta-time "ticks" which make up a quarter-note.</param>

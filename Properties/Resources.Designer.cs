@@ -19,7 +19,7 @@ namespace JeffBourdier.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -1043,6 +1043,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} extra bytes at end of file..
+        /// </summary>
+        internal static string ExtraBytesFormat {
+            get {
+                return ResourceManager.GetString("ExtraBytesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File.
         /// </summary>
         internal static string File {
@@ -1052,7 +1061,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File has the following errors (prohibiting playback):.
+        ///   Looks up a localized string similar to File has the following errors (may prohibit playback):.
         /// </summary>
         internal static string FileHasErrors {
             get {
@@ -1204,12 +1213,13 @@ namespace JeffBourdier.Properties {
         ///    &lt;title&gt;MIDIopsy Help&lt;/title&gt;
         ///    &lt;meta name=&quot;author&quot; content=&quot;Jeff Bourdier&quot; /&gt;
         ///    &lt;style&gt;
+        ///      html { background-color: #FFFFDF; }
         ///      h1, h6 { text-align: center; }
         ///      h2, h6 { border-top: 1px solid; padding-top: 4px; }
         ///      table { margin: auto; border-collapse: collapse; }
         ///      table caption { font-weight: bold; font-size: larger; padding: 8px; }
         ///      th, td { border: 1px solid black; padding: 4px; }
-        ///      td.number { text-align: right; font-fami [rest of string was truncated]&quot;;.
+        ///    [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string HelpText {
             get {
@@ -1462,7 +1472,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File contains multiple header (MThd) chunks.
+        ///   Looks up a localized string similar to File contains multiple header (MThd) chunks..
         /// </summary>
         internal static string MultipleHeaders {
             get {

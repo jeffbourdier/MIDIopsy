@@ -145,7 +145,7 @@ namespace JeffBourdier
         #region Public Properties
 
         /// <summary>Gets the number of bytes represented by this item.</summary>
-        public override int Size { get { return MidiMetaEvent.SizeItem(this.DeltaTime, this.DataLength); } }
+        public override int Size { get { return MidiMetaEvent.TotalSize(this.DeltaTime, this.DataLength); } }
 
         /// <summary>Gets the text to display in the "Type" field (i.e., meta-event type).</summary>
         public override string TypeField { get { return MidiMetaEvent.GetTypeComment(this.Type); } }
@@ -212,8 +212,8 @@ namespace JeffBourdier
 
         #region Public Methods
 
-        /// <summary>Returns the number of bytes required to store an item of this type.</summary>
-        public static int SizeItem(int deltaTime, int dataLength)
+        /// <summary>Returns the total number of bytes required to store an item of this type.</summary>
+        public static int TotalSize(int deltaTime, int dataLength)
         { return Midi.SizeVLQ(deltaTime) + 2 + Midi.SizeVLQ(dataLength) + dataLength; }
 
         /// <summary>Returns a general comment on a meta-event type.</summary>

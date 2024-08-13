@@ -423,7 +423,7 @@ namespace JeffBourdier
 
         /// <summary>Gets the number of bytes represented by this item.</summary>
         public override int Size
-        { get { return MidiChannelEvent.SizeItem(this.DeltaTime, this.RunningStatus, this.MessageType); } }
+        { get { return MidiChannelEvent.TotalSize(this.DeltaTime, this.RunningStatus, this.MessageType); } }
 
         /// <summary>Gets the text to display in the "Type" field (i.e., event type).</summary>
         public override string TypeField
@@ -547,8 +547,8 @@ namespace JeffBourdier
 
         #region Public Methods
 
-        /// <summary>Returns the number of bytes required to store an item of this type.</summary>
-        public static int SizeItem(int deltaTime, bool runningStatus, MidiMessageType messageType)
+        /// <summary>Returns the total number of bytes required to store an item of this type.</summary>
+        public static int TotalSize(int deltaTime, bool runningStatus, MidiMessageType messageType)
         { return Midi.SizeVLQ(deltaTime) + (runningStatus ? 0 : 1) + (MidiChannelEvent.HasData2(messageType) ? 2 : 1); }
 
         /// <summary>Returns a general comment on a type of channel message/event.</summary>

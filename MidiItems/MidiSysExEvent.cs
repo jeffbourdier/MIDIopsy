@@ -36,7 +36,7 @@ namespace JeffBourdier
         #region Public Properties
 
         /// <summary>Gets the number of bytes represented by this item.</summary>
-        public override int Size { get { return MidiSysExEvent.SizeItem(this.DeltaTime, this.DataLength); } }
+        public override int Size { get { return MidiSysExEvent.TotalSize(this.DeltaTime, this.DataLength); } }
 
         /// <summary>Gets the text to display in the "Type" field.</summary>
         public override string TypeField
@@ -101,8 +101,8 @@ namespace JeffBourdier
 
         #region Public Methods
 
-        /// <summary>Returns the number of bytes required to store an item of this type.</summary>
-        public static int SizeItem(int deltaTime, int dataLength)
+        /// <summary>Returns the total number of bytes required to store an item of this type.</summary>
+        public static int TotalSize(int deltaTime, int dataLength)
         { return Midi.SizeVLQ(deltaTime) + 1 + Midi.SizeVLQ(dataLength) + dataLength; }
 
         #endregion
