@@ -56,7 +56,7 @@ namespace JeffBourdier
         public static string FormatHex(byte[] bytes, int offset, int length)
         {
             string s = null;
-            for (int n = offset + length, i = offset; i < n; ++i)
+            for (int n = Math.Min(offset + length, bytes.Length), i = offset; i < n; ++i)
             {
                 if (i > offset) s += " ";
                 s += bytes[i].ToString("X2");
@@ -83,8 +83,8 @@ namespace JeffBourdier
         /// <returns>The text that is read.</returns>
         public static string ReadText(byte[] bytes, int offset, int length)
         {
-            char[] chars = new char[length];
-            for (int i = 0; i < length; ++i)
+            char[] chars = new char[Math.Min(length, bytes.Length - offset)];
+            for (int i = 0; i < chars.Length; ++i)
             {
                 chars[i] = (char)bytes[offset + i];
                 if (!Midi.IsPrintable(chars[i])) chars[i] = '.';

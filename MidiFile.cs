@@ -137,12 +137,13 @@ namespace JeffBourdier
                 this.AddErrorText(s, 0);
             }
 
-            /* Check for leftover bytes. */
+            /* Check for leftover bytes or unexpected end of file. */
             if (j > 0)
             {
                 s = string.Format(Properties.Resources.ExtraBytesFormat, j);
                 this.AddErrorText(s, 0);
             }
+            else if (j < 0) this.AddErrorText(Properties.Resources.UnexpectedEOF, 0);
         }
 
         /// <summary>Gets the MidiItem object at the specified index in this file's list.</summary>

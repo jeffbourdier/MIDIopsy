@@ -1258,4 +1258,7 @@
   <data name="ExtraBytesFormat" xml:space="preserve">
     <value>{0} extra bytes at end of file.</value>
   </data>
+  <data name="UnexpectedEOF" xml:space="preserve">
+    <value>Unexpected end of file.</value>
+  </data>
 </root>

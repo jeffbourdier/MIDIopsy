@@ -3470,6 +3470,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected end of file..
+        /// </summary>
+        internal static string UnexpectedEOF {
+            get {
+                return ResourceManager.GetString("UnexpectedEOF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} must be between {1} and {2}..
         /// </summary>
         internal static string ValueRangeFormat {
