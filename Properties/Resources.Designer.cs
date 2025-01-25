@@ -1043,7 +1043,7 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} extra bytes at end of file..
+        ///   Looks up a localized string similar to {0} extra bytes at end of {1}..
         /// </summary>
         internal static string ExtraBytesFormat {
             get {
@@ -1264,11 +1264,11 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid variable-length quantity..
+        ///   Looks up a localized string similar to Invalid {0} at byte {1} (remainder of chunk may not be parsed)..
         /// </summary>
-        internal static string InvalidVLQ {
+        internal static string InvalidFormat {
             get {
-                return ResourceManager.GetString("InvalidVLQ", resourceCulture);
+                return ResourceManager.GetString("InvalidFormat", resourceCulture);
             }
         }
         
@@ -2080,6 +2080,15 @@ namespace JeffBourdier.Properties {
         internal static string Reload {
             get {
                 return ResourceManager.GetString("Reload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove End of Track event?.
+        /// </summary>
+        internal static string RemoveEndOfTrack {
+            get {
+                return ResourceManager.GetString("RemoveEndOfTrack", resourceCulture);
             }
         }
         
@@ -3335,6 +3344,15 @@ namespace JeffBourdier.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to status.
+        /// </summary>
+        internal static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will stop playback.  Proceed?.
         /// </summary>
         internal static string StopPlayback {
@@ -3502,6 +3520,15 @@ namespace JeffBourdier.Properties {
         internal static string Version {
             get {
                 return ResourceManager.GetString("Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to variable-length quantity.
+        /// </summary>
+        internal static string VLQ {
+            get {
+                return ResourceManager.GetString("VLQ", resourceCulture);
             }
         }
     }

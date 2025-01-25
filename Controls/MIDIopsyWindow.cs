@@ -1,6 +1,6 @@
 ﻿/* MIDIopsyWindow.cs - Implementation of MIDIopsyWindow class, which makes up this application's user interface.
  *
- * Copyright (c) 2018-20 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-25 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -837,11 +837,14 @@ namespace JeffBourdier
         private void BodyCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
         { e.CanExecute = (this.State != FileState.Closed && this.ListView.SelectedIndex > 1); }
 
-        /* The command that edits the properties of the selected MIDI item can execute
-         * as long as there is a file open and the selected item is not chunk info.
+        /* The command that edits the properties of the selected MIDI item can execute as long
+         * as there is a file open and the selected item is neither chunk info nor extra bytes.
          */
         private void PropertiesCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        { e.CanExecute = (this.State != FileState.Closed && !(this.ListView.SelectedItem is MidiChunkInfo)); }
+        {
+            e.CanExecute = (this.State != FileState.Closed &&
+                !(this.ListView.SelectedItem is MidiChunkInfo) && !(this.ListView.SelectedItem is ExtraItem));
+        }
 
         /* Commands that apply only to MIDI (MTrk) events can execute as long as
          * there is a file open and the selected item is in fact a MIDI event.
@@ -1197,6 +1200,11 @@ namespace JeffBourdier
 
                 this.ListView.Items.Add(item);
             }
+
+            /* If the last item consists of "leftover" bytes, put a separator before it. */
+            int j = this.ListView.Items.Count - 1;
+            if (this.ListView.Items[j] is ExtraItem) this.ListView.Items.Insert(j, new MidiItem.Separator());
+
             this.ListView.SelectedIndex = 0;
             this.ListView.ScrollIntoView(this.ListView.SelectedItem);
             this.SetColumnWidths();
@@ -1376,9 +1384,18 @@ namespace JeffBourdier
                 return true;
             }
 
-            /* Otherwise, as long as the selected MIDI item is not chunk info, it can be removed. */
+            /* If the selected MIDI item is an End of Track meta-event, warn the user. */
+            MidiMetaEvent metaEvent = this.ListView.SelectedItem as MidiMetaEvent;
+            if (metaEvent != null && metaEvent.Type == MidiMetaEvent.EndOfTrackType)
+                return this.PromptUser(Properties.Resources.RemoveEndOfTrack, false);
+
+            /* Otherwise, as long as the selected MIDI item is not chunk info, it can be removed.
+             * (If it's an extra item at the end, there is presumably a preceding separator that should also be removed.)
+             */
             MidiChunkInfo chunkInfo = this.ListView.SelectedItem as MidiChunkInfo;
-            if (chunkInfo == null) return true;
+            if (chunkInfo == null)
+                return (this.ListView.SelectedItem is ExtraItem &&
+                    this.ListView.SelectedIndex == this.ListView.Items.Count - 1) ? null : (bool?)true;
 
             /* If the selected MIDI item represents the only track, warn the user. */
             if (chunkInfo.Type == MidiChunkInfo.TrackType && this.MidiFile.Header.NumberOfTracks == 1)

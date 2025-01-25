@@ -50,6 +50,7 @@
     <Compile Include="Controls\SettingsDialog.cs" />
     <Compile Include="Controls\DialogWindow.cs" />
     <Compile Include="Controls\CommonWindow.cs" />
+    <Compile Include="MidiItems\ExtraItem.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="Controls\GoToDialog.cs" />
     <Compile Include="Controls\MidiItemDialogs\MidiMetaEventDialog.cs" />

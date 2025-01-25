@@ -1,6 +1,6 @@
 ﻿/* MidiFile.cs - Implementation of MidiFile class, which represents a standard MIDI file.
  *
- * Copyright (c) 2018-20 Jeffrey Paul Bourdier
+ * Copyright (c) 2018-25 Jeffrey Paul Bourdier
  *
  * Licensed under the MIT License.  This file may be used only in compliance with this License.
  * Software distributed under this License is provided "AS IS", WITHOUT WARRANTY OF ANY KIND.
@@ -128,6 +128,15 @@ namespace JeffBourdier
                 }
             }
 
+            /* Check for leftover bytes or unexpected end of file. */
+            if (j > 0)
+            {
+                this.Items.Add(new ExtraItem(this, i, j));
+                s = string.Format(Properties.Resources.ExtraBytesFormat, j, Properties.Resources.File.ToLower());
+                this.AddErrorText(s, 0);
+            }
+            else if (j < 0) this.AddErrorText(Properties.Resources.UnexpectedEOF, 0);
+
             /* Check for track number mismatch. */
             i = (header == null) ? 0 : header.NumberOfTracks;
             if (i != n)
@@ -136,14 +145,6 @@ namespace JeffBourdier
                 s = string.Format(Properties.Resources.MismatchFormat, s, i, n);
                 this.AddErrorText(s, 0);
             }
-
-            /* Check for leftover bytes or unexpected end of file. */
-            if (j > 0)
-            {
-                s = string.Format(Properties.Resources.ExtraBytesFormat, j);
-                this.AddErrorText(s, 0);
-            }
-            else if (j < 0) this.AddErrorText(Properties.Resources.UnexpectedEOF, 0);
         }
 
         /// <summary>Gets the MidiItem object at the specified index in this file's list.</summary>
@@ -206,7 +207,8 @@ namespace JeffBourdier
             }
 
             /* This means we processed four bytes and never encountered the last byte (MSB clear). */
-            throw new ApplicationException(Properties.Resources.InvalidVLQ);
+            string s = string.Format(Properties.Resources.InvalidFormat, Properties.Resources.VLQ, offset);
+            throw new ApplicationException(s);
         }
 
         /// <summary>Writes a number of bytes into this file's byte array, resizing the byte array if necessary.</summary>
@@ -671,21 +673,30 @@ namespace JeffBourdier
                 /* In order to know what kind of event to instantiate, we must read the event's status
                  * byte, which requires skipping past the delta-time (stored as a variable-length quantity).
                  */
-                for (j = i; j < this.Bytes.Length && (this.Bytes[j] & 0x80) > 0; ++j) if (j - i > 3)
+                for (j = i; j < n && j < this.Bytes.Length && (this.Bytes[j] & 0x80) > 0; ++j) if (j - i > 3)
                     {
-                        s = string.Format("{0} (@ {1} {2})", Properties.Resources.InvalidVLQ, Properties.Resources.Byte, i);
+                        s = string.Format(Properties.Resources.InvalidFormat, Properties.Resources.VLQ, i);
                         this.AddErrorText(s, trackNumber);
                         return;
                     }
-                if (++j >= this.Bytes.Length) break;
+                if (++j >= n || j >= this.Bytes.Length) break;
 
                 /* Instantiate an event object of the appropriate type (based on the status byte). */
-                switch (this.Bytes[j])
+                byte b = this.Bytes[j];
+                switch (b)
                 {
                     case 0xFF: mtrkEvent = new MidiMetaEvent(this, i); break;
                     case 0xF7: mtrkEvent = new MidiSysExEvent(this, i); break;
                     case 0xF0: mtrkEvent = new MidiSysExEvent(this, i); break;
-                    default: mtrkEvent = new MidiChannelEvent(this, i); break;
+                    default:
+                        if (b > 0xF0 || (b < 0x80 && this.GetRunningStatus(i) < 0))
+                        {
+                            s = string.Format(Properties.Resources.InvalidFormat, Properties.Resources.Status, j);
+                            this.AddErrorText(s, trackNumber);
+                            return;
+                        }
+                        else mtrkEvent = new MidiChannelEvent(this, i);
+                        break;
                 }
                 this.Items.Add(mtrkEvent);
                 this.SetTotalTime(this.ItemCount - 1);
@@ -693,20 +704,28 @@ namespace JeffBourdier
                 /* If the event is a MIDI channel message/event that does not use
                  * running status, use it to set the running status at this byte offset.
                  */
-                if (++j >= this.Bytes.Length) break;
+                if (++j >= n || j >= this.Bytes.Length) break;
                 MidiChannelEvent channelEvent = mtrkEvent as MidiChannelEvent;
                 if (channelEvent != null && !channelEvent.RunningStatus) this.SetRunningStatus(i, channelEvent.Status);
 
                 /* If the event is a meta-event representing a key signature,
                  * use it to set the key signature at the appropriate time.
                  */
-                if (++j >= this.Bytes.Length) break;
+                if (++j >= n || j >= this.Bytes.Length) break;
                 metaEvent = MidiFile.ItemToKeySignatureEvent(mtrkEvent);
                 if (metaEvent != null) this.SetKeySignature(metaEvent);
             }
 
-            /* If we ran out of data, add an error message. */
-            if (j >= this.Bytes.Length)
+            /* If there are extra bytes in the chunk (that are not part
+             * of an event) or we ran out of data, add an error message.
+             */
+            if (j >= n)
+            {
+                this.Items.Add(new ExtraItem(this, i, j -= i));
+                s = string.Format(Properties.Resources.ExtraBytesFormat, j, Properties.Resources.Chunk);
+                this.AddErrorText(s, trackNumber);
+            }
+            else if (j >= this.Bytes.Length)
             {
                 s = string.Format(Properties.Resources.MismatchFormat, Properties.Resources.Byte, length, i - offset);
                 this.AddErrorText(s, trackNumber);

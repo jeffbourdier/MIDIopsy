@@ -160,8 +160,8 @@
   <data name="HelpText" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Help.html;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="InvalidVLQ" xml:space="preserve">
-    <value>Invalid variable-length quantity.</value>
+  <data name="InvalidFormat" xml:space="preserve">
+    <value>Invalid {0} at byte {1} (remainder of chunk may not be parsed).</value>
   </data>
   <data name="Message" xml:space="preserve">
     <value>message</value>
@@ -1256,9 +1256,18 @@
     <value>Version</value>
   </data>
   <data name="ExtraBytesFormat" xml:space="preserve">
-    <value>{0} extra bytes at end of file.</value>
+    <value>{0} extra bytes at end of {1}.</value>
   </data>
   <data name="UnexpectedEOF" xml:space="preserve">
     <value>Unexpected end of file.</value>
+  </data>
+  <data name="RemoveEndOfTrack" xml:space="preserve">
+    <value>Remove End of Track event?</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>status</value>
+  </data>
+  <data name="VLQ" xml:space="preserve">
+    <value>variable-length quantity</value>
   </data>
 </root>
