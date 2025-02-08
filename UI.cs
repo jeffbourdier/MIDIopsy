@@ -149,6 +149,9 @@ namespace JeffBourdier
             int n;
             FrameworkElement element;
 
+            /* Remove leading and trailing white-space. */
+            textBox.Text = textBox.Text.Trim();
+
             /* If the user entered something non-numeric, it's invalid. */
             if (!int.TryParse(textBox.Text, out n))
             {
